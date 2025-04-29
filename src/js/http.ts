@@ -82,7 +82,7 @@ export class HttpClient {
 
             // 发送请求
             const response = await this.sendRequest<T>(finalConfig, fullUrl);
-            console.log(response);
+
             // 存储 Cookie
             if (finalConfig.withCredentials && response.cookies) {
                 await this.storeCookies(fullUrl, response.cookies);
