@@ -304,7 +304,10 @@ export class HttpClient {
 
 // 默认导出实例
 export const http = new HttpClient({
-    baseURL: "https://jwxt2018.gxu.edu.cn",
+    baseURL: "https://jwxt2018.gxu.edu.cn/jwglxt",
+    headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+    },
 });
 
 export function urlWithParams(url: string, params: Record<string, any> = {}) {

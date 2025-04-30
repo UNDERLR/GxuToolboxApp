@@ -1,12 +1,11 @@
 import {http, urlWithParams} from "./http.ts";
 import {getEncryptedPassword} from "./rasPassword";
-import {Cookies} from "@react-native-cookies/cookies";
 
 export const jwxt = {
     getPublicKey: (): Promise<{modulus: string; exponent: string}> => {
         return new Promise(resolve => {
             http.get(
-                urlWithParams("/jwglxt/xtgl/login_getPublicKey.html", {
+                urlWithParams("/xtgl/login_getPublicKey.html", {
                     time: Date.now(),
                 }),
             ).then(res => {
@@ -15,7 +14,12 @@ export const jwxt = {
         });
     },
 
-    getToken: async (username: string, password: string, public_key: string, public_length: string): Promise<string> => {
+    getToken: async (
+        username: string,
+        password: string,
+        public_key: string,
+        public_length: string,
+    ): Promise<string> => {
         return new Promise(resolve => {
             http.post(
                 urlWithParams("/jwglxt/xtgl/login_slogin.html", {
@@ -33,8 +37,20 @@ export const jwxt = {
                     },
                 },
             ).then(data => {
-                resolve(data.config.headers.Cookie);
+                resolve(data.config.headers!.Cookie);
             });
         });
+    },
+
+    getCourseSchedule: () => {
+        return new Promise(resolve => {
+            http.get(
+                urlWithParams("/kbcx/xskbcx_cxXsgrkb.html", {
+                    time: Date.now(),
+                }),
+            ).then(res => {
+                resolve(res.data);
+            });
+        })
     },
 };

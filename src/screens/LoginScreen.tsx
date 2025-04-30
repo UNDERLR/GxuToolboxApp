@@ -2,13 +2,18 @@ import {StyleSheet, ToastAndroid, View} from "react-native";
 import {Button, Input, Text} from "@rneui/base";
 import {useState} from "react";
 import {jwxt} from "../js/jwxt";
+import {userMgr} from "../js/mgr/user.ts";
 
 function getToken(username: string, password: string) {
+    userMgr.storeAccount(username, password);
     jwxt.getPublicKey().then(data => {
         if (data.exponent) {
             jwxt.getToken(username, password, data.modulus, data.exponent).then(res => {
                 console.log(res);
-                ToastAndroid.show(res, ToastAndroid.SHORT);
+                if (res !== "") {
+                    ToastAndroid.show(res, ToastAndroid.SHORT);
+                    userMgr.storeToken(res);
+                }
             });
         }
     });
@@ -18,10 +23,15 @@ export function LoginScreen() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
+    //从存储中读取数据
+    userMgr.getAccount().then(data => {
+        setUsername(data.username);
+        setPassword(data.password);
+    });
     return (
         <View style={style.loginBg}>
             <Text h1 style={style.loginTitle}>
-                login
+                登录教务
             </Text>
             <Text style={style.loginNote}>仅用于工具从教务系统获取信息</Text>
             <Input
