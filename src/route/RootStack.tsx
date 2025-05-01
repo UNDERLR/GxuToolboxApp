@@ -8,8 +8,8 @@ const Stack = createNativeStackNavigator();
 export function RootStack() {
     return (
         <Stack.Navigator initialRouteName="home">
-            <Stack.Screen name="课表" navigationKey="home" component={HomeScreen} />
-            <Stack.Screen name="登录教务系统" navigationKey="login" component={LoginScreen} />
+            <Stack.Screen name="home" component={HomeScreen} options={{title: "课表"}} />
+            <Stack.Screen name="login" component={LoginScreen} options={{title: "登录教务系统"}} />
         </Stack.Navigator>
     );
 }

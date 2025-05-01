@@ -1,28 +1,32 @@
-import {http, urlWithParams} from "./http.ts";
-import {getEncryptedPassword} from "./rasPassword";
+import {http, urlWithParams} from "../http.ts";
+import {getEncryptedPassword} from "../rasPassword";
+import CookieManager from "@react-native-cookies/cookies";
+import {AxiosResponse} from "axios";
 
 export const jwxt = {
     getPublicKey: (): Promise<{modulus: string; exponent: string}> => {
+        CookieManager.clearAll();
         return new Promise(resolve => {
             http.get(
                 urlWithParams("/xtgl/login_getPublicKey.html", {
                     time: Date.now(),
                 }),
             ).then(res => {
+                console.log(res);
                 resolve(res.data);
             });
         });
     },
 
-    getToken: async (
+    login: async (
         username: string,
         password: string,
         public_key: string,
         public_length: string,
-    ): Promise<string> => {
+    ): Promise<AxiosResponse> => {
         return new Promise(resolve => {
             http.post(
-                urlWithParams("/jwglxt/xtgl/login_slogin.html", {
+                urlWithParams("/xtgl/login_slogin.html", {
                     time: Date.now(),
                 }),
                 {
@@ -31,26 +35,10 @@ export const jwxt = {
                     mm: getEncryptedPassword(password, public_key, public_length),
                     yzm: "",
                 },
-                {
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded",
-                    },
-                },
-            ).then(data => {
-                resolve(data.config.headers!.Cookie);
+            ).then(res => {
+                resolve(res);
             });
         });
     },
 
-    getCourseSchedule: () => {
-        return new Promise(resolve => {
-            http.get(
-                urlWithParams("/kbcx/xskbcx_cxXsgrkb.html", {
-                    time: Date.now(),
-                }),
-            ).then(res => {
-                resolve(res.data);
-            });
-        })
-    },
 };

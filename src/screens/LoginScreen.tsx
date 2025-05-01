@@ -1,18 +1,18 @@
 import {StyleSheet, ToastAndroid, View} from "react-native";
-import {Button, Input, Text} from "@rneui/base";
+import {Button, Input, Text} from "@rneui/themed";
 import {useState} from "react";
-import {jwxt} from "../js/jwxt";
+import {jwxt} from "../js/jw/jwxt.ts";
 import {userMgr} from "../js/mgr/user.ts";
 
 function getToken(username: string, password: string) {
     userMgr.storeAccount(username, password);
     jwxt.getPublicKey().then(data => {
         if (data.exponent) {
-            jwxt.getToken(username, password, data.modulus, data.exponent).then(res => {
-                console.log(res);
-                if (res !== "") {
-                    ToastAndroid.show(res, ToastAndroid.SHORT);
-                    userMgr.storeToken(res);
+            jwxt.login(username, password, data.modulus, data.exponent).then(res => {
+                if (res.status === 200) {
+                    ToastAndroid.show("获取成功", ToastAndroid.SHORT);
+                } else {
+                    ToastAndroid.show(`获取失败，错误码：${res.status}`, ToastAndroid.SHORT);
                 }
             });
         }
