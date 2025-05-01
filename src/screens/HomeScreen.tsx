@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import {ScrollView, StyleProp, StyleSheet, Text, TextStyle, ToastAndroid, View, ViewStyle} from "react-native";
 import {useNavigation} from "@react-navigation/native";
-import {Button, Divider, useTheme} from "@rneui/themed";
+import {Button, Divider} from "@rneui/themed";
 import {Course, PracticalCourse} from "../type/course.ts";
 import {infoQuery} from "../js/jw/infoQuery.ts";
 import {BaseColor, Color} from "../js/color.ts";
@@ -10,6 +10,7 @@ import AntDesign from "react-native-vector-icons/AntDesign.js";
 import FontAwesome from "react-native-vector-icons/FontAwesome.js";
 import Flex from "../components/un-ui/Flex.tsx";
 import moment from "moment";
+import {store} from "../js/store.ts";
 
 interface CourseItem extends Course {
     // 在课程表中显示的背景颜色
@@ -69,28 +70,40 @@ const staticData = {
 
 export function HomeScreen() {
     const navigation = useNavigation();
-    const theme = useTheme();
     const [apiRes, setApiRes] = useState<CourseScheduleQueryRes>();
     const [courseSchedule, setCourseSchedule] = useState<CourseItem[][]>([[], [], [], [], [], [], []]);
-    const [currentWeek, setCurrentWeek] = useState<number>(1);
+    const startDay = moment(staticData.startDay);
+    const [currentWeek, setCurrentWeek] = useState<number>(
+        Math.ceil(moment.duration(moment().diff(startDay)).asWeeks()),
+    );
 
     function getCourseSchedule() {
         infoQuery
             .getCourseSchedule()
             .then(data => {
                 ToastAndroid.show("刷新课表成功", ToastAndroid.SHORT);
-                calcWeek();
                 setApiRes(data);
                 randomCourseColor(data.kbList as CourseItem[]);
                 randomCourseColor(data.sjkList as PracticalCourseItem[]);
                 parseCourses(data.kbList as CourseItem[]);
+                store.save({key: "courseRes", data});
             })
             .catch(res => {
                 ToastAndroid.show(`刷新课表失败，错误码：${res.status}`, ToastAndroid.SHORT);
             });
     }
 
+    function init() {
+        store.load({key: "courseRes"}).then((data: CourseScheduleQueryRes) => {
+            setApiRes(data);
+            randomCourseColor(data.kbList as CourseItem[]);
+            randomCourseColor(data.sjkList as PracticalCourseItem[]);
+            parseCourses(data.kbList as CourseItem[]);
+        });
+    }
+
     useEffect(() => {
+        init();
         getCourseSchedule();
     }, []);
 
@@ -134,11 +147,6 @@ export function HomeScreen() {
                 course.backgroundColor = courseColor[course.kcmc];
             }
         });
-    }
-
-    function calcWeek() {
-        const startDay = moment(staticData.startDay);
-        setCurrentWeek(Math.ceil(moment.duration(moment().diff(startDay)).asWeeks()));
     }
 
     return (

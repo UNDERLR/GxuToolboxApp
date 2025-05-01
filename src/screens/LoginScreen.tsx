@@ -1,8 +1,9 @@
 import {StyleSheet, ToastAndroid, View} from "react-native";
 import {Button, Input, Text} from "@rneui/themed";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {jwxt} from "../js/jw/jwxt.ts";
 import {userMgr} from "../js/mgr/user.ts";
+import FontAwesome from "react-native-vector-icons/FontAwesome.js";
 
 function getToken(username: string, password: string) {
     userMgr.storeAccount(username, password);
@@ -22,12 +23,15 @@ function getToken(username: string, password: string) {
 export function LoginScreen() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [showPwd, setShowPwd] = useState(false);
 
     //从存储中读取数据
-    userMgr.getAccount().then(data => {
-        setUsername(data.username);
-        setPassword(data.password);
-    });
+    useEffect(() => {
+        userMgr.getAccount().then(data => {
+            setUsername(data.username);
+            setPassword(data.password);
+        });
+    }, []);
     return (
         <View style={style.loginBg}>
             <Text h1 style={style.loginTitle}>
@@ -45,7 +49,8 @@ export function LoginScreen() {
                 onChangeText={v => setPassword(v)}
                 label="密码"
                 placeholder="对应账号的密码"
-                secureTextEntry
+                secureTextEntry={!showPwd}
+                rightIcon={<FontAwesome name={showPwd ? "eye-slash" : "eye"} onPress={()=>setShowPwd(!showPwd)}/>}
             />
             <Button onPress={() => getToken(username, password)}>获取Token</Button>
         </View>
