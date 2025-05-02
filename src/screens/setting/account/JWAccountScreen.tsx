@@ -1,8 +1,8 @@
 import {StyleSheet, ToastAndroid, View} from "react-native";
 import {Button, Input, Text} from "@rneui/themed";
 import {useEffect, useState} from "react";
-import {jwxt} from "../js/jw/jwxt.ts";
-import {userMgr} from "../js/mgr/user.ts";
+import {jwxt} from "../../../js/jw/jwxt.ts";
+import {userMgr} from "../../../js/mgr/user.ts";
 import FontAwesome from "react-native-vector-icons/FontAwesome.js";
 
 function getToken(username: string, password: string) {
@@ -20,7 +20,7 @@ function getToken(username: string, password: string) {
     });
 }
 
-export function LoginScreen() {
+export function JWAccountScreen() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [showPwd, setShowPwd] = useState(false);
@@ -33,11 +33,11 @@ export function LoginScreen() {
         });
     }, []);
     return (
-        <View style={style.loginBg}>
-            <Text h1 style={style.loginTitle}>
-                登录教务
+        <View style={style.container}>
+            <Text h2 style={style.title}>
+                设置教务帐密
             </Text>
-            <Text style={style.loginNote}>仅用于工具从教务系统获取信息</Text>
+            <Text style={style.note}>仅用于工具从教务系统获取信息</Text>
             <Input
                 value={username}
                 onChangeText={v => setUsername(v)}
@@ -53,18 +53,19 @@ export function LoginScreen() {
                 rightIcon={<FontAwesome name={showPwd ? "eye-slash" : "eye"} onPress={()=>setShowPwd(!showPwd)}/>}
             />
             <Button onPress={() => getToken(username, password)}>获取Token</Button>
+            <Text style={style.note}>提示获取成功后，回到课表页进行测试</Text>
         </View>
     );
 }
 
 const style = StyleSheet.create({
-    loginBg: {
+    container: {
         padding: "5%",
     },
-    loginTitle: {
+    title: {
         textAlign: "center",
     },
-    loginNote: {
+    note: {
         marginVertical: 20,
         textAlign: "center",
         color: "gray",

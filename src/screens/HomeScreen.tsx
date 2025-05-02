@@ -153,9 +153,6 @@ export function HomeScreen() {
         <View>
             <ScrollView>
                 <Button onPress={getCourseSchedule}>刷新课表</Button>
-                <Button touchSoundDisabled onPress={() => navigation.navigate("login")}>
-                    设置教务账密
-                </Button>
                 {/* Course Schedule */}
                 <View style={style.courseSchedule}>
                     <View style={style.weekdayContainer}>
@@ -244,7 +241,7 @@ export function HomeScreen() {
                 <Divider />
                 <View>
                     <Text style={{textAlign: "center"}}>其他课程</Text>
-                    {apiRes?.sjkList.map((course: PracticalCourseItem) => {
+                    {apiRes?.sjkList && apiRes?.sjkList.map((course: PracticalCourseItem) => {
                         const itemStyle = StyleSheet.create({
                             course: {
                                 backgroundColor: course.backgroundColor,
