@@ -3,7 +3,7 @@ import {Button, Input, Text} from "@rneui/themed";
 import {useEffect, useState} from "react";
 import {jwxt} from "../../../js/jw/jwxt.ts";
 import {userMgr} from "../../../js/mgr/user.ts";
-import FontAwesome from "react-native-vector-icons/FontAwesome.js";
+import {UnIcon} from "../../../components/un-ui/UnIcon.tsx";
 
 function getToken(username: string, password: string) {
     userMgr.storeAccount(username, password);
@@ -37,7 +37,7 @@ export function JWAccountScreen() {
             <Text h2 style={style.title}>
                 设置教务帐密
             </Text>
-            <Text style={style.note}>仅用于工具从教务系统获取信息</Text>
+            <Text style={style.note}>仅用于工具从教务系统获取信息，凌晨请连接校园网</Text>
             <Input
                 value={username}
                 onChangeText={v => setUsername(v)}
@@ -50,10 +50,18 @@ export function JWAccountScreen() {
                 label="密码"
                 placeholder="对应账号的密码"
                 secureTextEntry={!showPwd}
-                rightIcon={<FontAwesome name={showPwd ? "eye-slash" : "eye"} onPress={()=>setShowPwd(!showPwd)}/>}
+                rightIcon={
+                    <UnIcon
+                        type="fontawesome"
+                        name={showPwd ? "eye-slash" : "eye"}
+                        size={20}
+                        style={style.showPwdIcon}
+                        onPress={() => setShowPwd(!showPwd)}
+                    />
+                }
             />
             <Button onPress={() => getToken(username, password)}>获取Token</Button>
-            <Text style={style.note}>提示获取成功后，回到课表页进行测试</Text>
+            <Text style={style.note}>提示获取成功后，回到课表页进行测试，若无法正常获取课表，可能为密码错误</Text>
         </View>
     );
 }
@@ -70,5 +78,9 @@ const style = StyleSheet.create({
         textAlign: "center",
         color: "gray",
         fontSize: 14,
+    },
+    showPwdIcon: {
+        paddingHorizontal: 5,
+        cursor: "pointer",
     },
 });

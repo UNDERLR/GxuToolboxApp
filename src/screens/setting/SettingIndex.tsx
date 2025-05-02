@@ -1,8 +1,8 @@
 import {Pressable, PressableAndroidRippleConfig, SectionList, StyleSheet, View} from "react-native";
-import {Text} from "@rneui/themed";
+import {Text, useTheme} from "@rneui/themed";
 import {BaseColor, Color} from "../../js/color.ts";
-import AntDesign from "react-native-vector-icons/AntDesign.js";
 import {useNavigation} from "@react-navigation/native";
+import {UnIcon} from "../../components/un-ui/UnIcon.tsx";
 
 interface settingSection {
     title: string;
@@ -15,17 +15,9 @@ interface SettingItem {
     navigation: string;
 }
 
-const staticData = {
-    style: {
-        cardBg: new Color(BaseColor.lightgray).setAlpha(0.3).rgbaString,
-        settingItemRipple: {
-            color: BaseColor.lightgray,
-        } as PressableAndroidRippleConfig,
-    },
-};
-
 export function SettingIndex() {
     const navigation = useNavigation();
+    const {theme} = useTheme();
 
     const settingList = [
         {
@@ -40,6 +32,35 @@ export function SettingIndex() {
         },
     ] as settingSection[];
 
+    const data = {
+        style: {
+            cardBg: new Color(BaseColor.lightgray).setAlpha(theme.mode === "light" ? 0.3 : 0.1).rgbaString,
+            settingItemRipple: {
+                color: theme.colors.grey4,
+            } as PressableAndroidRippleConfig,
+        },
+    };
+
+    const style = StyleSheet.create({
+        settingContainer: {
+            padding: "5%",
+        },
+        settingSectionContainer: {
+            paddingHorizontal: "3%",
+            paddingTop: "2%",
+            paddingBottom: "5%",
+            borderRadius: 5,
+            backgroundColor: data.style.cardBg,
+        },
+        settingItem: {
+            flexDirection: "row",
+            justifyContent: "space-between",
+            paddingVertical: 20,
+            paddingHorizontal: 10,
+            borderBottomWidth: 1,
+            borderBottomColor: theme.colors.grey3,
+        },
+    });
     return (
         <View style={style.settingContainer}>
             <SectionList
@@ -50,9 +71,9 @@ export function SettingIndex() {
                             <Pressable
                                 onPress={() => navigation.navigate(item.navigation)}
                                 style={style.settingItem}
-                                android_ripple={staticData.style.settingItemRipple}>
+                                android_ripple={data.style.settingItemRipple}>
                                 <Text>{item.label}</Text>
-                                <AntDesign name="right" size={16} />
+                                <UnIcon name="right" size={16} />
                             </Pressable>
                         );
                     } else {
@@ -64,7 +85,6 @@ export function SettingIndex() {
                     }
                 }}
                 contentContainerStyle={style.settingSectionContainer}
-                stickySectionHeadersEnabled
                 renderSectionHeader={({section: {title}}) => (
                     <View>
                         <Text h4>{title}</Text>
@@ -74,24 +94,3 @@ export function SettingIndex() {
         </View>
     );
 }
-
-const style = StyleSheet.create({
-    settingContainer: {
-        padding: "5%",
-    },
-    settingSectionContainer: {
-        paddingHorizontal: "3%",
-        paddingTop: "2%",
-        paddingBottom: "5%",
-        borderRadius: 5,
-        backgroundColor: staticData.style.cardBg,
-    },
-    settingItem: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        paddingVertical: 20,
-        paddingHorizontal: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: "#aaa",
-    },
-});

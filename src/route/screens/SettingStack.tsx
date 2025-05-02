@@ -7,8 +7,8 @@ const Stack = createNativeStackNavigator();
 
 export function SettingStack() {
     return (
-        <Stack.Navigator initialRouteName="setting">
-            <Stack.Screen name="setting" component={SettingIndex} options={{title: "工具箱设置"}} />
+        <Stack.Navigator initialRouteName="settingIndex">
+            <Stack.Screen name="settingIndex" component={SettingIndex} options={{title: "工具箱设置"}} />
 
             {/*  账号相关  */}
             <Stack.Screen name="jwAccount" component={JWAccountScreen} options={{title: "教务系统账号设置"}} />

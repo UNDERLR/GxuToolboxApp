@@ -1,16 +1,15 @@
 import {useEffect, useState} from "react";
 import {ScrollView, StyleProp, StyleSheet, Text, TextStyle, ToastAndroid, View, ViewStyle} from "react-native";
 import {useNavigation} from "@react-navigation/native";
-import {Button, Divider} from "@rneui/themed";
+import {Button, Divider, useTheme} from "@rneui/themed";
 import {Course, PracticalCourse} from "../type/course.ts";
 import {infoQuery} from "../js/jw/infoQuery.ts";
-import {BaseColor, Color} from "../js/color.ts";
+import {BaseColor, color, Color} from "../js/color.ts";
 import {CourseScheduleQueryRes} from "../type/api/classScheduleAPI.ts";
-import AntDesign from "react-native-vector-icons/AntDesign.js";
-import FontAwesome from "react-native-vector-icons/FontAwesome.js";
 import Flex from "../components/un-ui/Flex.tsx";
 import moment from "moment";
 import {store} from "../js/store.ts";
+import {UnIcon} from "../components/un-ui/UnIcon.tsx";
 
 interface CourseItem extends Course {
     // 在课程表中显示的背景颜色
@@ -30,25 +29,25 @@ const staticData = {
     },
     startDay: "2025-02-24",
     randomColor: [
-        new Color(BaseColor.pink),
-        new Color(BaseColor.lightgreen),
-        new Color(BaseColor.skyblue),
-        new Color(BaseColor.orange),
-        new Color(BaseColor.tan),
-        new Color(BaseColor.sandybrown),
-        new Color(BaseColor.navy),
-        new Color(BaseColor.maroon),
-        new Color(BaseColor.mediumspringgreen),
-        new Color(BaseColor.slateblue),
-        new Color(BaseColor.yellowgreen),
-        new Color(BaseColor.red),
-        new Color(BaseColor.yellow),
-        new Color(BaseColor.gold),
-        new Color(BaseColor.lightskyblue),
-        new Color(BaseColor.lightsteelblue),
-        new Color(BaseColor.limegreen),
-        new Color(BaseColor.mediumaquamarine),
-        new Color(BaseColor.mediumblue),
+        BaseColor.pink,
+        BaseColor.lightgreen,
+        BaseColor.skyblue,
+        BaseColor.orange,
+        BaseColor.tan,
+        BaseColor.sandybrown,
+        BaseColor.navy,
+        BaseColor.maroon,
+        BaseColor.mediumspringgreen,
+        BaseColor.slateblue,
+        BaseColor.yellowgreen,
+        BaseColor.red,
+        BaseColor.yellow,
+        BaseColor.gold,
+        BaseColor.lightskyblue,
+        BaseColor.lightsteelblue,
+        BaseColor.limegreen,
+        BaseColor.mediumaquamarine,
+        BaseColor.mediumblue,
     ],
     weekdayList: ["一", "二", "三", "四", "五", "六", "日"],
     timeSpanList: [
@@ -70,12 +69,57 @@ const staticData = {
 
 export function HomeScreen() {
     const navigation = useNavigation();
+    const {theme} = useTheme();
     const [apiRes, setApiRes] = useState<CourseScheduleQueryRes>();
     const [courseSchedule, setCourseSchedule] = useState<CourseItem[][]>([[], [], [], [], [], [], []]);
     const startDay = moment(staticData.startDay);
     const [currentWeek, setCurrentWeek] = useState<number>(
         Math.ceil(moment.duration(moment().diff(startDay)).asWeeks()),
     );
+
+    const style = StyleSheet.create({
+        courseSchedule: {
+            flex: 1,
+            flexDirection: "row",
+        },
+        weekdayContainer: {
+            flex: 1,
+            justifyContent: "flex-start",
+            borderRadius: 5,
+            marginVertical: 10,
+        },
+        weekdayItem: {
+            alignItems: "center",
+            justifyContent: "center",
+            height: staticData.style.weekdayHeight,
+        },
+        weekdayText: {
+            fontSize: 14,
+            textAlign: "center",
+            color: theme.colors.grey2,
+        },
+        timeSpan: {
+            textAlign: "center",
+            color: theme.colors.grey2,
+            height: staticData.style.timeSpanHeight,
+        },
+        courseItem: {
+            overflow: "hidden",
+            width: "96%",
+            borderRadius: 5,
+            borderWidth: 2,
+            borderStyle: "solid",
+            padding: 5,
+        },
+        practicalCourseItem: {
+            gap: 3,
+            marginHorizontal: "2%",
+            marginVertical: 10,
+        },
+        practicalCourseText: {
+            color: theme.colors.black,
+        },
+    });
 
     function getCourseSchedule() {
         infoQuery
@@ -141,8 +185,7 @@ export function HomeScreen() {
         courseList.forEach((course: CourseItem) => {
             if (!courseColor[course.kcmc]) {
                 let randomNum = Math.floor(Math.random() * staticData.randomColor.length);
-                course.backgroundColor = courseColor[course.kcmc] =
-                    staticData.randomColor[randomNum].setAlpha(0.2).rgbaString;
+                course.backgroundColor = courseColor[course.kcmc] = staticData.randomColor[randomNum];
             } else {
                 course.backgroundColor = courseColor[course.kcmc];
             }
@@ -170,6 +213,7 @@ export function HomeScreen() {
                         })}
                     </View>
                     {staticData.weekdayList.map((weekday, index) => {
+                        // 判断是否为当天
                         const currentDay = moment(staticData.startDay).add({
                             week: currentWeek - 1,
                             day: index,
@@ -181,7 +225,7 @@ export function HomeScreen() {
                             },
                             activeText: {
                                 ...style.weekdayText,
-                                color: undefined,
+                                color: theme.colors.black,
                             },
                         });
                         const weekdayContainerStyle: StyleProp<ViewStyle> = [style.weekdayContainer];
@@ -191,6 +235,7 @@ export function HomeScreen() {
                             weekdayTextStyle[0] = itemStyle.activeText;
                         }
                         return (
+                            // 当日课程渲染
                             <View style={weekdayContainerStyle}>
                                 <View style={style.weekdayItem}>
                                     <Text style={weekdayTextStyle}>
@@ -209,7 +254,14 @@ export function HomeScreen() {
                                                 span * staticData.style.timeSpanHeight -
                                                 staticData.style.courseItemMargin,
                                             position: "absolute",
-                                            backgroundColor: course.backgroundColor,
+                                            backgroundColor: new Color(course.backgroundColor).setAlpha(
+                                                theme.mode === "light" ? 0.3 : 0.1,
+                                            ).rgbaString,
+                                            borderColor: color.mix(
+                                                new Color(course.backgroundColor),
+                                                new Color(theme.colors.grey4),
+                                                0.7,
+                                            ).rgbaString,
                                             top:
                                                 staticData.style.weekdayHeight +
                                                 y * staticData.style.timeSpanHeight +
@@ -217,17 +269,18 @@ export function HomeScreen() {
                                         },
                                         text: {
                                             textAlign: "center",
+                                            color: theme.colors.black,
                                         },
                                     });
                                     return (
                                         <View style={[itemStyle.course, style.courseItem]}>
                                             <Text style={itemStyle.text}>{course.kcmc}</Text>
                                             <Text style={itemStyle.text}>
-                                                <FontAwesome name="map-marker" />
+                                                <UnIcon type="fontawesome" name="map-marker" />
                                                 {"\n" + course.cdmc.replace("-", "\n")}
                                             </Text>
                                             <Text style={itemStyle.text}>
-                                                <AntDesign name="user" />
+                                                <UnIcon name="user" />
                                                 {"\n" + course.xm}
                                             </Text>
                                         </View>
@@ -240,68 +293,37 @@ export function HomeScreen() {
                 {/* Other Courses */}
                 <Divider />
                 <View>
-                    <Text style={{textAlign: "center"}}>其他课程</Text>
-                    {apiRes?.sjkList && apiRes?.sjkList.map((course: PracticalCourseItem) => {
-                        const itemStyle = StyleSheet.create({
-                            course: {
-                                backgroundColor: course.backgroundColor,
-                            },
-                        });
-                        return (
-                            <View style={[itemStyle.course, style.courseItem, style.practicalCourseItem]}>
-                                <Text>{course.qtkcgs}</Text>
-                                <Flex gap={5}>
-                                    <AntDesign name="clockcircleo" />
-                                    <Text>{course.qsjsz}</Text>
-                                </Flex>
-                                <Flex gap={5}>
-                                    <AntDesign name="user" />
-                                    <Text>{course.jsxm}</Text>
-                                </Flex>
-                            </View>
-                        );
-                    })}
+                    <Text style={{textAlign: "center", color: theme.colors.black}}>其他课程</Text>
+                    {apiRes?.sjkList &&
+                        apiRes?.sjkList.map((course: PracticalCourseItem) => {
+                            const itemStyle = StyleSheet.create({
+                                course: {
+                                    backgroundColor: new Color(course.backgroundColor).setAlpha(
+                                        theme.mode === "light" ? 0.3 : 0.1,
+                                    ).rgbaString,
+                                    borderColor: color.mix(
+                                        new Color(course.backgroundColor),
+                                        new Color(theme.colors.grey4),
+                                        0.8,
+                                    ).rgbaString,
+                                },
+                            });
+                            return (
+                                <View style={[itemStyle.course, style.courseItem, style.practicalCourseItem]}>
+                                    <Text style={style.practicalCourseText}>{course.qtkcgs}</Text>
+                                    <Flex gap={5}>
+                                        <UnIcon name="clockcircleo" />
+                                        <Text style={style.practicalCourseText}>{course.qsjsz}</Text>
+                                    </Flex>
+                                    <Flex gap={5}>
+                                        <UnIcon name="user" />
+                                        <Text style={style.practicalCourseText}>{course.jsxm}</Text>
+                                    </Flex>
+                                </View>
+                            );
+                        })}
                 </View>
             </ScrollView>
         </View>
     );
 }
-
-const style = StyleSheet.create({
-    courseSchedule: {
-        flex: 1,
-        flexDirection: "row",
-    },
-    weekdayContainer: {
-        flex: 1,
-        justifyContent: "flex-start",
-    },
-    weekdayItem: {
-        alignItems: "center",
-        justifyContent: "center",
-        height: staticData.style.weekdayHeight,
-    },
-    weekdayText: {
-        fontSize: 14,
-        textAlign: "center",
-        color: "#666666",
-    },
-    timeSpan: {
-        textAlign: "center",
-        height: staticData.style.timeSpanHeight,
-    },
-    courseItem: {
-        overflow: "hidden",
-        width: "96%",
-        borderRadius: 5,
-        borderWidth: 2,
-        borderStyle: "solid",
-        borderColor: new Color(BaseColor.lightgrey).setAlpha(0.5).rgbaString,
-        padding: 5,
-    },
-    practicalCourseItem: {
-        gap: 3,
-        marginHorizontal: "2%",
-        marginVertical: 10,
-    },
-});
