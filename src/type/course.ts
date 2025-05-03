@@ -1,8 +1,13 @@
+import {BaseColor} from "../js/color.ts";
+import {useState} from "react";
+import {StyleSheet} from "react-native";
+import {useTheme} from "@rneui/themed";
+
 export interface Course {
     //？
     bklxdjmc: string;
     //场地ID
-    "cd_id": string;
+    cd_id: string;
     //场地-班号
     cdbh: string;
     //场地类别名称
@@ -28,11 +33,11 @@ export interface Course {
     //节次数
     jcs: string;
     //机构号ID
-    "jgh_id": string;
+    jgh_id: string;
     //机构排选制度
     jgpxzd: string;
     //教学班ID
-    "jxb_id": string;
+    jxb_id: string;
     //教学班名称
     jxbmc: string;
     //教学班是否可（退课）标记
@@ -44,7 +49,7 @@ export interface Course {
     //课程号
     kch: string;
     //课程号ID
-    "kch_id": string;
+    kch_id: string;
     //课程类别
     kclb: string;
     //课程名称
@@ -111,7 +116,7 @@ export interface Course {
     //学期号
     xqh1: string;
     //学期号ID
-    "xqh_id": string;
+    xqh_id: string;
     //星期几
     xqj: string;
     //星期几名称
@@ -147,7 +152,6 @@ export interface Course {
     zzrl: string;
 }
 
-
 /* 自动生成的 Interface */
 
 interface IUserModel {
@@ -158,7 +162,6 @@ interface IUserModel {
     status: number;
     usable: boolean;
 }
-
 
 interface IQueryModel {
     currentPage: number;
@@ -213,4 +216,104 @@ export interface CourseTag {
     xsmc: string;
     // 某种序号
     xsdm: string;
+}
+
+const CourseScheduleData = {
+    style: {
+        timeSpanHeight: 80,
+        weekdayHeight: 60,
+        courseItemMargin: 4,
+    },
+    startDay: "2025-02-24",
+    randomColor: [
+        BaseColor.pink,
+        BaseColor.lightgreen,
+        BaseColor.skyblue,
+        BaseColor.orange,
+        BaseColor.tan,
+        BaseColor.sandybrown,
+        BaseColor.navy,
+        BaseColor.maroon,
+        BaseColor.mediumspringgreen,
+        BaseColor.slateblue,
+        BaseColor.yellowgreen,
+        BaseColor.red,
+        BaseColor.yellow,
+        BaseColor.gold,
+        BaseColor.lightskyblue,
+        BaseColor.lightsteelblue,
+        BaseColor.limegreen,
+        BaseColor.mediumaquamarine,
+        BaseColor.mediumblue,
+    ],
+    weekdayList: ["一", "二", "三", "四", "五", "六", "日"],
+    timeSpanList: [
+        "08:00\n08:45",
+        "08:55\n09:40",
+        "10:00\n10:45",
+        "10:55\n11:40",
+        "14:30\n15:15",
+        "15:25\n16:10",
+        "16:20\n17:05",
+        "17:15\n18:00",
+        "18:10\n18:55",
+        "18:45\n19:30",
+        "19:40\n20:25",
+        "20:30\n21:15",
+        "21:20\n22:05",
+    ],
+};
+
+export function useCourseScheduleData() {
+    const [courseScheduleData, setCourseScheduleData] = useState<typeof CourseScheduleData>(CourseScheduleData);
+    return {courseScheduleData, setCourseScheduleData};
+}
+
+export function useCourseScheduleStyle() {
+    const {theme} = useTheme();
+    const CourseScheduleStyle = StyleSheet.create({
+        courseSchedule: {
+            flex: 1,
+            flexDirection: "row",
+        },
+        weekdayContainer: {
+            flex: 1,
+            justifyContent: "flex-start",
+            borderRadius: 5,
+            marginVertical: 10,
+        },
+        weekdayItem: {
+            alignItems: "center",
+            justifyContent: "center",
+            height: CourseScheduleData.style.weekdayHeight,
+        },
+        weekdayText: {
+            fontSize: 14,
+            textAlign: "center",
+            color: theme.colors.grey2,
+        },
+        timeSpan: {
+            textAlign: "center",
+            color: theme.colors.grey2,
+            height: CourseScheduleData.style.timeSpanHeight,
+        },
+        courseItem: {
+            overflow: "hidden",
+            width: "96%",
+            borderRadius: 5,
+            borderWidth: 2,
+            borderStyle: "solid",
+            padding: 5,
+        },
+        practicalCourseItem: {
+            gap: 3,
+            marginHorizontal: "2%",
+            marginVertical: 10,
+        },
+        practicalCourseText: {
+            color: theme.colors.black,
+        },
+    });
+    const [courseScheduleStyle, setCourseScheduleStyle] = useState<typeof CourseScheduleStyle>(CourseScheduleStyle);
+    return { courseScheduleStyle, setCourseScheduleStyle};
 }
