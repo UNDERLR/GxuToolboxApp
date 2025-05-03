@@ -109,6 +109,9 @@ export function CourseScheduleCard() {
                 </Flex>
             </Card.Title>
             <Card.Divider />
+            <Flex justifyContent="center">
+                <Text>点击课程查看详情</Text>
+            </Flex>
             <CourseScheduleTable onCoursePress={showCourseDetail} courseList={apiRes?.kbList ?? []} currentWeek={currentWeek} />
             {apiRes?.sjkList && (
                 <>
@@ -147,7 +150,7 @@ export function CourseScheduleCard() {
                         <Flex gap={10}>
                             <Text>学期</Text>
                             <View style={{flex: 1}}>
-                                <Picker selectedValue={year} onValueChange={(v, index) => setYear(index + 1)}>
+                                <Picker selectedValue={year} onValueChange={(v, index) => setYear(v)}>
                                     {Array.from(SchoolYears).map(value => {
                                         return <Picker.Item value={+value[0]} label={value[1]} key={value[0]} />;
                                     })}

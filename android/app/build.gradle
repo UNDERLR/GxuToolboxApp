@@ -105,6 +105,14 @@ android {
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            // 设置APK名称为你想要的名称
+            def newName = "gxu_tool_app-v${versionName}-${variant.name}.apk"
+            outputFileName = newName
+        }
+    }
 }
 
 dependencies {
