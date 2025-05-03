@@ -4,7 +4,7 @@ import moment from "moment/moment";
 import {color, Color} from "../../../../js/color.ts";
 import {UnIcon} from "../../../un-ui/UnIcon.tsx";
 import {Text, useTheme} from "@rneui/themed";
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import Flex from "../../../un-ui/Flex.tsx";
 
 interface Props {
@@ -117,7 +117,7 @@ export function CourseScheduleTable(props: Props) {
                 </View>
                 {courseScheduleData.timeSpanList.map((time, index) => {
                     return (
-                        <Flex style={courseScheduleStyle.timeSpanItem} justifyContent="center">
+                        <Flex key={`timespan-${index}`} style={courseScheduleStyle.timeSpanItem} justifyContent="center">
                             <Text style={courseScheduleStyle.timeSpanText}>{`${index + 1}\n${time}`}</Text>
                         </Flex>
                     );
@@ -147,7 +147,7 @@ export function CourseScheduleTable(props: Props) {
                 }
                 return (
                     // 当日课程渲染
-                    <View style={weekdayContainerStyle}>
+                    <View style={weekdayContainerStyle} key={`day${index}`}>
                         <View style={courseScheduleStyle.weekdayItem}>
                             <Text style={weekdayTextStyle}>
                                 {`${weekday}\n${currentDay.month() + 1}-${currentDay.date()}`}
@@ -181,7 +181,7 @@ export function CourseScheduleTable(props: Props) {
                                 },
                             });
                             return (
-                                <View style={[itemStyle.course, courseScheduleStyle.courseItem]}>
+                                <View style={[itemStyle.course, courseScheduleStyle.courseItem]} key={`day${index}-${course.kcmc}`}>
                                     <Text style={itemStyle.text}>{course.kcmc}</Text>
                                     <Text style={itemStyle.text}>
                                         <UnIcon type="fontawesome" name="map-marker" />

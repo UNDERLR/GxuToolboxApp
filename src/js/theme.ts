@@ -8,6 +8,14 @@ export const theme = createTheme({
                 marginVertical: 10,
             },
         },
+        Slider: {
+            style: {
+                flex: 1,
+            },
+            trackStyle: {
+                height: 5,
+            },
+        },
     },
 });
 

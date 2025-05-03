@@ -26,10 +26,10 @@ export const SchoolYears = [
 ];
 
 export const SchoolTerms = [
-    ["3", "1"],
-    ["12", "2"],
+    ["3", "秋季学期"],
+    ["12", "春季学期"],
     ["16", "3"],
-]
+];
 
 export const Schools = [
     ["10100", "党委办公室、校长办公室（校务督查办公室、法治与法务办公室）"],
@@ -87,7 +87,7 @@ export const Schools = [
     ["41600", "中国－东盟研究院／广西创新发展研究院"],
     ["60100", "资产经营有限公司"],
     ["60200", "农牧产业发展研究院"],
-]
+];
 
 export interface QueryModel {
     currentPage: number;

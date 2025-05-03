@@ -76,6 +76,7 @@ export function PracticalCourseList(props: Props) {
                 });
                 return (
                     <View
+                        key={course.kcmc}
                         style={[
                             itemStyle.course,
                             courseScheduleStyle.courseItem,
