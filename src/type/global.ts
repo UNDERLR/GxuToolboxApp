@@ -28,7 +28,7 @@ export const SchoolYears = [
 export const SchoolTerms = [
     ["3", "秋季学期"],
     ["12", "春季学期"],
-    ["16", "3"],
+    // ["16", "3"],
 ];
 
 export const Schools = [

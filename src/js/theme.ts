@@ -16,6 +16,11 @@ export const theme = createTheme({
                 height: 5,
             },
         },
+        Text: {
+            style: {
+                fontSize: 12,
+            },
+        },
     },
 });
 

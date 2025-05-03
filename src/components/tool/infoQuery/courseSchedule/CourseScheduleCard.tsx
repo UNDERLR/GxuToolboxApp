@@ -65,7 +65,7 @@ export function CourseScheduleCard() {
     useEffect(() => {
         init();
         getCourseSchedule();
-    }, []);
+    }, [year,term]);
     return (
         <Card>
             <Card.Title>
@@ -158,7 +158,7 @@ export function CourseScheduleCard() {
                             </View>
                             <View style={{flex: 1}}>
                                 <Picker
-                                    selectedValue={+SchoolTerms[term][0]}
+                                    selectedValue={+SchoolTerms[term-1][0]}
                                     onValueChange={(v, index) => setTerm(index + 1)}>
                                     {Array.from(SchoolTerms).map(value => {
                                         return <Picker.Item value={+value[0]} label={value[1]} key={value[0]} />;

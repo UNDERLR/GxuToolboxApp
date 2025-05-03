@@ -29,7 +29,6 @@ export function CourseScheduleTable(props: Props) {
     const currentTimeSpan = getCurrentTimeSpan();
 
     function init() {
-        randomCourseColor(props.courseList as CourseItem[]);
         parseCourses(props.courseList as CourseItem[]);
     }
 
@@ -40,6 +39,10 @@ export function CourseScheduleTable(props: Props) {
             clearInterval(id);
         };
     }, [props]);
+
+    useEffect(() => {
+        randomCourseColor(props.courseList as CourseItem[]);
+    }, [props.courseList]);
 
     function parseCourses(courseList: CourseItem[]) {
         const res = [[], [], [], [], [], [], []] as CourseItem[][];

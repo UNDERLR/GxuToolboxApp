@@ -101,6 +101,7 @@ export function SettingIndex() {
         },
         linkText: {
             borderBottomWidth: 1,
+            borderBottomColor: theme.colors.black,
         },
     });
 
