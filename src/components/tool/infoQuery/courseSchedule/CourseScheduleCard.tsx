@@ -8,12 +8,12 @@ import {PracticalCourseList} from "./PracticalCourseList.tsx";
 import Flex from "../../../un-ui/Flex.tsx";
 import {UnIcon} from "../../../un-ui/UnIcon.tsx";
 import moment from "moment";
-import {useCourseScheduleData} from "../../../../type/course.ts";
+import {Course, useCourseScheduleData} from "../../../../type/course.ts";
 import {CourseScheduleTable} from "./CourseScheduleTable.tsx";
-import PagerView from "react-native-pager-view";
 import {Color} from "../../../../js/color.ts";
 import {Picker} from "@react-native-picker/picker";
 import {SchoolTerms, SchoolYears} from "../../../../type/global.ts";
+import {CourseDetail} from "./CourseDetail.tsx";
 
 export function CourseScheduleCard() {
     const {theme} = useTheme();
@@ -27,7 +27,9 @@ export function CourseScheduleCard() {
         moment().isBetween(moment("02", "MM"), moment("08", "MM"), "month", "[]") ? 2 : 1,
     );
     const [currentWeek, setCurrentWeek] = useState(realCurrentWeek);
-    const [bottomSheetVisible, setBottomSheetVisible] = useState(false);
+    const [courseScheduleSettingVisible, setCourseScheduleSettingVisible] = useState(false);
+    const [courseDetailVisible, setCourseDetailVisible] = useState(false);
+    const [activeCourse, setActiveCourse] = useState<Course>({});
 
     const style = StyleSheet.create({
         bottomSheetContainer: {
@@ -53,6 +55,11 @@ export function CourseScheduleCard() {
         store.load({key: "courseRes"}).then((data: CourseScheduleQueryRes) => {
             setApiRes(data);
         });
+    }
+
+    function showCourseDetail(course: Course) {
+        setActiveCourse(course);
+        setCourseDetailVisible(true);
     }
 
     useEffect(() => {
@@ -96,14 +103,13 @@ export function CourseScheduleCard() {
                                 currentWeek >= 20 ? new Color(theme.colors.black).setAlpha(0.5).rgbaString : undefined
                             }
                         />
-                        <UnIcon name="setting" size={24} onPress={() => setBottomSheetVisible(true)} />
+                        <UnIcon name="setting" size={24} onPress={() => setCourseScheduleSettingVisible(true)} />
                         <UnIcon type="fontawesome" name="repeat" size={24} onPress={getCourseSchedule} />
                     </Flex>
                 </Flex>
             </Card.Title>
-            <PagerView></PagerView>
             <Card.Divider />
-            <CourseScheduleTable courseList={apiRes?.kbList ?? []} currentWeek={currentWeek} />
+            <CourseScheduleTable onCoursePress={showCourseDetail} courseList={apiRes?.kbList ?? []} currentWeek={currentWeek} />
             {apiRes?.sjkList && (
                 <>
                     <Card.Divider />
@@ -111,9 +117,8 @@ export function CourseScheduleCard() {
                 </>
             )}
             <BottomSheet
-                modalProps={{}}
-                isVisible={bottomSheetVisible}
-                onBackdropPress={() => setBottomSheetVisible(false)}>
+                isVisible={courseScheduleSettingVisible}
+                onBackdropPress={() => setCourseScheduleSettingVisible(false)}>
                 <View style={style.bottomSheetContainer}>
                     <ListItem bottomDivider>
                         <Flex gap={10}>
@@ -141,22 +146,29 @@ export function CourseScheduleCard() {
                     <ListItem bottomDivider>
                         <Flex gap={10}>
                             <Text>学期</Text>
-                            <View style={{flex:1}}>
+                            <View style={{flex: 1}}>
                                 <Picker selectedValue={year} onValueChange={(v, index) => setYear(index + 1)}>
                                     {Array.from(SchoolYears).map(value => {
-                                        return <Picker.Item value={+value[0]} label={value[1]} key={value[0]}/>;
+                                        return <Picker.Item value={+value[0]} label={value[1]} key={value[0]} />;
                                     })}
                                 </Picker>
                             </View>
-                            <View style={{flex:1}}>
-                                <Picker selectedValue={+SchoolTerms[term][0]} onValueChange={(v, index) => setTerm(index + 1)}>
+                            <View style={{flex: 1}}>
+                                <Picker
+                                    selectedValue={+SchoolTerms[term][0]}
+                                    onValueChange={(v, index) => setTerm(index + 1)}>
                                     {Array.from(SchoolTerms).map(value => {
-                                        return <Picker.Item value={+value[0]} label={value[1]} key={value[0]}/>;
+                                        return <Picker.Item value={+value[0]} label={value[1]} key={value[0]} />;
                                     })}
                                 </Picker>
                             </View>
                         </Flex>
                     </ListItem>
+                </View>
+            </BottomSheet>
+            <BottomSheet isVisible={courseDetailVisible} onBackdropPress={() => setCourseDetailVisible(false)}>
+                <View style={style.bottomSheetContainer}>
+                    <CourseDetail course={activeCourse} />
                 </View>
             </BottomSheet>
         </Card>

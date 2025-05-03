@@ -1,15 +1,16 @@
 import {Course, useCourseScheduleData, useCourseScheduleStyle} from "../../../../type/course.ts";
-import {StyleProp, StyleSheet, TextStyle, View, ViewStyle} from "react-native";
+import {Pressable, StyleProp, StyleSheet, TextStyle, View, ViewStyle} from "react-native";
 import moment from "moment/moment";
 import {color, Color} from "../../../../js/color.ts";
 import {UnIcon} from "../../../un-ui/UnIcon.tsx";
 import {Text, useTheme} from "@rneui/themed";
-import {useEffect, useMemo, useState} from "react";
+import {useEffect, useState} from "react";
 import Flex from "../../../un-ui/Flex.tsx";
 
 interface Props {
     courseList: Course[];
     currentWeek?: number;
+    onCoursePress?: (course: Course) => void;
 }
 
 interface CourseItem extends Course {
@@ -117,7 +118,10 @@ export function CourseScheduleTable(props: Props) {
                 </View>
                 {courseScheduleData.timeSpanList.map((time, index) => {
                     return (
-                        <Flex key={`timespan-${index}`} style={courseScheduleStyle.timeSpanItem} justifyContent="center">
+                        <Flex
+                            key={`timespan-${index}`}
+                            style={courseScheduleStyle.timeSpanItem}
+                            justifyContent="center">
                             <Text style={courseScheduleStyle.timeSpanText}>{`${index + 1}\n${time}`}</Text>
                         </Flex>
                     );
@@ -181,7 +185,11 @@ export function CourseScheduleTable(props: Props) {
                                 },
                             });
                             return (
-                                <View style={[itemStyle.course, courseScheduleStyle.courseItem]} key={`day${index}-${course.kcmc}`}>
+                                // 课程元素
+                                <Pressable
+                                    onPress={e => props.onCoursePress?.(course)}
+                                    style={[itemStyle.course, courseScheduleStyle.courseItem]}
+                                    key={`day${index}-${course.kcmc}`}>
                                     <Text style={itemStyle.text}>{course.kcmc}</Text>
                                     <Text style={itemStyle.text}>
                                         <UnIcon type="fontawesome" name="map-marker" />
@@ -191,7 +199,7 @@ export function CourseScheduleTable(props: Props) {
                                         <UnIcon name="user" />
                                         {"\n" + course.xm}
                                     </Text>
-                                </View>
+                                </Pressable>
                             );
                         })}
                     </View>

@@ -2,7 +2,7 @@ import {FlexAlignType, StyleSheet, View, ViewProps} from "react-native";
 
 interface Props extends ViewProps {
     gap: number;
-
+    inline: boolean;
     alignItems: FlexAlignType;
     justifyContent: "center" | "flex-start" | "flex-end" | "space-between" | "space-around" | "space-evenly";
 }
@@ -10,7 +10,7 @@ interface Props extends ViewProps {
 export default function Flex(props: Partial<Props>) {
     const style = StyleSheet.create({
         unUiFlex: {
-            flex: 1,
+            flex: !props.inline ? 1 : undefined,
             flexDirection: "row",
             gap: props.gap ?? 0,
             alignItems: props.alignItems ?? "center",
