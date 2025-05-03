@@ -1,4 +1,4 @@
-import {BaseColor} from "../js/color.ts";
+import {BaseColor, Color} from "../js/color.ts";
 import {useState} from "react";
 import {StyleSheet} from "react-native";
 import {useTheme} from "@rneui/themed";
@@ -222,7 +222,8 @@ const CourseScheduleData = {
     style: {
         timeSpanHeight: 80,
         weekdayHeight: 60,
-        courseItemMargin: 4,
+        courseItemMargin: 2,
+        courseItemBorderWidth: 2,
     },
     startDay: "2025-02-24",
     randomColor: [
@@ -272,6 +273,16 @@ export function useCourseScheduleData() {
 export function useCourseScheduleStyle() {
     const {theme} = useTheme();
     const CourseScheduleStyle = StyleSheet.create({
+        timeSpanHighLight: {
+            position: "absolute",
+            height: CourseScheduleData.style.timeSpanHeight,
+            flex: 1,
+            width: "100%",
+            left: 0,
+            overflow: "hidden",
+            borderRadius: 5,
+            backgroundColor: new Color(theme.colors.primary).setAlpha(0.1).rgbaString,
+        },
         courseSchedule: {
             flex: 1,
             flexDirection: "row",
@@ -292,16 +303,18 @@ export function useCourseScheduleStyle() {
             textAlign: "center",
             color: theme.colors.grey2,
         },
-        timeSpan: {
+        timeSpanItem: {
+            height: CourseScheduleData.style.timeSpanHeight,
+        },
+        timeSpanText: {
             textAlign: "center",
             color: theme.colors.grey2,
-            height: CourseScheduleData.style.timeSpanHeight,
         },
         courseItem: {
             overflow: "hidden",
             width: "96%",
             borderRadius: 5,
-            borderWidth: 2,
+            borderWidth: CourseScheduleData.style.courseItemBorderWidth,
             borderStyle: "solid",
             padding: 5,
         },
@@ -310,10 +323,7 @@ export function useCourseScheduleStyle() {
             marginHorizontal: "2%",
             marginVertical: 10,
         },
-        practicalCourseText: {
-            color: theme.colors.black,
-        },
     });
     const [courseScheduleStyle, setCourseScheduleStyle] = useState<typeof CourseScheduleStyle>(CourseScheduleStyle);
-    return { courseScheduleStyle, setCourseScheduleStyle};
+    return {courseScheduleStyle, setCourseScheduleStyle};
 }

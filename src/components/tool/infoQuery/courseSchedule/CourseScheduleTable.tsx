@@ -1,10 +1,11 @@
 import {Course, useCourseScheduleData, useCourseScheduleStyle} from "../../../../type/course.ts";
-import {StyleProp, StyleSheet, Text, TextStyle, View, ViewStyle} from "react-native";
+import {StyleProp, StyleSheet, TextStyle, View, ViewStyle} from "react-native";
 import moment from "moment/moment";
-import {BaseColor, color, Color} from "../../../../js/color.ts";
+import {color, Color} from "../../../../js/color.ts";
 import {UnIcon} from "../../../un-ui/UnIcon.tsx";
-import {useTheme} from "@rneui/themed";
+import {Text, useTheme} from "@rneui/themed";
 import {useEffect, useState} from "react";
+import Flex from "../../../un-ui/Flex.tsx";
 
 interface Props {
     courseList: Course[];
@@ -22,9 +23,9 @@ export function CourseScheduleTable(props: Props) {
     const {courseScheduleData} = useCourseScheduleData();
     const {courseScheduleStyle} = useCourseScheduleStyle();
     const startDay = moment(courseScheduleData.startDay);
-    const [currentWeek, setCurrentWeek] = useState<number>(
-        props.currentWeek ?? Math.ceil(moment.duration(moment().diff(startDay)).asWeeks()),
-    );
+    const [currentTime, setCurrentTime] = useState(moment().format());
+    const currentWeek = props.currentWeek ?? Math.ceil(moment.duration(moment().diff(startDay)).asWeeks());
+    const currentTimeSpan = getCurrentTimeSpan();
 
     function init() {
         randomCourseColor(props.courseList as CourseItem[]);
@@ -33,6 +34,10 @@ export function CourseScheduleTable(props: Props) {
 
     useEffect(() => {
         init();
+        const id = setInterval(() => setCurrentTime(moment().format()), 1000);
+        return () => {
+            clearInterval(id);
+        };
     }, [props]);
 
     function parseCourses(courseList: CourseItem[]) {
@@ -76,8 +81,34 @@ export function CourseScheduleTable(props: Props) {
         });
     }
 
+    function getCurrentTimeSpan() {
+        let res = -1;
+        courseScheduleData.timeSpanList.forEach((timeSpan, index, list) => {
+            const start = index > 0 ? list[index - 1].split("\n")[1] : "00:00";
+            const end = timeSpan.split("\n")[1];
+            const startTime = moment(start, "hh:mm");
+            const endTime = moment(end, "hh:mm");
+            if (moment(currentTime).isBetween(startTime, endTime, undefined, "[]")) {
+                res = index;
+                return;
+            }
+        });
+        return res > -1 ? res : null;
+    }
+
+    const timeSpanHighLightTop = {
+        top:
+            courseScheduleData.style.weekdayHeight +
+            (currentTimeSpan ?? 1) * courseScheduleData.style.timeSpanHeight +
+            10,
+    };
+
     return (
         <View style={courseScheduleStyle.courseSchedule}>
+            {typeof currentTimeSpan === "number" && (
+                <View style={[timeSpanHighLightTop, courseScheduleStyle.timeSpanHighLight]} />
+            )}
+            {/*时间表渲染*/}
             <View style={courseScheduleStyle.weekdayContainer}>
                 <View style={courseScheduleStyle.weekdayItem}>
                     <Text style={courseScheduleStyle.weekdayText}>
@@ -86,12 +117,13 @@ export function CourseScheduleTable(props: Props) {
                 </View>
                 {courseScheduleData.timeSpanList.map((time, index) => {
                     return (
-                        <View>
-                            <Text style={courseScheduleStyle.timeSpan}>{`${index + 1}\n${time}`}</Text>
-                        </View>
+                        <Flex style={courseScheduleStyle.timeSpanItem} justifyContent="center">
+                            <Text style={courseScheduleStyle.timeSpanText}>{`${index + 1}\n${time}`}</Text>
+                        </Flex>
                     );
                 })}
             </View>
+            {/*课表*/}
             {courseScheduleData.weekdayList.map((weekday, index) => {
                 // 判断是否为当天
                 const currentDay = moment(courseScheduleData.startDay).add({
@@ -101,11 +133,10 @@ export function CourseScheduleTable(props: Props) {
                 const itemStyle = StyleSheet.create({
                     activeContainer: {
                         ...courseScheduleStyle.weekdayContainer,
-                        backgroundColor: new Color(BaseColor.skyblue).setAlpha(0.2).rgbaString,
+                        backgroundColor: new Color(theme.colors.primary).setAlpha(0.2).rgbaString,
                     },
                     activeText: {
                         ...courseScheduleStyle.weekdayText,
-                        color: theme.colors.black,
                     },
                 });
                 const weekdayContainerStyle: StyleProp<ViewStyle> = [courseScheduleStyle.weekdayContainer];
@@ -130,7 +161,7 @@ export function CourseScheduleTable(props: Props) {
                                 course: {
                                     height:
                                         span * courseScheduleData.style.timeSpanHeight -
-                                        courseScheduleData.style.courseItemMargin,
+                                        courseScheduleData.style.courseItemMargin * 2,
                                     position: "absolute",
                                     backgroundColor: new Color(course.backgroundColor).setAlpha(
                                         theme.mode === "light" ? 0.3 : 0.1,
@@ -143,11 +174,10 @@ export function CourseScheduleTable(props: Props) {
                                     top:
                                         courseScheduleData.style.weekdayHeight +
                                         y * courseScheduleData.style.timeSpanHeight +
-                                        courseScheduleData.style.courseItemMargin / 2,
+                                        courseScheduleData.style.courseItemMargin,
                                 },
                                 text: {
                                     textAlign: "center",
-                                    color: theme.colors.black,
                                 },
                             });
                             return (

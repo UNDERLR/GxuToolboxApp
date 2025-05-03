@@ -1,9 +1,9 @@
-import {PracticalCourse} from "../../../../type/course.ts";
-import {StyleSheet, Text, View} from "react-native";
+import {PracticalCourse, useCourseScheduleStyle} from "../../../../type/course.ts";
+import {StyleSheet, View} from "react-native";
 import {BaseColor, color, Color} from "../../../../js/color.ts";
 import Flex from "../../../un-ui/Flex.tsx";
 import {UnIcon} from "../../../un-ui/UnIcon.tsx";
-import {useTheme} from "@rneui/themed";
+import {Text, useTheme} from "@rneui/themed";
 import {useEffect, useState} from "react";
 
 interface Props {
@@ -47,24 +47,7 @@ export function PracticalCourseList(props: Props) {
         setCourseList(props.courseList as PracticalCourseItem[]);
     }, [props.courseList]);
 
-    const style = StyleSheet.create({
-        courseItem: {
-            overflow: "hidden",
-            width: "96%",
-            borderRadius: 5,
-            borderWidth: 2,
-            borderStyle: "solid",
-            padding: 5,
-        },
-        practicalCourseItem: {
-            gap: 3,
-            marginHorizontal: "2%",
-            marginVertical: 10,
-        },
-        practicalCourseText: {
-            color: theme.colors.black,
-        },
-    });
+    const {courseScheduleStyle} = useCourseScheduleStyle();
 
     function randomCourseColor(courseList: PracticalCourseItem[]) {
         //使得相同课程的颜色相同
@@ -81,7 +64,7 @@ export function PracticalCourseList(props: Props) {
 
     return (
         <View>
-            <Text style={{textAlign: "center", color: theme.colors.black}}>其他课程</Text>
+            <Text style={{textAlign: "center"}}>其他课程</Text>
             {courseList.map((course: PracticalCourseItem) => {
                 const itemStyle = StyleSheet.create({
                     course: {
@@ -92,15 +75,20 @@ export function PracticalCourseList(props: Props) {
                     },
                 });
                 return (
-                    <View style={[itemStyle.course, style.courseItem, style.practicalCourseItem]}>
-                        <Text style={style.practicalCourseText}>{course.qtkcgs}</Text>
+                    <View
+                        style={[
+                            itemStyle.course,
+                            courseScheduleStyle.courseItem,
+                            courseScheduleStyle.practicalCourseItem,
+                        ]}>
+                        <Text>{course.qtkcgs}</Text>
                         <Flex gap={5}>
                             <UnIcon name="clockcircleo" />
-                            <Text style={style.practicalCourseText}>{course.qsjsz}</Text>
+                            <Text>{course.qsjsz}</Text>
                         </Flex>
                         <Flex gap={5}>
                             <UnIcon name="user" />
-                            <Text style={style.practicalCourseText}>{course.jsxm}</Text>
+                            <Text>{course.jsxm}</Text>
                         </Flex>
                     </View>
                 );
