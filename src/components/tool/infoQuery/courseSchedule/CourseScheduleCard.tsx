@@ -1,4 +1,4 @@
-import {BottomSheet, Card, ListItem, Slider, Text, useTheme} from "@rneui/themed";
+import {BottomSheet, Card, ListItem, Slider, Text} from "@rneui/themed";
 import {infoQuery} from "../../../../js/jw/infoQuery.ts";
 import {StyleSheet, ToastAndroid, View} from "react-native";
 import {store} from "../../../../js/store.ts";
@@ -14,17 +14,18 @@ import {Color} from "../../../../js/color.ts";
 import {Picker} from "@react-native-picker/picker";
 import {SchoolTerms, SchoolYears} from "../../../../type/global.ts";
 import {CourseDetail} from "./CourseDetail.tsx";
+import {useUserTheme} from "../../../../js/theme.ts";
 
 export function CourseScheduleCard() {
-    const {theme} = useTheme();
+    const {theme, userTheme} = useUserTheme();
     const [apiRes, setApiRes] = useState<CourseScheduleQueryRes>();
     const {courseScheduleData} = useCourseScheduleData();
     const startDay = moment(courseScheduleData.startDay);
 
     const realCurrentWeek = Math.ceil(moment.duration(moment().diff(startDay)).asWeeks());
     const [year, setYear] = useState(moment().isBefore(moment("8", "M"), "M") ? moment().year() - 1 : moment().year());
-    const [term, setTerm] = useState<1 | 2 | 3>(
-        moment().isBetween(moment("02", "MM"), moment("08", "MM"), "month", "[]") ? 2 : 1,
+    const [term, setTerm] = useState<string>(
+        moment().isBetween(moment("02", "MM"), moment("08", "MM"), "month", "[]") ? SchoolTerms[1][0] : SchoolYears[0][0],
     );
     const [currentWeek, setCurrentWeek] = useState(realCurrentWeek);
     const [courseScheduleSettingVisible, setCourseScheduleSettingVisible] = useState(false);
@@ -65,7 +66,7 @@ export function CourseScheduleCard() {
     useEffect(() => {
         init();
         getCourseSchedule();
-    }, [year,term]);
+    }, [year, term]);
     return (
         <Card>
             <Card.Title>
@@ -112,7 +113,11 @@ export function CourseScheduleCard() {
             <Flex justifyContent="center">
                 <Text>点击课程查看详情</Text>
             </Flex>
-            <CourseScheduleTable onCoursePress={showCourseDetail} courseList={apiRes?.kbList ?? []} currentWeek={currentWeek} />
+            <CourseScheduleTable
+                onCoursePress={showCourseDetail}
+                courseList={apiRes?.kbList ?? []}
+                currentWeek={currentWeek}
+            />
             {apiRes?.sjkList && (
                 <>
                     <Card.Divider />
@@ -150,7 +155,10 @@ export function CourseScheduleCard() {
                         <Flex gap={10}>
                             <Text>学期</Text>
                             <View style={{flex: 1}}>
-                                <Picker selectedValue={year} onValueChange={(v, index) => setYear(v)}>
+                                <Picker
+                                    {...userTheme.components.Picker}
+                                    selectedValue={year}
+                                    onValueChange={(v, index) => setYear(v)}>
                                     {Array.from(SchoolYears).map(value => {
                                         return <Picker.Item value={+value[0]} label={value[1]} key={value[0]} />;
                                     })}
@@ -158,10 +166,11 @@ export function CourseScheduleCard() {
                             </View>
                             <View style={{flex: 1}}>
                                 <Picker
-                                    selectedValue={+SchoolTerms[term-1][0]}
-                                    onValueChange={(v, index) => setTerm(index + 1)}>
+                                    {...userTheme.components.Picker}
+                                    selectedValue={term}
+                                    onValueChange={(v, index) => setTerm(v)}>
                                     {Array.from(SchoolTerms).map(value => {
-                                        return <Picker.Item value={+value[0]} label={value[1]} key={value[0]} />;
+                                        return <Picker.Item value={value[0]} label={value[1]} key={value[0]} />;
                                     })}
                                 </Picker>
                             </View>

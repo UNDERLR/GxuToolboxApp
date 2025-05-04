@@ -26,6 +26,7 @@
     "react-native": "0.79.1",
     "react-native-blob-util": "^0.21.2",
     "react-native-pager-view": "^6.7.1",
+    "react-native-reanimated-table": "^0.0.2",
     "react-native-safe-area-context": "^5.4.0",
     "react-native-screens": "^4.10.0",
     "react-native-storage": "^1.0.1",

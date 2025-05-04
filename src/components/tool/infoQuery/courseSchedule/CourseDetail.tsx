@@ -1,9 +1,10 @@
 import {Course} from "../../../../type/course.ts";
-import {Pressable, PressableAndroidRippleConfig, StyleSheet, ToastAndroid, View, ViewProps} from "react-native";
-import {ListItem, Text, useTheme} from "@rneui/themed";
+import {Pressable, StyleSheet, ToastAndroid, View, ViewProps} from "react-native";
+import {ListItem, Text} from "@rneui/themed";
 import {UnIcon} from "../../../un-ui/UnIcon.tsx";
 import Flex from "../../../un-ui/Flex.tsx";
 import Clipboard from "@react-native-clipboard/clipboard";
+import {useUserTheme} from "../../../../js/theme.ts";
 
 interface Props extends ViewProps {
     course: Course;
@@ -16,14 +17,7 @@ interface Info {
 }
 
 export function CourseDetail(props: Props) {
-    const {theme} = useTheme();
-    const data = {
-        style: {
-            ripple: {
-                color: theme.colors.grey4,
-            } as PressableAndroidRippleConfig,
-        },
-    };
+    const {userTheme} = useUserTheme();
     const infoList = [
         {
             label: "课程名称",
@@ -81,7 +75,7 @@ export function CourseDetail(props: Props) {
                         </Flex>
                         <Flex justifyContent="flex-end">
                             <Pressable
-                                android_ripple={data.style.ripple}
+                                android_ripple={userTheme.ripple}
                                 onPress={() => copy(props.course[item.key] ?? "", `复制${item.label}成功`)}>
                                 <Text style={style.infoData}>{props.course[item.key] ?? ""}</Text>
                             </Pressable>
