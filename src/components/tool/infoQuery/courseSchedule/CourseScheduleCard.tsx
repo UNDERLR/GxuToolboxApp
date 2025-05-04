@@ -72,13 +72,6 @@ export function CourseScheduleCard() {
             <Card.Title>
                 <Flex justifyContent="space-between">
                     <Text h4>课表</Text>
-                    {currentWeek === realCurrentWeek ? (
-                        <Text>（第{currentWeek}周）</Text>
-                    ) : (
-                        <Text>
-                            （第{currentWeek}周，目前为第{realCurrentWeek}周）
-                        </Text>
-                    )}
                     <Flex gap={15} justifyContent="flex-end">
                         <UnIcon
                             name="left"
@@ -110,7 +103,14 @@ export function CourseScheduleCard() {
                 </Flex>
             </Card.Title>
             <Card.Divider />
-            <Flex justifyContent="center">
+            <Flex>
+                {currentWeek === realCurrentWeek ? (
+                    <Text>（第{currentWeek}周）</Text>
+                ) : (
+                    <Text>
+                        （第{currentWeek}周，目前为第{realCurrentWeek}周）
+                    </Text>
+                )}
                 <Text>点击课程查看详情</Text>
             </Flex>
             <CourseScheduleTable

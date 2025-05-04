@@ -36,12 +36,12 @@ export function ToolboxIndex() {
         {
             title: "信息查询",
             data: [
-                {
-                    label: "课表查询",
-                    icon: <UnIcon name="calendar" size={20} />,
-                    type: "navigation",
-                    navigation: "courseSchedule",
-                },
+                // {
+                //     label: "课表查询",
+                //     icon: <UnIcon name="calendar" size={20} />,
+                //     type: "navigation",
+                //     navigation: "courseSchedule",
+                // },
                 {
                     label: "考试信息查询",
                     icon: <UnIcon name="book" size={20} />,
