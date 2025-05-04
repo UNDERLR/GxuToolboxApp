@@ -6,7 +6,7 @@ export function HomeHeaderRight() {
     const navigation = useNavigation();
     return (
         <View>
-            <UnIcon name="setting" size={18} onPress={() => navigation.navigate("setting")} />
+            <UnIcon name="setting" size={24} onPress={() => navigation.navigate("setting")} />
         </View>
     );
 }

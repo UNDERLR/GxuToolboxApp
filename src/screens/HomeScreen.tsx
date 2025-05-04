@@ -1,12 +1,10 @@
-import {ScrollView, View} from "react-native";
+import {ScrollView} from "react-native";
 import {CourseScheduleCard} from "../components/tool/infoQuery/courseSchedule/CourseScheduleCard.tsx";
 
 export function HomeScreen() {
     return (
-        <View>
-            <ScrollView>
-                <CourseScheduleCard />
-            </ScrollView>
-        </View>
+        <ScrollView>
+            <CourseScheduleCard />
+        </ScrollView>
     );
 }
