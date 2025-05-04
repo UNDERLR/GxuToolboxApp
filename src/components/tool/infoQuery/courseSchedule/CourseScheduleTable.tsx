@@ -1,4 +1,4 @@
-import {Course, useCourseScheduleData, useCourseScheduleStyle} from "../../../../type/course.ts";
+import {Course, useCourseScheduleData, useCourseScheduleStyle} from "../../../../type/infoQuery/course/course.ts";
 import {Pressable, StyleProp, StyleSheet, TextStyle, View, ViewStyle} from "react-native";
 import moment from "moment/moment";
 import {color, Color} from "../../../../js/color.ts";

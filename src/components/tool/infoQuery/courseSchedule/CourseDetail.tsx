@@ -1,4 +1,4 @@
-import {Course} from "../../../../type/course.ts";
+import {Course} from "../../../../type/infoQuery/course/course.ts";
 import {Pressable, StyleSheet, ToastAndroid, View, ViewProps} from "react-native";
 import {ListItem, Text} from "@rneui/themed";
 import {UnIcon} from "../../../un-ui/UnIcon.tsx";

@@ -1,4 +1,4 @@
-import {BaseColor, Color} from "../js/color.ts";
+import {BaseColor, Color} from "../../../js/color.ts";
 import {useState} from "react";
 import {StyleSheet} from "react-native";
 import {useTheme} from "@rneui/themed";

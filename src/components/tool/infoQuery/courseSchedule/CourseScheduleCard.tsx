@@ -8,7 +8,7 @@ import {PracticalCourseList} from "./PracticalCourseList.tsx";
 import Flex from "../../../un-ui/Flex.tsx";
 import {UnIcon} from "../../../un-ui/UnIcon.tsx";
 import moment from "moment";
-import {Course, useCourseScheduleData} from "../../../../type/course.ts";
+import {Course, useCourseScheduleData} from "../../../../type/infoQuery/course/course.ts";
 import {CourseScheduleTable} from "./CourseScheduleTable.tsx";
 import {Color} from "../../../../js/color.ts";
 import {Picker} from "@react-native-picker/picker";

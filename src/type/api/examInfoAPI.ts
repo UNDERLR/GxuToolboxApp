@@ -1,5 +1,5 @@
 import {QueryResRoot} from "../global";
-import {ExamInfo} from "../examInfo.ts";
+import {ExamInfo} from "../infoQuery/exam/examInfo.ts";
 
 // 考试信息查询返回结果数据类型
 export interface ExamInfoQueryRes extends QueryResRoot {

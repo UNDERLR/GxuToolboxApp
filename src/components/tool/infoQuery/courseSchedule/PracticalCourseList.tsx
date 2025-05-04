@@ -1,4 +1,4 @@
-import {PracticalCourse, useCourseScheduleStyle} from "../../../../type/course.ts";
+import {PracticalCourse, useCourseScheduleStyle} from "../../../../type/infoQuery/course/course.ts";
 import {StyleSheet, View} from "react-native";
 import {BaseColor, color, Color} from "../../../../js/color.ts";
 import Flex from "../../../un-ui/Flex.tsx";

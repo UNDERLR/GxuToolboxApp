@@ -43,4 +43,25 @@ export const infoQuery = {
             });
         });
     },
+    getExamScore: (year: number, term: string, page: number = 1): Promise<ExamInfoQueryRes> => {
+        const yearIndex = SchoolYears.findIndex(v => +v[0] === year);
+        return new Promise((resolve, reject) => {
+            http.post("/cjcx/cjcx_cxXsgrcj.html?doType=query", {
+                xnm: SchoolYears[yearIndex ?? SchoolYears.findIndex(v => +v[0] === defaultYear)][0],
+                xqm: term ?? SchoolTerms[0][0],
+                queryModel: {
+                    showCount: 15,
+                    currentPage: page > 0 ? page : 1,
+                    sortName: "",
+                    sortOrder: "asc",
+                },
+            }).then(res => {
+                if (res.status === 200) {
+                    resolve(res.data);
+                } else {
+                    reject(res);
+                }
+            });
+        });
+    },
 };
