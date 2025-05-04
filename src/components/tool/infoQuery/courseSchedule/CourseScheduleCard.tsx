@@ -10,7 +10,6 @@ import {UnIcon} from "../../../un-ui/UnIcon.tsx";
 import moment from "moment";
 import {Course, useCourseScheduleData} from "../../../../type/infoQuery/course/course.ts";
 import {CourseScheduleTable} from "./CourseScheduleTable.tsx";
-import {Color} from "../../../../js/color.ts";
 import {Picker} from "@react-native-picker/picker";
 import {SchoolTerms, SchoolYears} from "../../../../type/global.ts";
 import {CourseDetail} from "./CourseDetail.tsx";
@@ -25,7 +24,9 @@ export function CourseScheduleCard() {
     const realCurrentWeek = Math.ceil(moment.duration(moment().diff(startDay)).asWeeks());
     const [year, setYear] = useState(moment().isBefore(moment("8", "M"), "M") ? moment().year() - 1 : moment().year());
     const [term, setTerm] = useState<string>(
-        moment().isBetween(moment("02", "MM"), moment("08", "MM"), "month", "[]") ? SchoolTerms[1][0] : SchoolYears[0][0],
+        moment().isBetween(moment("02", "MM"), moment("08", "MM"), "month", "[]")
+            ? SchoolTerms[1][0]
+            : SchoolYears[0][0],
     );
     const [currentWeek, setCurrentWeek] = useState(realCurrentWeek);
     const [courseScheduleSettingVisible, setCourseScheduleSettingVisible] = useState(false);
@@ -73,6 +74,15 @@ export function CourseScheduleCard() {
                 <Flex justifyContent="space-between">
                     <Text h4>课表</Text>
                     <Flex gap={15} justifyContent="flex-end">
+                        { currentWeek !== realCurrentWeek&&
+                            <UnIcon
+                                name="back"
+                                size={24}
+                                onPress={() => {
+                                    setCurrentWeek(realCurrentWeek);
+                                }}
+                            />
+                        }
                         <UnIcon
                             name="left"
                             size={24}
@@ -81,9 +91,6 @@ export function CourseScheduleCard() {
                                     setCurrentWeek(currentWeek - 1);
                                 }
                             }}
-                            color={
-                                currentWeek <= 1 ? new Color(theme.colors.black).setAlpha(0.5).rgbaString : undefined
-                            }
                         />
                         <UnIcon
                             name="right"
@@ -93,12 +100,9 @@ export function CourseScheduleCard() {
                                     setCurrentWeek(currentWeek + 1);
                                 }
                             }}
-                            color={
-                                currentWeek >= 20 ? new Color(theme.colors.black).setAlpha(0.5).rgbaString : undefined
-                            }
                         />
                         <UnIcon name="setting" size={24} onPress={() => setCourseScheduleSettingVisible(true)} />
-                        <UnIcon type="fontawesome" name="repeat" size={24} onPress={getCourseSchedule} />
+                        <UnIcon name="sync" size={24} onPress={getCourseSchedule} />
                     </Flex>
                 </Flex>
             </Card.Title>

@@ -16,7 +16,9 @@ export function ExamScore() {
     const {theme, userTheme} = useUserTheme();
     const [apiRes, setApiRes] = useState<ExamInfoQueryRes>({});
     const [year, setYear] = useState(moment().isBefore(moment("8", "M"), "M") ? moment().year() - 1 : moment().year());
-    const [term, setTerm] = useState<string>("");
+    const [term, setTerm] = useState<string>(
+        moment().isBetween(moment("02", "MM"), moment("08", "MM"), "month", "[]") ? SchoolTerms[1][0] : SchoolYears[0][0],
+    );
     const [page, setPage] = useState(1);
     const [tableData, setTableData] = useState({
         header: ["学年", "课程名称", "成绩", "学分", "绩点", "教学班", "教师"],
@@ -124,19 +126,17 @@ export function ExamScore() {
                 </ListItem>
                 <Button>查询</Button>
                 <Divider />
-                <ListItem>
+                <Flex direction="column" gap={10} alignItems="flex-start">
+                    <Flex alignItems="flex-end" gap={5}>
+                        <Text h4>查询结果</Text>
+                        <Text>{`第${apiRes.currentPage}/${apiRes.totalPage}页，共有${apiRes.totalCount}条结果`}</Text>
+                    </Flex>
                     <Flex gap={10}>
                         <Text>页数</Text>
                         <Flex inline>
                             <NumberInput value={page} onChange={setPage} min={1} max={apiRes.totalPage} />
                         </Flex>
                         <Text>每页15条记录</Text>
-                    </Flex>
-                </ListItem>
-                <Flex direction="column" gap={10} alignItems="flex-start">
-                    <Flex alignItems="flex-end" gap={5}>
-                        <Text h4>查询结果</Text>
-                        <Text>{`第${apiRes.currentPage}/${apiRes.totalPage}页，共有${apiRes.totalCount}条结果`}</Text>
                     </Flex>
                     <ScrollView horizontal>
                         <Table style={style.table} borderStyle={style.tableBorder}>
@@ -154,8 +154,6 @@ export function ExamScore() {
                             />
                         </Table>
                     </ScrollView>
-                </Flex>
-                <ListItem>
                     <Flex gap={10}>
                         <Text>页数</Text>
                         <Flex inline>
@@ -163,7 +161,7 @@ export function ExamScore() {
                         </Flex>
                         <Text>每页15条记录</Text>
                     </Flex>
-                </ListItem>
+                </Flex>
             </View>
         </ScrollView>
     );
