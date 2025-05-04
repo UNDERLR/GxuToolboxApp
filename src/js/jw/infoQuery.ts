@@ -1,8 +1,8 @@
-import {http} from "../http.ts";
+import {http, objectToFormUrlEncoded} from "../http.ts";
 import {CourseScheduleQueryRes} from "../../type/api/classScheduleAPI.ts";
 import {SchoolTerms, SchoolYears} from "../../type/global.ts";
 import moment from "moment/moment";
-import {ExamInfoQueryRes} from "../../type/api/examInfoAPI.ts";
+import {ExamInfoQueryRes, ExamScoreQueryRes} from "../../type/api/examInfoAPI.ts";
 
 export const defaultYear = moment().isBefore(moment("8", "M"), "M") ? moment().year() - 1 : moment().year();
 
@@ -43,7 +43,7 @@ export const infoQuery = {
             });
         });
     },
-    getExamScore: (year: number, term: string, page: number = 1): Promise<ExamInfoQueryRes> => {
+    getExamScore: (year: number, term: string, page: number = 1): Promise<ExamScoreQueryRes> => {
         const yearIndex = SchoolYears.findIndex(v => +v[0] === year);
         return new Promise((resolve, reject) => {
             http.post("/cjcx/cjcx_cxXsgrcj.html?doType=query", {

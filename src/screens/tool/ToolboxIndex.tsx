@@ -48,6 +48,12 @@ export function ToolboxIndex() {
                     type: "navigation",
                     navigation: "examInfo",
                 },
+                {
+                    label: "考试成绩查询",
+                    icon: <UnIcon name="barschart" size={20} />,
+                    type: "navigation",
+                    navigation: "examScore",
+                },
             ],
         },
     ] as settingSection[];
