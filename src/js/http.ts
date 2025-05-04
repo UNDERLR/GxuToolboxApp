@@ -9,6 +9,13 @@ export const http = axios.create({
     withCredentials: true,
 });
 
+http.interceptors.request.use(config => {
+    if (config.headers.getContentType(/urlencoded/).length > 0) {
+        config.data = objectToFormUrlEncoded(config.data);
+    }
+    return config;
+});
+
 export function urlWithParams(url: string, params: Record<string, any> = {}): string {
     Object.keys(params).forEach(key => {
         if (params[key] === undefined) {
@@ -22,4 +29,15 @@ export function urlWithParams(url: string, params: Record<string, any> = {}): st
             .map(key => key + "=" + encodeURIComponent(params[key]))
             .join("&")
     );
+}
+
+export function objectToFormUrlEncoded(obj: any, prefix = ""): string {
+    let res = "";
+    for (const key in obj) {
+        if (typeof obj[key] === "object") {
+            res += objectToFormUrlEncoded(obj[key], prefix + key + ".");
+        } else res += prefix + key + "=" + encodeURIComponent(obj[key]) + "&";
+    }
+    if (!prefix) res = res.slice(0, -1);
+    return res;
 }
