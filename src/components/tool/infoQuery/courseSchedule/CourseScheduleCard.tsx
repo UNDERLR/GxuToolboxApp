@@ -14,6 +14,7 @@ import {Picker} from "@react-native-picker/picker";
 import {SchoolTerms, SchoolYears} from "../../../../type/global.ts";
 import {CourseDetail} from "./CourseDetail.tsx";
 import {useUserTheme} from "../../../../js/theme.ts";
+import {Color} from "../../../../js/color.ts";
 
 export function CourseScheduleCard() {
     const {theme, userTheme} = useUserTheme();
@@ -34,6 +35,10 @@ export function CourseScheduleCard() {
     const [activeCourse, setActiveCourse] = useState<Course>({});
 
     const style = StyleSheet.create({
+        card:{
+            backgroundColor: new Color(theme.colors.background).setAlpha(theme.mode === "dark" ? 0.7 : 0.8).rgbaString,
+            borderRadius:5,
+        },
         bottomSheetContainer: {
             backgroundColor: theme.colors.background,
             padding: "5%",
@@ -69,7 +74,7 @@ export function CourseScheduleCard() {
         getCourseSchedule();
     }, [year, term]);
     return (
-        <Card>
+        <Card containerStyle={style.card}>
             <Card.Title>
                 <Flex justifyContent="space-between">
                     <Text h4>课表</Text>

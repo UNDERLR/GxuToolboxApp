@@ -6,7 +6,12 @@ const Stack = createNativeStackNavigator();
 
 export function RootStack() {
     return (
-        <Stack.Navigator initialRouteName="main">
+        <Stack.Navigator
+            initialRouteName="main"
+            screenOptions={{
+                headerShadowVisible: false,
+                contentStyle: {backgroundColor: "transparent"},
+            }}>
             <Stack.Screen name="main" options={{headerShown: false}} component={MainTab} />
         </Stack.Navigator>
     );

@@ -7,7 +7,7 @@ import {
     ToastAndroid,
     View,
 } from "react-native";
-import {Text} from "@rneui/themed";
+import {Button, Text} from "@rneui/themed";
 import {BaseColor, Color} from "../../js/color.ts";
 import {useNavigation} from "@react-navigation/native";
 import {Icon} from "../../components/un-ui/Icon.tsx";
@@ -17,6 +17,7 @@ import Clipboard from "@react-native-clipboard/clipboard";
 import moment from "moment/moment";
 import {ColorPicker} from "../../components/un-ui/ColorPicker.tsx";
 import {useUserTheme} from "../../js/theme.ts";
+import {launchImageLibrary} from "react-native-image-picker";
 
 interface settingSection {
     title: string;
@@ -34,6 +35,19 @@ interface SettingItem {
 export function SettingIndex() {
     const navigation = useNavigation();
     const {theme, userTheme, updateUserTheme, updateTheme} = useUserTheme();
+
+    function selectBg() {
+        launchImageLibrary({
+            mediaType: "photo",
+        }).then(res => {
+            if (!res.didCancel && res.assets && res.assets.length > 0) {
+                updateUserTheme({
+                    ...userTheme,
+                    bgUri: res.assets[0].uri,
+                });
+            }
+        });
+    }
 
     const settingList = [
         {
@@ -56,9 +70,27 @@ export function SettingIndex() {
                         <ColorPicker
                             color={theme.colors.primary}
                             onColorChange={v => {
-                                updateUserTheme({...userTheme,colors: {primary: v}});
+                                updateUserTheme({...userTheme, colors: {primary: v}});
                             }}
                         />
+                    ),
+                },
+                {
+                    label: "背景图",
+                    type: "any",
+                    value: (
+                        <Flex gap={10} inline>
+                            <Button
+                                onPress={() => {
+                                    updateUserTheme({...userTheme, bgUri: ""});
+                                }}
+                                size="sm">
+                                重置背景
+                            </Button>
+                            <Button onPress={selectBg} size="sm">
+                                选择图片
+                            </Button>
+                        </Flex>
                     ),
                 },
             ],
@@ -88,7 +120,7 @@ export function SettingIndex() {
 
     const data = {
         style: {
-            cardBg: new Color(BaseColor.lightgray).setAlpha(theme.mode === "light" ? 0.3 : 0.1).rgbaString,
+            cardBg: new Color(theme.colors.background).setAlpha(theme.mode === "light" ? 0.8 : 0.5).rgbaString,
             settingItemRipple: {
                 color: theme.colors.grey4,
             } as PressableAndroidRippleConfig,

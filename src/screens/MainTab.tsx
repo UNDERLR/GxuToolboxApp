@@ -4,12 +4,31 @@ import {HomeHeaderRight} from "../components/header/HomeHeaderRight.tsx";
 import {Icon} from "../components/un-ui/Icon.tsx";
 import {SettingStack} from "../route/screens/SettingStack.tsx";
 import {ToolboxStack} from "../route/screens/ToolboxStack.tsx";
+import {useUserTheme} from "../js/theme.ts";
+import {Color} from "../js/color.ts";
 
 const Tab = createBottomTabNavigator();
 
 export function MainTab() {
+    const {theme} = useUserTheme();
     return (
-        <Tab.Navigator>
+        <Tab.Navigator
+            screenOptions={{
+                headerShadowVisible: false,
+                tabBarActiveTintColor: theme.colors.primary,
+                headerStyle: {
+                    backgroundColor: new Color(theme.colors.background).setAlpha(theme.mode === "dark" ? 0.5 : 0.4)
+                        .rgbaString,
+                },
+                sceneStyle: {
+                    backgroundColor: new Color(theme.colors.background).setAlpha(theme.mode === "dark" ? 0.8 : 0.4)
+                        .rgbaString,
+                },
+                tabBarStyle: {
+                    backgroundColor: new Color(theme.colors.background).setAlpha(theme.mode === "dark" ? 0.9 : 0.75)
+                        .rgbaString,
+                },
+            }}>
             <Tab.Screen
                 name="home"
                 options={{

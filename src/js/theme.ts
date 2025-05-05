@@ -47,6 +47,7 @@ export function useUserTheme() {
         colors: {
             primary: uiTheme.theme.colors.primary,
         },
+        bgUri: "",
     };
     const DefaultNavigationTheme = {
         light: {
@@ -55,6 +56,7 @@ export function useUserTheme() {
             colors: {
                 ...DefaultTheme.colors,
                 ...theme.lightColors,
+                background: "transparent",
             },
         },
         dark: {
@@ -63,6 +65,7 @@ export function useUserTheme() {
             colors: {
                 ...DarkTheme.colors,
                 ...theme.darkColors,
+                background: "transparent",
             },
         },
     };
@@ -74,6 +77,7 @@ export function useUserTheme() {
         const newUiTheme = createTheme({
             ...theme,
             ...newUserTheme.uiTheme,
+            mode: colorScheme,
             lightColors: {
                 primary: newUserTheme.colors.primary,
             },
@@ -83,7 +87,7 @@ export function useUserTheme() {
         });
         uiTheme.replaceTheme(newUiTheme);
         setUserTheme(newUserTheme);
-        setNavigationTheme((old)=> {
+        setNavigationTheme(old => {
             return {
                 light: {
                     ...old.light,
@@ -112,6 +116,6 @@ export function useUserTheme() {
         store.load({key: "userTheme"}).then(userTheme => {
             update(userTheme);
         });
-    }, [colorScheme]);
+    }, []);
     return {userTheme, updateUserTheme, ...uiTheme, navigationTheme, setNavigationTheme};
 }

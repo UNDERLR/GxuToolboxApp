@@ -60,7 +60,7 @@ export function ToolboxIndex() {
 
     const data = {
         style: {
-            cardBg: new Color(BaseColor.lightgray).setAlpha(theme.mode === "light" ? 0.3 : 0.1).rgbaString,
+            cardBg: new Color(theme.colors.background).setAlpha(theme.mode === "light" ? 0.8 : 0.5).rgbaString,
             settingItemRipple: {
                 color: theme.colors.grey4,
             } as PressableAndroidRippleConfig,
