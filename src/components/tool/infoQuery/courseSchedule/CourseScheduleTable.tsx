@@ -3,9 +3,10 @@ import {Pressable, StyleProp, StyleSheet, TextStyle, View, ViewStyle} from "reac
 import moment from "moment/moment";
 import {color, Color} from "../../../../js/color.ts";
 import {Icon} from "../../../un-ui/Icon.tsx";
-import {Text, useTheme} from "@rneui/themed";
+import {Text} from "@rneui/themed";
 import {useEffect, useState} from "react";
 import Flex from "../../../un-ui/Flex.tsx";
+import {useUserTheme} from "../../../../js/theme.ts";
 
 interface Props {
     courseList: Course[];
@@ -19,7 +20,7 @@ interface CourseItem extends Course {
 }
 
 export function CourseScheduleTable(props: Props) {
-    const {theme} = useTheme();
+    const {theme} = useUserTheme();
     const [courseSchedule, setCourseSchedule] = useState<CourseItem[][]>([[], [], [], [], [], [], []]);
     const {courseScheduleData} = useCourseScheduleData();
     const {courseScheduleStyle} = useCourseScheduleStyle();

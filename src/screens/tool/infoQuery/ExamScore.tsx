@@ -11,13 +11,16 @@ import {Row, Rows, Table} from "react-native-reanimated-table";
 import {useUserTheme} from "../../../js/theme.ts";
 import {ExamInfoQueryRes} from "../../../type/api/examInfoAPI.ts";
 import {store} from "../../../js/store.ts";
+import {color, Color} from "../../../js/color.ts";
 
 export function ExamScore() {
     const {theme, userTheme} = useUserTheme();
     const [apiRes, setApiRes] = useState<ExamInfoQueryRes>({});
     const [year, setYear] = useState(moment().isBefore(moment("8", "M"), "M") ? moment().year() - 1 : moment().year());
     const [term, setTerm] = useState<string>(
-        moment().isBetween(moment("02", "MM"), moment("08", "MM"), "month", "[]") ? SchoolTerms[1][0] : SchoolYears[0][0],
+        moment().isBetween(moment("02", "MM"), moment("08", "MM"), "month", "[]")
+            ? SchoolTerms[1][0]
+            : SchoolYears[0][0],
     );
     const [page, setPage] = useState(1);
     const [tableData, setTableData] = useState({
@@ -44,11 +47,19 @@ export function ExamScore() {
         },
         tableBorder: {
             borderWidth: 2,
-            borderColor: "#c8e1ff",
+            borderColor: color.mix(new Color(theme.colors.primary), new Color(theme.colors.grey4), 0.4).rgbaString,
+        },
+        tableHeader: {
+            backgroundColor: color
+                .mix(
+                    new Color(theme.colors.primary),
+                    new Color(theme.colors.background),
+                    theme.mode === "dark" ? 0.7 : 0.2,
+                )
+                .setAlpha(theme.mode === "dark" ? 0.3 : 0.6).rgbaString,
         },
         tableHeaderText: {},
     });
-
     function init() {
         store.load({key: "examScore"}).then(data => {
             setApiRes(data);
@@ -144,6 +155,7 @@ export function ExamScore() {
                                 data={tableData.header}
                                 widthArr={tableData.width}
                                 textStyle={style.tableText}
+                                style={style.tableHeader}
                                 height={50}
                             />
                             <Rows

@@ -189,6 +189,7 @@ export class Color {
         ) {
             // 转换 RGBA 颜色
             this.hex = "#" + args.map(v => Math.round(v).toString(16).padStart(2, "0")).join("");
+            this.hex = this.hex.slice(0, -2);
             this.rgba = [args[0], args[1], args[2], args[3]];
         } else {
             throw new Error("Invalid arguments");

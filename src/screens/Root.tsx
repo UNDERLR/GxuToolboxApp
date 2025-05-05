@@ -1,17 +1,12 @@
-import {Appearance, StatusBar, View} from "react-native";
+import {StatusBar, useColorScheme, View} from "react-native";
 import {NavigationContainer} from "@react-navigation/native";
 import {RootStack} from "../route/RootStack.tsx";
 import React from "react";
-import {useTheme, useThemeMode} from "@rneui/themed";
-import {NavigationDarkTheme, NavigationLightTheme} from "../js/theme.ts";
+import {useUserTheme} from "../js/theme.ts";
 
 export function Root() {
-    const {theme, updateTheme} = useTheme();
-    const {mode, setMode} = useThemeMode();
-
-    Appearance.addChangeListener(({colorScheme}) => {
-        setMode(colorScheme === "dark" ? "dark" : "light");
-    });
+    const {theme, navigationTheme} = useUserTheme();
+    const colorScheme = useColorScheme();
 
     const backgroundStyle = {
         flex: 1,
@@ -20,10 +15,10 @@ export function Root() {
     return (
         <View style={backgroundStyle}>
             <StatusBar
-                barStyle={mode === "light" ? "dark-content" : "light-content"}
+                barStyle={colorScheme === "light" ? "dark-content" : "light-content"}
                 backgroundColor={backgroundStyle.backgroundColor}
             />
-            <NavigationContainer theme={mode === "dark" ? NavigationDarkTheme : NavigationLightTheme}>
+            <NavigationContainer theme={navigationTheme[colorScheme ?? "light"]}>
                 <RootStack />
             </NavigationContainer>
         </View>

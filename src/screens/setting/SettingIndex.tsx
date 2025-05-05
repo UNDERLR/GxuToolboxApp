@@ -7,7 +7,7 @@ import {
     ToastAndroid,
     View,
 } from "react-native";
-import {Text, useTheme} from "@rneui/themed";
+import {Text} from "@rneui/themed";
 import {BaseColor, Color} from "../../js/color.ts";
 import {useNavigation} from "@react-navigation/native";
 import {Icon} from "../../components/un-ui/Icon.tsx";
@@ -15,6 +15,8 @@ import Flex from "../../components/un-ui/Flex.tsx";
 import packageJson from "../../../package.json";
 import Clipboard from "@react-native-clipboard/clipboard";
 import moment from "moment/moment";
+import {ColorPicker} from "../../components/un-ui/ColorPicker.tsx";
+import {useUserTheme} from "../../js/theme.ts";
 
 interface settingSection {
     title: string;
@@ -31,7 +33,7 @@ interface SettingItem {
 
 export function SettingIndex() {
     const navigation = useNavigation();
-    const {theme} = useTheme();
+    const {theme, userTheme, updateUserTheme, updateTheme} = useUserTheme();
 
     const settingList = [
         {
@@ -50,6 +52,14 @@ export function SettingIndex() {
                 {
                     label: "主题色",
                     type: "any",
+                    value: (
+                        <ColorPicker
+                            color={theme.colors.primary}
+                            onColorChange={v => {
+                                updateUserTheme({...userTheme,colors: {primary: v}});
+                            }}
+                        />
+                    ),
                 },
             ],
         },
