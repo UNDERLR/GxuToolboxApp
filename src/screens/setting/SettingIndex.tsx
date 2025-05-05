@@ -10,7 +10,7 @@ import {
 import {Text, useTheme} from "@rneui/themed";
 import {BaseColor, Color} from "../../js/color.ts";
 import {useNavigation} from "@react-navigation/native";
-import {UnIcon} from "../../components/un-ui/UnIcon.tsx";
+import {Icon} from "../../components/un-ui/Icon.tsx";
 import Flex from "../../components/un-ui/Flex.tsx";
 import packageJson from "../../../package.json";
 import Clipboard from "@react-native-clipboard/clipboard";
@@ -23,9 +23,9 @@ interface settingSection {
 
 interface SettingItem {
     label: string;
-    type: "navigation" | "text" | "link";
+    type: "navigation" | "text" | "link" | "any";
     navigation?: string;
-    value?: string;
+    value?: any;
     url?: string;
 }
 
@@ -35,7 +35,7 @@ export function SettingIndex() {
 
     const settingList = [
         {
-            title: "账号相关",
+            title: "账号",
             data: [
                 {
                     label: "教务账号设置",
@@ -45,7 +45,16 @@ export function SettingIndex() {
             ],
         },
         {
-            title: "软件相关",
+            title: "主题",
+            data: [
+                {
+                    label: "主题色",
+                    type: "any",
+                },
+            ],
+        },
+        {
+            title: "软件",
             data: [
                 {
                     label: "代码版本号",
@@ -135,7 +144,7 @@ export function SettingIndex() {
                                     style={style.settingItem}
                                     android_ripple={data.style.settingItemRipple}>
                                     <Text>{item.label}</Text>
-                                    <UnIcon name="right" size={16} />
+                                    <Icon name="right" size={16} />
                                 </Pressable>
                             );
                         case "text":
@@ -153,10 +162,17 @@ export function SettingIndex() {
                                     android_ripple={data.style.settingItemRipple}>
                                     <Text>{item.label}</Text>
                                     <Text style={style.linkText}>
-                                        <UnIcon name="link" size={16} />
+                                        <Icon name="link" size={16} />
                                         {item.value ?? item.url}
                                     </Text>
                                 </Pressable>
+                            );
+                        case "any":
+                            return (
+                                <Flex style={style.settingItem} justifyContent="space-between">
+                                    <Text>{item.label}</Text>
+                                    {item.value}
+                                </Flex>
                             );
                         default:
                             return (

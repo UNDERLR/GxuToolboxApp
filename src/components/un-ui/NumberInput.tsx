@@ -1,7 +1,7 @@
 import {Pressable, StyleSheet, View} from "react-native";
 import Flex from "./Flex.tsx";
 import {Text} from "@rneui/themed";
-import {UnIcon} from "./UnIcon.tsx";
+import {Icon} from "./Icon.tsx";
 import {useUserTheme} from "../../js/theme.ts";
 import {Color} from "../../js/color.ts";
 
@@ -65,7 +65,7 @@ export function NumberInput(props: Props) {
                 onPress={minus}
                 disabled={props.value <= (props.min ?? Number.MIN_SAFE_INTEGER)}>
                 <Flex style={style.leftIcon} inline justifyContent="center">
-                    <UnIcon
+                    <Icon
                         name="minus"
                         size={props.size / 2 ?? 15}
                         color={
@@ -84,7 +84,7 @@ export function NumberInput(props: Props) {
                 onPress={plus}
                 disabled={props.value >= (props.max ?? Number.MAX_SAFE_INTEGER)}>
                 <Flex style={style.rightIcon} inline justifyContent="center">
-                    <UnIcon
+                    <Icon
                         name="plus"
                         size={props.size / 2 ?? 15}
                         color={

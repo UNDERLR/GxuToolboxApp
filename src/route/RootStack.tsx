@@ -1,6 +1,5 @@
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import React from "react";
-import {SettingStack} from "./screens/SettingStack.tsx";
 import {MainTab} from "../screens/MainTab.tsx";
 
 const Stack = createNativeStackNavigator();

@@ -9,7 +9,7 @@ interface Props extends IconProps{
     type?: "antdesign" | "fontawesome";
 }
 
-export function UnIcon({type = "antdesign", name, size = 12, color, ...props}: Props) {
+export function Icon({type = "antdesign", name, size = 12, color, ...props}: Props) {
     const {theme} = useTheme();
     const iconColor = color || theme.colors.black;
 

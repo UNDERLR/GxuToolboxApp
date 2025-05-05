@@ -6,7 +6,7 @@ import {CourseScheduleQueryRes} from "../../../../type/api/classScheduleAPI.ts";
 import {useEffect, useState} from "react";
 import {PracticalCourseList} from "./PracticalCourseList.tsx";
 import Flex from "../../../un-ui/Flex.tsx";
-import {UnIcon} from "../../../un-ui/UnIcon.tsx";
+import {Icon} from "../../../un-ui/Icon.tsx";
 import moment from "moment";
 import {Course, useCourseScheduleData} from "../../../../type/infoQuery/course/course.ts";
 import {CourseScheduleTable} from "./CourseScheduleTable.tsx";
@@ -75,7 +75,7 @@ export function CourseScheduleCard() {
                     <Text h4>课表</Text>
                     <Flex gap={15} justifyContent="flex-end">
                         { currentWeek !== realCurrentWeek&&
-                            <UnIcon
+                            <Icon
                                 name="back"
                                 size={24}
                                 onPress={() => {
@@ -83,7 +83,7 @@ export function CourseScheduleCard() {
                                 }}
                             />
                         }
-                        <UnIcon
+                        <Icon
                             name="left"
                             size={24}
                             onPress={() => {
@@ -92,7 +92,7 @@ export function CourseScheduleCard() {
                                 }
                             }}
                         />
-                        <UnIcon
+                        <Icon
                             name="right"
                             size={24}
                             onPress={() => {
@@ -101,8 +101,8 @@ export function CourseScheduleCard() {
                                 }
                             }}
                         />
-                        <UnIcon name="setting" size={24} onPress={() => setCourseScheduleSettingVisible(true)} />
-                        <UnIcon name="sync" size={24} onPress={getCourseSchedule} />
+                        <Icon name="setting" size={24} onPress={() => setCourseScheduleSettingVisible(true)} />
+                        <Icon name="sync" size={24} onPress={getCourseSchedule} />
                     </Flex>
                 </Flex>
             </Card.Title>
