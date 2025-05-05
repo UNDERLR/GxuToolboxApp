@@ -1,5 +1,5 @@
 import {ScrollView, StyleSheet, ToastAndroid, View} from "react-native";
-import {Button, Divider, ListItem, Text} from "@rneui/themed";
+import {Button, Divider, Text} from "@rneui/themed";
 import {useEffect, useState} from "react";
 import moment from "moment/moment";
 import Flex from "../../../components/un-ui/Flex.tsx";
@@ -100,8 +100,8 @@ export function ExamInfo() {
             <View style={style.container}>
                 <Text h3>考试信息查询</Text>
                 <Divider />
-                <Text h4>查询参数</Text>
-                <ListItem bottomDivider>
+                <Flex gap={10} direction="column" alignItems="flex-start">
+                    <Text h4>查询参数</Text>
                     <Flex gap={10}>
                         <Text>学期</Text>
                         <View style={{flex: 1}}>
@@ -125,10 +125,12 @@ export function ExamInfo() {
                             </Picker>
                         </View>
                     </Flex>
-                </ListItem>
-                <Button>查询</Button>
+                    <View style={{width:"100%"}}>
+                        <Button onPress={query}>查询</Button>
+                    </View>
+                </Flex>
                 <Divider />
-                <Flex direction="column" gap={10} alignItems="flex-start">
+                <Flex direction="column" gap={15} alignItems="flex-start">
                     <Flex alignItems="flex-end" gap={5}>
                         <Text h4>查询结果</Text>
                         <Text>{`第${apiRes.currentPage}/${apiRes.totalPage}页，共有${apiRes.totalCount}条结果`}</Text>

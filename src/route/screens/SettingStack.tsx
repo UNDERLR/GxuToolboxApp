@@ -15,14 +15,28 @@ export function SettingStack() {
             screenOptions={{
                 headerShadowVisible: false,
                 headerStyle: {
-                    backgroundColor: new Color(theme.colors.background).setAlpha(theme.mode === "dark" ? 0.5 : 0.4)
+                    backgroundColor: new Color(theme.colors.background).setAlpha(theme.mode === "dark" ? 0.7 : 0.9)
                         .rgbaString,
                 },
                 contentStyle: {
-                    backgroundColor: "transparent",
+                    backgroundColor: new Color(theme.colors.background).setAlpha(theme.mode === "dark" ? 0.5 : 0.6)
+                        .rgbaString,
                 },
             }}>
-            <Stack.Screen name="settingIndex" component={SettingIndex} options={{title: "工具箱设置"}} />
+            <Stack.Screen
+                name="settingIndex"
+                component={SettingIndex}
+                options={{
+                    title: "工具箱设置",
+                    headerStyle: {
+                        backgroundColor: new Color(theme.colors.background).setAlpha(theme.mode === "dark" ? 0.5 : 0.4)
+                            .rgbaString,
+                    },
+                    contentStyle: {
+                        backgroundColor: "transparent",
+                    },
+                }}
+            />
 
             {/*  账号相关  */}
             <Stack.Screen name="jwAccount" component={JWAccountScreen} options={{title: "教务系统账号设置"}} />

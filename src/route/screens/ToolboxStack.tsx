@@ -16,14 +16,28 @@ export function ToolboxStack() {
             screenOptions={{
                 headerShadowVisible: false,
                 headerStyle: {
-                    backgroundColor: new Color(theme.colors.background).setAlpha(theme.mode === "dark" ? 0.5 : 0.4)
+                    backgroundColor: new Color(theme.colors.background).setAlpha(theme.mode === "dark" ? 0.7 : 0.9)
                         .rgbaString,
                 },
                 contentStyle: {
-                    backgroundColor: "transparent",
+                    backgroundColor: new Color(theme.colors.background).setAlpha(theme.mode === "dark" ? 0.5 : 0.6)
+                        .rgbaString,
                 },
             }}>
-            <Stack.Screen name="toolboxIndex" component={ToolboxIndex} options={{title: "工具箱"}} />
+            <Stack.Screen
+                name="toolboxIndex"
+                component={ToolboxIndex}
+                options={{
+                    title: "工具箱",
+                    headerStyle: {
+                        backgroundColor: new Color(theme.colors.background).setAlpha(theme.mode === "dark" ? 0.5 : 0.4)
+                            .rgbaString,
+                    },
+                    contentStyle: {
+                        backgroundColor: "transparent",
+                    },
+                }}
+            />
 
             {/*  工具  */}
             <Stack.Screen name="examInfo" component={ExamInfo} options={{title: "考试信息查询"}} />
