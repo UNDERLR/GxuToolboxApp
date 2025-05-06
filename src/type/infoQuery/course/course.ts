@@ -287,6 +287,9 @@ export function useCourseScheduleStyle() {
             flex: 1,
             flexDirection: "row",
         },
+        timeSpanContainer: {
+            flex: undefined,
+        },
         weekdayContainer: {
             flex: 1,
             justifyContent: "flex-start",
@@ -308,11 +311,13 @@ export function useCourseScheduleStyle() {
         },
         timeSpanText: {
             textAlign: "center",
+            fontSize: 12,
             color: theme.colors.grey2,
         },
         courseItem: {
             overflow: "hidden",
             width: "96%",
+            marginHorizontal: "2%",
             borderRadius: 5,
             borderWidth: CourseScheduleData.style.courseItemBorderWidth,
             borderStyle: "solid",

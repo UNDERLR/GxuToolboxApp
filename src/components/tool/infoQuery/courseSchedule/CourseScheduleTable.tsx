@@ -110,11 +110,12 @@ export function CourseScheduleTable(props: Props) {
 
     return (
         <View style={courseScheduleStyle.courseSchedule}>
+            {/*时间段高亮*/}
             {typeof currentTimeSpan === "number" && (
                 <View style={[timeSpanHighLightTop, courseScheduleStyle.timeSpanHighLight]} />
             )}
             {/*时间表渲染*/}
-            <View style={courseScheduleStyle.weekdayContainer}>
+            <View style={[courseScheduleStyle.timeSpanContainer,courseScheduleStyle.weekdayContainer]}>
                 <View style={courseScheduleStyle.weekdayItem}>
                     <Text style={courseScheduleStyle.weekdayText}>
                         {moment(courseScheduleData.startDay).add(currentWeek, "w").month() + 1 + "月"}

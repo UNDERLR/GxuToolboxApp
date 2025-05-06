@@ -35,9 +35,14 @@ export function CourseScheduleCard() {
     const [activeCourse, setActiveCourse] = useState<Course>({});
 
     const style = StyleSheet.create({
-        card:{
+        card: {
             backgroundColor: new Color(theme.colors.background).setAlpha(theme.mode === "dark" ? 0.7 : 0.8).rgbaString,
-            borderRadius:5,
+            borderRadius: 5,
+            paddingHorizontal: 0,
+            marginHorizontal: 5,
+        },
+        cardTitle: {
+            paddingHorizontal: 15,
         },
         bottomSheetContainer: {
             backgroundColor: theme.colors.background,
@@ -75,11 +80,11 @@ export function CourseScheduleCard() {
     }, [year, term]);
     return (
         <Card containerStyle={style.card}>
-            <Card.Title>
+            <Card.Title style={style.cardTitle}>
                 <Flex justifyContent="space-between">
                     <Text h4>课表</Text>
                     <Flex gap={15} justifyContent="flex-end">
-                        { currentWeek !== realCurrentWeek&&
+                        {currentWeek !== realCurrentWeek && (
                             <Icon
                                 name="back"
                                 size={24}
@@ -87,7 +92,7 @@ export function CourseScheduleCard() {
                                     setCurrentWeek(realCurrentWeek);
                                 }}
                             />
-                        }
+                        )}
                         <Icon
                             name="left"
                             size={24}
