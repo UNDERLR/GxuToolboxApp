@@ -1,12 +1,19 @@
 import {ImageBackground, StatusBar, StyleSheet, useColorScheme, View} from "react-native";
 import {NavigationContainer} from "@react-navigation/native";
 import {RootStack} from "../route/RootStack.tsx";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {useUserTheme} from "../js/theme.ts";
 
 export function Root() {
     const {theme, navigationTheme, userTheme} = useUserTheme();
     const colorScheme = useColorScheme();
+    // 添加背景图URI的状态
+    const [bgUri, setBgUri] = useState(userTheme.bgUri);
+
+    // 监听 userTheme 变化，更新背景图
+    useEffect(() => {
+        setBgUri(userTheme.bgUri);
+    }, [userTheme.bgUri]);
 
     const style = StyleSheet.create({
         backgroundStyle: {
@@ -20,7 +27,11 @@ export function Root() {
     });
     return (
         <View style={style.backgroundStyle}>
-            <ImageBackground style={style.bg} source={{uri: userTheme.bgUri}}>
+            <ImageBackground
+                style={style.bg}
+                source={{uri: bgUri}}
+                loadingIndicatorSource={{uri: bgUri}}
+                resizeMode="cover">
                 <StatusBar barStyle={colorScheme === "light" ? "dark-content" : "light-content"} />
                 <NavigationContainer theme={navigationTheme[colorScheme ?? "light"]}>
                     <RootStack />
