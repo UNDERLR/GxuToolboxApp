@@ -1,8 +1,8 @@
-import {PracticalCourse, useCourseScheduleStyle} from "../../../../type/course.ts";
+import {PracticalCourse, useCourseScheduleStyle} from "../../../../type/infoQuery/course/course.ts";
 import {StyleSheet, View} from "react-native";
 import {BaseColor, color, Color} from "../../../../js/color.ts";
 import Flex from "../../../un-ui/Flex.tsx";
-import {UnIcon} from "../../../un-ui/UnIcon.tsx";
+import {Icon} from "../../../un-ui/Icon.tsx";
 import {Text, useTheme} from "@rneui/themed";
 import {useEffect, useState} from "react";
 
@@ -84,11 +84,11 @@ export function PracticalCourseList(props: Props) {
                         ]}>
                         <Text>{course.qtkcgs}</Text>
                         <Flex gap={5}>
-                            <UnIcon name="clockcircleo" />
+                            <Icon name="clockcircleo" />
                             <Text>{course.qsjsz}</Text>
                         </Flex>
                         <Flex gap={5}>
-                            <UnIcon name="user" />
+                            <Icon name="user" />
                             <Text>{course.jsxm}</Text>
                         </Flex>
                     </View>

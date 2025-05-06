@@ -1,5 +1,5 @@
 import {ScrollView, StyleSheet, ToastAndroid, View} from "react-native";
-import {Button, Divider, Text} from "@rneui/themed";
+import {Button, Divider, ListItem, Text} from "@rneui/themed";
 import {useEffect, useState} from "react";
 import moment from "moment/moment";
 import Flex from "../../../components/un-ui/Flex.tsx";
@@ -11,9 +11,9 @@ import {Row, Rows, Table} from "react-native-reanimated-table";
 import {useUserTheme} from "../../../js/theme.ts";
 import {ExamInfoQueryRes} from "../../../type/api/examInfoAPI.ts";
 import {store} from "../../../js/store.ts";
-import {Color, color} from "../../../js/color.ts";
+import {color, Color} from "../../../js/color.ts";
 
-export function ExamInfo() {
+export function ExamScore() {
     const {theme, userTheme} = useUserTheme();
     const [apiRes, setApiRes] = useState<ExamInfoQueryRes>({});
     const [year, setYear] = useState(moment().isBefore(moment("8", "M"), "M") ? moment().year() - 1 : moment().year());
@@ -24,8 +24,8 @@ export function ExamInfo() {
     );
     const [page, setPage] = useState(1);
     const [tableData, setTableData] = useState({
-        header: ["课程名称", "考试时间", "考试校区", "考试地点", "考试座号", "学年", "学期", "教学班", "考试名称"],
-        width: [170, 200, 80, 100, 80, 100, 70, 190, 300],
+        header: ["学年", "课程名称", "成绩", "学分", "绩点", "教学班", "教师"],
+        width: [120, 200, 80, 100, 80, 200, 140],
         body: [] as string[][],
     });
 
@@ -60,32 +60,41 @@ export function ExamInfo() {
         },
         tableHeaderText: {},
     });
-
     function init() {
-        store.load({key: "examInfo"}).then(data => {
+        store.load({key: "examScore"}).then(data => {
             setApiRes(data);
+            setTableData({
+                ...tableData,
+                body: data.items.map((item, index) => [
+                    item.xnmmc,
+                    item.kcmc,
+                    item.cj,
+                    item.xf,
+                    item.jd,
+                    item.jxbmc,
+                    item.jsxm,
+                ]),
+            });
         });
     }
 
     function query() {
-        infoQuery.getExamInfo(year, term, page).then(res => {
+        infoQuery.getExamScore(year, term, page).then(res => {
             const tableBody = res.items.map((item, index) => [
+                item.xnmmc,
                 item.kcmc,
-                item.kssj,
-                item.cdxqmc,
-                item.cdmc,
-                item.zwh,
-                item.xnmc,
-                item.xqmmc,
+                item.cj,
+                item.xf,
+                item.jd,
                 item.jxbmc,
-                item.ksmc,
+                item.jsxm,
             ]);
             setTableData({
                 ...tableData,
                 body: tableBody,
             });
             setApiRes(res);
-            store.save({key: "examInfo", data: res});
+            store.save({key: "examScore", data: res});
             ToastAndroid.show("获取考试信息成功", ToastAndroid.SHORT);
         });
     }
@@ -98,10 +107,10 @@ export function ExamInfo() {
     return (
         <ScrollView>
             <View style={style.container}>
-                <Text h3>考试信息查询</Text>
+                <Text h3>考试成绩查询</Text>
                 <Divider />
+                <Text h4>查询参数</Text>
                 <Flex gap={10} direction="column" alignItems="flex-start">
-                    <Text h4>查询参数</Text>
                     <Flex gap={10}>
                         <Text>学期</Text>
                         <View style={{flex: 1}}>

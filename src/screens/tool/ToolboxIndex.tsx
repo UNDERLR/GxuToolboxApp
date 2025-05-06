@@ -10,7 +10,7 @@ import {
 import {Text, useTheme} from "@rneui/themed";
 import {BaseColor, Color} from "../../js/color.ts";
 import {useNavigation} from "@react-navigation/native";
-import {UnIcon} from "../../components/un-ui/UnIcon.tsx";
+import {Icon} from "../../components/un-ui/Icon.tsx";
 import Flex from "../../components/un-ui/Flex.tsx";
 import Clipboard from "@react-native-clipboard/clipboard";
 
@@ -36,17 +36,23 @@ export function ToolboxIndex() {
         {
             title: "信息查询",
             data: [
-                {
-                    label: "课表查询",
-                    icon: <UnIcon name="calendar" size={20} />,
-                    type: "navigation",
-                    navigation: "courseSchedule",
-                },
+                // {
+                //     label: "课表查询",
+                //     icon: <Icon name="calendar" size={20} />,
+                //     type: "navigation",
+                //     navigation: "courseSchedule",
+                // },
                 {
                     label: "考试信息查询",
-                    icon: <UnIcon name="book" size={20} />,
+                    icon: <Icon name="book" size={20} />,
                     type: "navigation",
                     navigation: "examInfo",
+                },
+                {
+                    label: "考试成绩查询",
+                    icon: <Icon name="barschart" size={20} />,
+                    type: "navigation",
+                    navigation: "examScore",
                 },
             ],
         },
@@ -54,7 +60,7 @@ export function ToolboxIndex() {
 
     const data = {
         style: {
-            cardBg: new Color(BaseColor.lightgray).setAlpha(theme.mode === "light" ? 0.3 : 0.1).rgbaString,
+            cardBg: new Color(theme.colors.background).setAlpha(theme.mode === "light" ? 0.8 : 0.5).rgbaString,
             settingItemRipple: {
                 color: theme.colors.grey4,
             } as PressableAndroidRippleConfig,
@@ -125,7 +131,7 @@ export function ToolboxIndex() {
                                             {item.label}
                                         </Text>
                                     </Flex>
-                                    <UnIcon name="right" size={16} />
+                                    <Icon name="right" size={16} />
                                 </Pressable>
                             );
                         case "text":
@@ -143,7 +149,7 @@ export function ToolboxIndex() {
                                     android_ripple={data.style.settingItemRipple}>
                                     <Text>{item.label}</Text>
                                     <Text style={style.linkText}>
-                                        <UnIcon name="link" size={16} />
+                                        <Icon name="link" size={16} />
                                         {item.value ?? item.url}
                                     </Text>
                                 </Pressable>

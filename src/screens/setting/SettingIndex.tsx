@@ -7,14 +7,17 @@ import {
     ToastAndroid,
     View,
 } from "react-native";
-import {Text, useTheme} from "@rneui/themed";
+import {Button, Text} from "@rneui/themed";
 import {BaseColor, Color} from "../../js/color.ts";
 import {useNavigation} from "@react-navigation/native";
-import {UnIcon} from "../../components/un-ui/UnIcon.tsx";
+import {Icon} from "../../components/un-ui/Icon.tsx";
 import Flex from "../../components/un-ui/Flex.tsx";
 import packageJson from "../../../package.json";
 import Clipboard from "@react-native-clipboard/clipboard";
 import moment from "moment/moment";
+import {ColorPicker} from "../../components/un-ui/ColorPicker.tsx";
+import {useUserTheme} from "../../js/theme.ts";
+import {launchImageLibrary} from "react-native-image-picker";
 
 interface settingSection {
     title: string;
@@ -23,19 +26,32 @@ interface settingSection {
 
 interface SettingItem {
     label: string;
-    type: "navigation" | "text" | "link";
+    type: "navigation" | "text" | "link" | "any";
     navigation?: string;
-    value?: string;
+    value?: any;
     url?: string;
 }
 
 export function SettingIndex() {
     const navigation = useNavigation();
-    const {theme} = useTheme();
+    const {theme, userTheme, updateUserTheme, updateTheme} = useUserTheme();
+
+    function selectBg() {
+        launchImageLibrary({
+            mediaType: "photo",
+        }).then(res => {
+            if (!res.didCancel && res.assets && res.assets.length > 0) {
+                updateUserTheme({
+                    ...userTheme,
+                    bgUri: res.assets[0].uri,
+                });
+            }
+        });
+    }
 
     const settingList = [
         {
-            title: "账号相关",
+            title: "账号",
             data: [
                 {
                     label: "教务账号设置",
@@ -45,7 +61,42 @@ export function SettingIndex() {
             ],
         },
         {
-            title: "软件相关",
+            title: "主题",
+            data: [
+                {
+                    label: "主题色",
+                    type: "any",
+                    value: (
+                        <ColorPicker
+                            color={theme.colors.primary}
+                            onColorChange={v => {
+                                updateUserTheme({...userTheme, colors: {primary: v}});
+                            }}
+                        />
+                    ),
+                },
+                {
+                    label: "背景图",
+                    type: "any",
+                    value: (
+                        <Flex gap={10} inline>
+                            <Button
+                                onPress={() => {
+                                    updateUserTheme({...userTheme, bgUri: ""});
+                                }}
+                                size="sm">
+                                重置背景
+                            </Button>
+                            <Button onPress={selectBg} size="sm">
+                                选择图片
+                            </Button>
+                        </Flex>
+                    ),
+                },
+            ],
+        },
+        {
+            title: "软件",
             data: [
                 {
                     label: "代码版本号",
@@ -69,7 +120,7 @@ export function SettingIndex() {
 
     const data = {
         style: {
-            cardBg: new Color(BaseColor.lightgray).setAlpha(theme.mode === "light" ? 0.3 : 0.1).rgbaString,
+            cardBg: new Color(theme.colors.background).setAlpha(theme.mode === "light" ? 0.8 : 0.5).rgbaString,
             settingItemRipple: {
                 color: theme.colors.grey4,
             } as PressableAndroidRippleConfig,
@@ -135,7 +186,7 @@ export function SettingIndex() {
                                     style={style.settingItem}
                                     android_ripple={data.style.settingItemRipple}>
                                     <Text>{item.label}</Text>
-                                    <UnIcon name="right" size={16} />
+                                    <Icon name="right" size={16} />
                                 </Pressable>
                             );
                         case "text":
@@ -153,10 +204,17 @@ export function SettingIndex() {
                                     android_ripple={data.style.settingItemRipple}>
                                     <Text>{item.label}</Text>
                                     <Text style={style.linkText}>
-                                        <UnIcon name="link" size={16} />
+                                        <Icon name="link" size={16} />
                                         {item.value ?? item.url}
                                     </Text>
                                 </Pressable>
+                            );
+                        case "any":
+                            return (
+                                <Flex style={style.settingItem} justifyContent="space-between">
+                                    <Text>{item.label}</Text>
+                                    {item.value}
+                                </Flex>
                             );
                         default:
                             return (

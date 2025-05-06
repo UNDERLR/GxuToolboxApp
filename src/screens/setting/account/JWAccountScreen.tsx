@@ -3,7 +3,7 @@ import {Button, Input, Text} from "@rneui/themed";
 import {useEffect, useState} from "react";
 import {jwxt} from "../../../js/jw/jwxt.ts";
 import {userMgr} from "../../../js/mgr/user.ts";
-import {UnIcon} from "../../../components/un-ui/UnIcon.tsx";
+import {Icon} from "../../../components/un-ui/Icon.tsx";
 
 function getToken(username: string, password: string) {
     userMgr.storeAccount(username, password);
@@ -51,7 +51,7 @@ export function JWAccountScreen() {
                 placeholder="对应账号的密码"
                 secureTextEntry={!showPwd}
                 rightIcon={
-                    <UnIcon
+                    <Icon
                         type="fontawesome"
                         name={showPwd ? "eye-slash" : "eye"}
                         size={20}

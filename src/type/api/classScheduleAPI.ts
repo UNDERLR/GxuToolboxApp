@@ -1,5 +1,5 @@
 import {QueryResRoot} from "../global";
-import {Course, PracticalCourse} from "../course";
+import {Course, PracticalCourse} from "../infoQuery/course/course.ts";
 
 export interface CourseScheduleQueryRes extends QueryResRoot {
     // 课程标记对应表

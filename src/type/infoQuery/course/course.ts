@@ -1,7 +1,7 @@
-import {BaseColor, Color} from "../js/color.ts";
-import {useState} from "react";
+import {BaseColor, Color} from "../../../js/color.ts";
+import {useEffect, useState} from "react";
 import {StyleSheet} from "react-native";
-import {useTheme} from "@rneui/themed";
+import {useUserTheme} from "../../../js/theme.ts";
 
 export interface Course {
     //？
@@ -271,7 +271,7 @@ export function useCourseScheduleData() {
 }
 
 export function useCourseScheduleStyle() {
-    const {theme} = useTheme();
+    const {theme} = useUserTheme();
     const CourseScheduleStyle = StyleSheet.create({
         timeSpanHighLight: {
             position: "absolute",
@@ -325,5 +325,15 @@ export function useCourseScheduleStyle() {
         },
     });
     const [courseScheduleStyle, setCourseScheduleStyle] = useState<typeof CourseScheduleStyle>(CourseScheduleStyle);
+    // 疑似不是最优
+    useEffect(() => {
+        setCourseScheduleStyle({
+            ...courseScheduleStyle,
+            timeSpanHighLight: {
+                ...courseScheduleStyle.timeSpanHighLight,
+                backgroundColor: new Color(theme.colors.primary).setAlpha(0.1).rgbaString,
+            },
+        });
+    }, [theme]);
     return {courseScheduleStyle, setCourseScheduleStyle};
 }

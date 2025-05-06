@@ -1,4 +1,4 @@
-import {BottomSheet, Card, ListItem, Slider, Text, useTheme} from "@rneui/themed";
+import {BottomSheet, Card, ListItem, Slider, Text} from "@rneui/themed";
 import {infoQuery} from "../../../../js/jw/infoQuery.ts";
 import {StyleSheet, ToastAndroid, View} from "react-native";
 import {store} from "../../../../js/store.ts";
@@ -6,25 +6,28 @@ import {CourseScheduleQueryRes} from "../../../../type/api/classScheduleAPI.ts";
 import {useEffect, useState} from "react";
 import {PracticalCourseList} from "./PracticalCourseList.tsx";
 import Flex from "../../../un-ui/Flex.tsx";
-import {UnIcon} from "../../../un-ui/UnIcon.tsx";
+import {Icon} from "../../../un-ui/Icon.tsx";
 import moment from "moment";
-import {Course, useCourseScheduleData} from "../../../../type/course.ts";
+import {Course, useCourseScheduleData} from "../../../../type/infoQuery/course/course.ts";
 import {CourseScheduleTable} from "./CourseScheduleTable.tsx";
-import {Color} from "../../../../js/color.ts";
 import {Picker} from "@react-native-picker/picker";
 import {SchoolTerms, SchoolYears} from "../../../../type/global.ts";
 import {CourseDetail} from "./CourseDetail.tsx";
+import {useUserTheme} from "../../../../js/theme.ts";
+import {Color} from "../../../../js/color.ts";
 
 export function CourseScheduleCard() {
-    const {theme} = useTheme();
+    const {theme, userTheme} = useUserTheme();
     const [apiRes, setApiRes] = useState<CourseScheduleQueryRes>();
     const {courseScheduleData} = useCourseScheduleData();
     const startDay = moment(courseScheduleData.startDay);
 
     const realCurrentWeek = Math.ceil(moment.duration(moment().diff(startDay)).asWeeks());
     const [year, setYear] = useState(moment().isBefore(moment("8", "M"), "M") ? moment().year() - 1 : moment().year());
-    const [term, setTerm] = useState<1 | 2 | 3>(
-        moment().isBetween(moment("02", "MM"), moment("08", "MM"), "month", "[]") ? 2 : 1,
+    const [term, setTerm] = useState<string>(
+        moment().isBetween(moment("02", "MM"), moment("08", "MM"), "month", "[]")
+            ? SchoolTerms[1][0]
+            : SchoolYears[0][0],
     );
     const [currentWeek, setCurrentWeek] = useState(realCurrentWeek);
     const [courseScheduleSettingVisible, setCourseScheduleSettingVisible] = useState(false);
@@ -32,6 +35,10 @@ export function CourseScheduleCard() {
     const [activeCourse, setActiveCourse] = useState<Course>({});
 
     const style = StyleSheet.create({
+        card:{
+            backgroundColor: new Color(theme.colors.background).setAlpha(theme.mode === "dark" ? 0.7 : 0.8).rgbaString,
+            borderRadius:5,
+        },
         bottomSheetContainer: {
             backgroundColor: theme.colors.background,
             padding: "5%",
@@ -65,21 +72,23 @@ export function CourseScheduleCard() {
     useEffect(() => {
         init();
         getCourseSchedule();
-    }, [year,term]);
+    }, [year, term]);
     return (
-        <Card>
+        <Card containerStyle={style.card}>
             <Card.Title>
                 <Flex justifyContent="space-between">
                     <Text h4>课表</Text>
-                    {currentWeek === realCurrentWeek ? (
-                        <Text>（第{currentWeek}周）</Text>
-                    ) : (
-                        <Text>
-                            （第{currentWeek}周，目前为第{realCurrentWeek}周）
-                        </Text>
-                    )}
                     <Flex gap={15} justifyContent="flex-end">
-                        <UnIcon
+                        { currentWeek !== realCurrentWeek&&
+                            <Icon
+                                name="back"
+                                size={24}
+                                onPress={() => {
+                                    setCurrentWeek(realCurrentWeek);
+                                }}
+                            />
+                        }
+                        <Icon
                             name="left"
                             size={24}
                             onPress={() => {
@@ -87,11 +96,8 @@ export function CourseScheduleCard() {
                                     setCurrentWeek(currentWeek - 1);
                                 }
                             }}
-                            color={
-                                currentWeek <= 1 ? new Color(theme.colors.black).setAlpha(0.5).rgbaString : undefined
-                            }
                         />
-                        <UnIcon
+                        <Icon
                             name="right"
                             size={24}
                             onPress={() => {
@@ -99,20 +105,28 @@ export function CourseScheduleCard() {
                                     setCurrentWeek(currentWeek + 1);
                                 }
                             }}
-                            color={
-                                currentWeek >= 20 ? new Color(theme.colors.black).setAlpha(0.5).rgbaString : undefined
-                            }
                         />
-                        <UnIcon name="setting" size={24} onPress={() => setCourseScheduleSettingVisible(true)} />
-                        <UnIcon type="fontawesome" name="repeat" size={24} onPress={getCourseSchedule} />
+                        <Icon name="setting" size={24} onPress={() => setCourseScheduleSettingVisible(true)} />
+                        <Icon name="sync" size={24} onPress={getCourseSchedule} />
                     </Flex>
                 </Flex>
             </Card.Title>
             <Card.Divider />
-            <Flex justifyContent="center">
+            <Flex>
+                {currentWeek === realCurrentWeek ? (
+                    <Text>（第{currentWeek}周）</Text>
+                ) : (
+                    <Text>
+                        （第{currentWeek}周，目前为第{realCurrentWeek}周）
+                    </Text>
+                )}
                 <Text>点击课程查看详情</Text>
             </Flex>
-            <CourseScheduleTable onCoursePress={showCourseDetail} courseList={apiRes?.kbList ?? []} currentWeek={currentWeek} />
+            <CourseScheduleTable
+                onCoursePress={showCourseDetail}
+                courseList={apiRes?.kbList ?? []}
+                currentWeek={currentWeek}
+            />
             {apiRes?.sjkList && (
                 <>
                     <Card.Divider />
@@ -150,7 +164,10 @@ export function CourseScheduleCard() {
                         <Flex gap={10}>
                             <Text>学期</Text>
                             <View style={{flex: 1}}>
-                                <Picker selectedValue={year} onValueChange={(v, index) => setYear(v)}>
+                                <Picker
+                                    {...userTheme.components.Picker}
+                                    selectedValue={year}
+                                    onValueChange={(v, index) => setYear(v)}>
                                     {Array.from(SchoolYears).map(value => {
                                         return <Picker.Item value={+value[0]} label={value[1]} key={value[0]} />;
                                     })}
@@ -158,10 +175,11 @@ export function CourseScheduleCard() {
                             </View>
                             <View style={{flex: 1}}>
                                 <Picker
-                                    selectedValue={+SchoolTerms[term-1][0]}
-                                    onValueChange={(v, index) => setTerm(index + 1)}>
+                                    {...userTheme.components.Picker}
+                                    selectedValue={term}
+                                    onValueChange={(v, index) => setTerm(v)}>
                                     {Array.from(SchoolTerms).map(value => {
-                                        return <Picker.Item value={+value[0]} label={value[1]} key={value[0]} />;
+                                        return <Picker.Item value={value[0]} label={value[1]} key={value[0]} />;
                                     })}
                                 </Picker>
                             </View>

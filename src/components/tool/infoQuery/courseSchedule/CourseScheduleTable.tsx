@@ -1,11 +1,12 @@
-import {Course, useCourseScheduleData, useCourseScheduleStyle} from "../../../../type/course.ts";
+import {Course, useCourseScheduleData, useCourseScheduleStyle} from "../../../../type/infoQuery/course/course.ts";
 import {Pressable, StyleProp, StyleSheet, TextStyle, View, ViewStyle} from "react-native";
 import moment from "moment/moment";
 import {color, Color} from "../../../../js/color.ts";
-import {UnIcon} from "../../../un-ui/UnIcon.tsx";
-import {Text, useTheme} from "@rneui/themed";
+import {Icon} from "../../../un-ui/Icon.tsx";
+import {Text} from "@rneui/themed";
 import {useEffect, useState} from "react";
 import Flex from "../../../un-ui/Flex.tsx";
+import {useUserTheme} from "../../../../js/theme.ts";
 
 interface Props {
     courseList: Course[];
@@ -19,7 +20,7 @@ interface CourseItem extends Course {
 }
 
 export function CourseScheduleTable(props: Props) {
-    const {theme} = useTheme();
+    const {theme} = useUserTheme();
     const [courseSchedule, setCourseSchedule] = useState<CourseItem[][]>([[], [], [], [], [], [], []]);
     const {courseScheduleData} = useCourseScheduleData();
     const {courseScheduleStyle} = useCourseScheduleStyle();
@@ -195,11 +196,11 @@ export function CourseScheduleTable(props: Props) {
                                     key={`day${index}-${course.kcmc}`}>
                                     <Text style={itemStyle.text}>{course.kcmc}</Text>
                                     <Text style={itemStyle.text}>
-                                        <UnIcon type="fontawesome" name="map-marker" />
+                                        <Icon type="fontawesome" name="map-marker" />
                                         {"\n" + course.cdmc.replace("-", "\n")}
                                     </Text>
                                     <Text style={itemStyle.text}>
-                                        <UnIcon name="user" />
+                                        <Icon name="user" />
                                         {"\n" + course.xm}
                                     </Text>
                                 </Pressable>
