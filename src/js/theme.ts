@@ -19,6 +19,11 @@ export const theme = createTheme({
             trackStyle: {
                 height: 5,
             },
+            thumbStyle: {
+                height: 20,
+                width: 20,
+                backgroundColor: "gray",
+            },
         },
         Text: {
             style: {
@@ -74,6 +79,7 @@ export function useUserTheme() {
             primary: uiTheme.theme.colors.primary,
         },
         bgUri: "",
+        bgOpacity: 100,
     };
     const DefaultNavigationTheme = {
         light: {
@@ -148,7 +154,7 @@ export function useUserTheme() {
 
     useEffect(() => {
         store.load({key: "userTheme"}).then(userTheme => {
-            update(userTheme);
+            update({...DefaultUserTheme, ...userTheme});
         });
     }, []);
     return {userTheme, updateUserTheme, ...uiTheme, navigationTheme, setNavigationTheme};

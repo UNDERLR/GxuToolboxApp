@@ -3,6 +3,7 @@ import {NavigationContainer} from "@react-navigation/native";
 import {RootStack} from "../route/RootStack.tsx";
 import React, {useEffect, useState} from "react";
 import {useUserTheme} from "../js/theme.ts";
+import {CheckUpdate} from "../components/CheckUpdate.tsx";
 
 export function Root() {
     const {theme, navigationTheme, userTheme} = useUserTheme();
@@ -33,6 +34,7 @@ export function Root() {
                 loadingIndicatorSource={{uri: bgUri}}
                 resizeMode="cover">
                 <StatusBar barStyle={colorScheme === "light" ? "dark-content" : "light-content"} />
+                <CheckUpdate/>
                 <NavigationContainer theme={navigationTheme[colorScheme ?? "light"]}>
                     <RootStack />
                 </NavigationContainer>

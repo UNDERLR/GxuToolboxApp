@@ -7,8 +7,8 @@ import {
     ToastAndroid,
     View,
 } from "react-native";
-import {Button, Text} from "@rneui/themed";
-import {BaseColor, Color} from "../../js/color.ts";
+import {Button, Slider, Text} from "@rneui/themed";
+import {Color} from "../../js/color.ts";
 import {useNavigation} from "@react-navigation/native";
 import {Icon} from "../../components/un-ui/Icon.tsx";
 import Flex from "../../components/un-ui/Flex.tsx";
@@ -76,7 +76,7 @@ export function SettingIndex() {
                     ),
                 },
                 {
-                    label: "背景图",
+                    label: "背景图（需要重启）",
                     type: "any",
                     value: (
                         <Flex gap={10} inline>
@@ -90,6 +90,24 @@ export function SettingIndex() {
                             <Button onPress={selectBg} size="sm">
                                 选择图片
                             </Button>
+                        </Flex>
+                    ),
+                },
+                {
+                    label: "背景蒙版相对透明度（需重启）",
+                    type: "any",
+                    value: (
+                        <Flex gap={10} inline style={{width: "45%"}}>
+                            <Text>{userTheme.bgOpacity}</Text>
+                            <Slider
+                                step={1}
+                                minimumValue={0}
+                                maximumValue={100}
+                                value={userTheme.bgOpacity}
+                                onValueChange={v => {
+                                    updateUserTheme({...userTheme, bgOpacity: v});
+                                }}
+                            />
                         </Flex>
                     ),
                 },
@@ -120,7 +138,9 @@ export function SettingIndex() {
 
     const data = {
         style: {
-            cardBg: new Color(theme.colors.background).setAlpha(theme.mode === "light" ? 0.8 : 0.5).rgbaString,
+            cardBg: new Color(theme.colors.background).setAlpha(
+                0.1 + ((theme.mode === "light" ? 0.7 : 0.4) * userTheme.bgOpacity) / 100,
+            ).rgbaString,
             settingItemRipple: {
                 color: theme.colors.grey4,
             } as PressableAndroidRippleConfig,

@@ -7,12 +7,13 @@ import {
     ToastAndroid,
     View,
 } from "react-native";
-import {Text, useTheme} from "@rneui/themed";
-import {BaseColor, Color} from "../../js/color.ts";
+import {Text} from "@rneui/themed";
+import {Color} from "../../js/color.ts";
 import {useNavigation} from "@react-navigation/native";
 import {Icon} from "../../components/un-ui/Icon.tsx";
 import Flex from "../../components/un-ui/Flex.tsx";
 import Clipboard from "@react-native-clipboard/clipboard";
+import {useUserTheme} from "../../js/theme.ts";
 
 interface settingSection {
     title: string;
@@ -30,7 +31,7 @@ interface ToolboxItem {
 
 export function ToolboxIndex() {
     const navigation = useNavigation();
-    const {theme} = useTheme();
+    const {theme, userTheme} = useUserTheme();
 
     const toolList = [
         {
@@ -60,7 +61,9 @@ export function ToolboxIndex() {
 
     const data = {
         style: {
-            cardBg: new Color(theme.colors.background).setAlpha(theme.mode === "light" ? 0.8 : 0.5).rgbaString,
+            cardBg: new Color(theme.colors.background).setAlpha(
+                0.1 + ((theme.mode === "light" ? 0.7 : 0.4) * userTheme.bgOpacity) / 100,
+            ).rgbaString,
             settingItemRipple: {
                 color: theme.colors.grey4,
             } as PressableAndroidRippleConfig,
@@ -127,9 +130,7 @@ export function ToolboxIndex() {
                                     android_ripple={data.style.settingItemRipple}>
                                     <Flex gap={5}>
                                         {item.icon}
-                                        <Text>
-                                            {item.label}
-                                        </Text>
+                                        <Text>{item.label}</Text>
                                     </Flex>
                                     <Icon name="right" size={16} />
                                 </Pressable>

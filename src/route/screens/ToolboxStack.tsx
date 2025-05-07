@@ -9,19 +9,21 @@ import {useUserTheme} from "../../js/theme.ts";
 const Stack = createNativeStackNavigator();
 
 export function ToolboxStack() {
-    const {theme} = useUserTheme();
+    const {theme, userTheme} = useUserTheme();
     return (
         <Stack.Navigator
             initialRouteName="toolboxIndex"
             screenOptions={{
                 headerShadowVisible: false,
                 headerStyle: {
-                    backgroundColor: new Color(theme.colors.background).setAlpha(theme.mode === "dark" ? 0.7 : 0.9)
-                        .rgbaString,
+                    backgroundColor: new Color(theme.colors.background).setAlpha(
+                        ((theme.mode === "dark" ? 0.7 : 0.9) * userTheme.bgOpacity) / 100,
+                    ).rgbaString,
                 },
                 contentStyle: {
-                    backgroundColor: new Color(theme.colors.background).setAlpha(theme.mode === "dark" ? 0.5 : 0.6)
-                        .rgbaString,
+                    backgroundColor: new Color(theme.colors.background).setAlpha(
+                        ((theme.mode === "dark" ? 0.5 : 0.6) * userTheme.bgOpacity) / 100,
+                    ).rgbaString,
                 },
             }}>
             <Stack.Screen
@@ -30,8 +32,9 @@ export function ToolboxStack() {
                 options={{
                     title: "工具箱",
                     headerStyle: {
-                        backgroundColor: new Color(theme.colors.background).setAlpha(theme.mode === "dark" ? 0.5 : 0.4)
-                            .rgbaString,
+                        backgroundColor: new Color(theme.colors.background).setAlpha(
+                            ((theme.mode === "dark" ? 0.5 : 0.4) * userTheme.bgOpacity) / 100,
+                        ).rgbaString,
                     },
                     contentStyle: {
                         backgroundColor: "transparent",
