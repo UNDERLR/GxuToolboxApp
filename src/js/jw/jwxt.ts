@@ -2,6 +2,8 @@ import {http, urlWithParams} from "../http.ts";
 import {getEncryptedPassword} from "../rasPassword";
 import CookieManager from "@react-native-cookies/cookies";
 import {AxiosResponse} from "axios";
+import {userMgr} from "../mgr/user.ts";
+import {ToastAndroid} from "react-native";
 
 export const jwxt = {
     getPublicKey: (): Promise<{modulus: string; exponent: string}> => {
@@ -41,4 +43,24 @@ export const jwxt = {
         });
     },
 
+    getToken(username: string, password: string, hasAlerter = true) {
+        return new Promise(resolve => {
+            userMgr.storeAccount(username, password);
+            jwxt.getPublicKey().then(data => {
+                if (data.exponent) {
+                    jwxt.login(username, password, data.modulus, data.exponent).then(res => {
+                        resolve(res);
+                        if (!hasAlerter) {
+                            return;
+                        }
+                        if (res.status === 200) {
+                            ToastAndroid.show("获取成功", ToastAndroid.SHORT);
+                        } else {
+                            ToastAndroid.show(`获取失败，错误码：${res.status}`, ToastAndroid.SHORT);
+                        }
+                    });
+                }
+            });
+        });
+    },
 };
