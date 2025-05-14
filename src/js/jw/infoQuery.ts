@@ -3,6 +3,7 @@ import {CourseScheduleQueryRes} from "../../type/api/classScheduleAPI.ts";
 import {SchoolTerms, SchoolYears} from "../../type/global.ts";
 import moment from "moment/moment";
 import {ExamInfoQueryRes, ExamScoreQueryRes} from "../../type/api/examInfoAPI.ts";
+import {jwxt} from "./jwxt.ts";
 
 export const defaultYear = moment().isBefore(moment("8", "M"), "M") ? moment().year() - 1 : moment().year();
 

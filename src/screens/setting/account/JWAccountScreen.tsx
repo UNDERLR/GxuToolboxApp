@@ -1,9 +1,24 @@
-import {StyleSheet, View} from "react-native";
+import {StyleSheet, ToastAndroid, View} from "react-native";
 import {Button, Input, Text} from "@rneui/themed";
 import {useEffect, useState} from "react";
 import {jwxt} from "../../../js/jw/jwxt.ts";
 import {userMgr} from "../../../js/mgr/user.ts";
 import {Icon} from "../../../components/un-ui/Icon.tsx";
+
+function getToken(username: string, password: string) {
+    userMgr.storeAccount(username, password);
+    jwxt.getPublicKey().then(data => {
+        if (data.exponent) {
+            jwxt.login(username, password, data.modulus, data.exponent).then(res => {
+                if (res.status === 200) {
+                    ToastAndroid.show("获取成功", ToastAndroid.SHORT);
+                } else {
+                    ToastAndroid.show(`获取失败，错误码：${res.status}`, ToastAndroid.SHORT);
+                }
+            });
+        }
+    });
+}
 
 export function JWAccountScreen() {
     const [username, setUsername] = useState("");
@@ -45,7 +60,7 @@ export function JWAccountScreen() {
                     />
                 }
             />
-            <Button onPress={() => jwxt.getToken(username, password)}>获取Token</Button>
+            <Button onPress={() => getToken(username, password)}>获取Token</Button>
             <Text style={style.note}>提示获取成功后，回到课表页进行测试，若无法正常获取课表，可能为密码错误</Text>
         </View>
     );

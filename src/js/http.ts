@@ -1,7 +1,7 @@
 import axios from "axios";
 import {userMgr} from "./mgr/user.ts";
 import {ToastAndroid} from "react-native";
-import {jwxt} from "./jw/jwxt.ts";
+import Clipboard from "@react-native-clipboard/clipboard";
 
 // 默认导出实例
 export const http = axios.create({
@@ -9,35 +9,24 @@ export const http = axios.create({
     headers: {
         "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
     },
-    maxRedirects: 0,
     withCredentials: true,
 });
 
 http.interceptors.request.use(config => {
-    return new Promise((resolve, reject) => {
-        userMgr
-            .getAccount()
-            .then(data => {
-                if (!data.username || !data.password) {
-                    ToastAndroid.show("未正确设置账号，请前往设置设置账号", ToastAndroid.SHORT);
-                    reject(config);
-                }
-                if (config.headers.getContentType(/urlencoded/).length > 0) {
-                    config.data = objectToFormUrlEncoded(config.data);
-                }
-                if (!config.url.includes("/xtgl/login") && config.baseURL === "https://jwxt2018.gxu.edu.cn/jwglxt") {
-                    jwxt.getToken(data.username, data.password, false).then(() => {
-                        resolve(config);
-                    });
-                } else {
-                    resolve(config);
-                }
-            })
-            .catch(() => {
+    userMgr
+        .getAccount()
+        .then(data => {
+            if (!data.username || !data.password) {
                 ToastAndroid.show("未正确设置账号，请前往设置设置账号", ToastAndroid.SHORT);
-                reject(config);
-            });
-    });
+            }
+            if (config.headers.getContentType(/urlencoded/).length > 0) {
+                config.data = objectToFormUrlEncoded(config.data);
+            }
+        })
+        .catch(() => {
+            ToastAndroid.show("未正确设置账号，请前往设置设置账号", ToastAndroid.SHORT);
+        });
+    return config;
 });
 
 http.interceptors.response.use(
