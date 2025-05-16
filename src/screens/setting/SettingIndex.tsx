@@ -102,7 +102,7 @@ export function SettingIndex() {
                             <Slider
                                 step={1}
                                 minimumValue={0}
-                                maximumValue={100}
+                                maximumValue={130}
                                 value={userTheme.bgOpacity}
                                 onValueChange={v => {
                                     updateUserTheme({...userTheme, bgOpacity: v});

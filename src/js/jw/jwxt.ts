@@ -3,6 +3,7 @@ import {getEncryptedPassword} from "../rasPassword";
 import CookieManager from "@react-native-cookies/cookies";
 import {AxiosResponse} from "axios";
 import {userMgr} from "../mgr/user.ts";
+import {ToastAndroid} from "react-native";
 
 export const jwxt = {
     getPublicKey: (): Promise<{modulus: string; exponent: string}> => {
@@ -42,12 +43,12 @@ export const jwxt = {
         });
     },
 
-    refreshToken() {
+    refreshToken(fb: (res: any) => void) {
         userMgr.getAccount().then(({username, password}) => {
             userMgr.storeAccount(username, password);
             jwxt.getPublicKey().then(data => {
                 if (data.exponent) {
-                    jwxt.login(username, password, data.modulus, data.exponent);
+                    jwxt.login(username, password, data.modulus, data.exponent).then(res => fb(res));
                 }
             });
         });

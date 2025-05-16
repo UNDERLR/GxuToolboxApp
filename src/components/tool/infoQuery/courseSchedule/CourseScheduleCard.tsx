@@ -56,12 +56,8 @@ export function CourseScheduleCard() {
         infoQuery
             .getCourseSchedule(year, term)
             .then(data => {
-                ToastAndroid.show("刷新课表成功", ToastAndroid.SHORT);
                 setApiRes(data);
                 store.save({key: "courseRes", data});
-            })
-            .catch(res => {
-                ToastAndroid.show(`刷新课表失败，错误码：${res.status}`, ToastAndroid.SHORT);
             });
     }
 
