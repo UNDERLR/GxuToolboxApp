@@ -25,6 +25,8 @@ export function ToolboxStack() {
                         ((theme.mode === "dark" ? 0.5 : 0.6) * userTheme.bgOpacity) / 100,
                     ).rgbaString,
                 },
+                animation: "fade",
+                animationDuration: 100,
             }}>
             <Stack.Screen
                 name="toolboxIndex"

@@ -1,7 +1,7 @@
 import {ImageBackground, StatusBar, StyleSheet, useColorScheme, View} from "react-native";
 import {NavigationContainer} from "@react-navigation/native";
 import {RootStack} from "../route/RootStack.tsx";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useReducer, useState} from "react";
 import {useUserTheme} from "../js/theme.ts";
 import {CheckUpdate} from "../components/CheckUpdate.tsx";
 
@@ -27,14 +27,14 @@ export function Root() {
         },
     });
     return (
-        <View style={style.backgroundStyle}>
+        <View style={style.backgroundStyle} key={userTheme.bgUri}>
             <ImageBackground
                 style={style.bg}
                 source={{uri: bgUri}}
                 loadingIndicatorSource={{uri: bgUri}}
                 resizeMode="cover">
                 <StatusBar barStyle={colorScheme === "light" ? "dark-content" : "light-content"} />
-                <CheckUpdate/>
+                <CheckUpdate />
                 <NavigationContainer theme={navigationTheme[colorScheme ?? "light"]}>
                     <RootStack />
                 </NavigationContainer>

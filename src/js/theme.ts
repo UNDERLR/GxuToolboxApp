@@ -119,28 +119,26 @@ export function useUserTheme() {
             });
 
             // 批量更新状态
-            Promise.resolve().then(() => {
-                uiTheme.replaceTheme(newUiTheme);
-                setUserTheme(newUserTheme);
-                setNavigationTheme(old => ({
-                    light: {
-                        ...old.light,
-                        colors: {
-                            ...old.light.colors,
-                            ...newUiTheme.lightColors,
-                        },
+            uiTheme.replaceTheme(newUiTheme);
+            setUserTheme(newUserTheme);
+            setNavigationTheme(old => ({
+                light: {
+                    ...old.light,
+                    colors: {
+                        ...old.light.colors,
+                        ...newUiTheme.lightColors,
                     },
-                    dark: {
-                        ...old.dark,
-                        colors: {
-                            ...old.dark.colors,
-                            ...newUiTheme.darkColors,
-                        },
+                },
+                dark: {
+                    ...old.dark,
+                    colors: {
+                        ...old.dark.colors,
+                        ...newUiTheme.darkColors,
                     },
-                }));
-            });
+                },
+            }));
         },
-        [colorScheme, uiTheme],
+        [colorScheme, uiTheme, userTheme],
     );
 
     const updateUserTheme = (newUserTheme: typeof DefaultUserTheme) => {
