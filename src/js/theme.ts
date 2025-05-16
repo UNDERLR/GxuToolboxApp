@@ -18,6 +18,7 @@ export const theme = createTheme({
             },
             trackStyle: {
                 height: 5,
+                marginTop: undefined,
             },
             thumbStyle: {
                 height: 20,
@@ -73,6 +74,12 @@ export function useUserTheme() {
                 },
                 mode: "dropdown",
             } as PickerProps,
+
+            Slider: {
+                trackStyle: {
+                    marginTop: undefined,
+                },
+            },
         },
         uiTheme: theme,
         colors: {
@@ -119,24 +126,26 @@ export function useUserTheme() {
             });
 
             // 批量更新状态
-            uiTheme.replaceTheme(newUiTheme);
-            setUserTheme(newUserTheme);
-            setNavigationTheme(old => ({
-                light: {
-                    ...old.light,
-                    colors: {
-                        ...old.light.colors,
-                        ...newUiTheme.lightColors,
+            Promise.resolve().then(() => {
+                uiTheme.replaceTheme(newUiTheme);
+                setUserTheme(newUserTheme);
+                setNavigationTheme(old => ({
+                    light: {
+                        ...old.light,
+                        colors: {
+                            ...old.light.colors,
+                            ...newUiTheme.lightColors,
+                        },
                     },
-                },
-                dark: {
-                    ...old.dark,
-                    colors: {
-                        ...old.dark.colors,
-                        ...newUiTheme.darkColors,
+                    dark: {
+                        ...old.dark,
+                        colors: {
+                            ...old.dark.colors,
+                            ...newUiTheme.darkColors,
+                        },
                     },
-                },
-            }));
+                }));
+            });
         },
         [colorScheme, uiTheme, userTheme],
     );
@@ -152,7 +161,7 @@ export function useUserTheme() {
 
     useEffect(() => {
         store.load({key: "userTheme"}).then(userTheme => {
-            update({...DefaultUserTheme, ...userTheme});
+            update({...DefaultUserTheme, uiTheme: {...theme}, ...userTheme});
         });
     }, []);
     return {userTheme, updateUserTheme, ...uiTheme, navigationTheme, setNavigationTheme};

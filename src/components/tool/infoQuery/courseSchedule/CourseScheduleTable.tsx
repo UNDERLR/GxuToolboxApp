@@ -124,6 +124,7 @@ export function CourseScheduleTable(props: Props) {
                 {courseScheduleData.timeSpanList.map((time, index) => {
                     return (
                         <Flex
+                            inline
                             key={`timespan-${index}`}
                             style={courseScheduleStyle.timeSpanItem}
                             justifyContent="center">
@@ -195,15 +196,17 @@ export function CourseScheduleTable(props: Props) {
                                     onPress={e => props.onCoursePress?.(course)}
                                     style={[itemStyle.course, courseScheduleStyle.courseItem]}
                                     key={`day${index}-${course.kcmc}`}>
-                                    <Text style={itemStyle.text}>{course.kcmc}</Text>
-                                    <Text style={itemStyle.text}>
-                                        <Icon type="fontawesome" name="map-marker" />
-                                        {"\n" + course.cdmc.replace("-", "\n")}
-                                    </Text>
-                                    <Text style={itemStyle.text}>
-                                        <Icon name="user" />
-                                        {"\n" + course.xm}
-                                    </Text>
+                                    <Flex direction="column" gap={5}>
+                                        <Text style={itemStyle.text}>{course.kcmc}</Text>
+                                        <Text style={itemStyle.text}>
+                                            <Icon type="fontawesome" name="map-marker" />
+                                            {"\n" + course.cdmc.replace("-", "\n")}
+                                        </Text>
+                                        <Text style={itemStyle.text} ellipsizeMode="tail" numberOfLines={5}>
+                                            <Icon name="user" />
+                                            {"\n" + course.xm}
+                                        </Text>
+                                    </Flex>
                                 </Pressable>
                             );
                         })}

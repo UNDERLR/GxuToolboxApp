@@ -177,20 +177,22 @@ export function SettingIndex() {
     });
 
     function openUrl(url: string) {
-        Linking.canOpenURL(url)
-            .then(v => {
-                if (v) {
-                    Linking.openURL(url);
-                    return;
-                } else {
+        if (url) {
+            Linking.canOpenURL(url)
+                .then(v => {
+                    if (v) {
+                        Linking.openURL(url);
+                        return;
+                    } else {
+                        ToastAndroid.show("打开链接失败，已将链接复制至剪切板", ToastAndroid.LONG);
+                        Clipboard.setString(url);
+                    }
+                })
+                .catch(() => {
                     ToastAndroid.show("打开链接失败，已将链接复制至剪切板", ToastAndroid.LONG);
                     Clipboard.setString(url);
-                }
-            })
-            .catch(() => {
-                ToastAndroid.show("打开链接失败，已将链接复制至剪切板", ToastAndroid.LONG);
-                Clipboard.setString(url);
-            });
+                });
+        }
     }
 
     return (

@@ -1,9 +1,9 @@
 import {BottomSheet, Card, ListItem, Slider, Text} from "@rneui/themed";
 import {infoQuery} from "../../../../js/jw/infoQuery.ts";
-import {StyleSheet, ToastAndroid, View} from "react-native";
+import {Pressable, StyleSheet, View} from "react-native";
 import {store} from "../../../../js/store.ts";
 import {CourseScheduleQueryRes} from "../../../../type/api/classScheduleAPI.ts";
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {PracticalCourseList} from "./PracticalCourseList.tsx";
 import Flex from "../../../un-ui/Flex.tsx";
 import {Icon} from "../../../un-ui/Icon.tsx";
@@ -15,9 +15,12 @@ import {SchoolTerms, SchoolYears} from "../../../../type/global.ts";
 import {CourseDetail} from "./CourseDetail.tsx";
 import {useUserTheme} from "../../../../js/theme.ts";
 import {Color} from "../../../../js/color.ts";
+import {usePagerView} from "react-native-pager-view";
 
 export function CourseScheduleCard() {
     const {theme, userTheme} = useUserTheme();
+    const {AnimatedPagerView, ref, ...rest} = usePagerView({pagesAmount: 20});
+
     const [apiRes, setApiRes] = useState<CourseScheduleQueryRes>();
     const {courseScheduleData} = useCourseScheduleData();
     const startDay = moment(courseScheduleData.startDay);
@@ -29,7 +32,6 @@ export function CourseScheduleCard() {
             ? SchoolTerms[1][0]
             : SchoolYears[0][0],
     );
-    const [currentWeek, setCurrentWeek] = useState(realCurrentWeek);
     const [courseScheduleSettingVisible, setCourseScheduleSettingVisible] = useState(false);
     const [courseDetailVisible, setCourseDetailVisible] = useState(false);
     const [activeCourse, setActiveCourse] = useState<Course>({});
@@ -46,6 +48,10 @@ export function CourseScheduleCard() {
         cardTitle: {
             paddingHorizontal: 15,
         },
+        pagerView: {
+            width: "100%",
+            height: courseScheduleData.style.timeSpanHeight * 13 + courseScheduleData.style.weekdayHeight + 50,
+        },
         bottomSheetContainer: {
             backgroundColor: theme.colors.background,
             padding: "5%",
@@ -53,12 +59,10 @@ export function CourseScheduleCard() {
     });
 
     function getCourseSchedule() {
-        infoQuery
-            .getCourseSchedule(year, term)
-            .then(data => {
-                setApiRes(data);
-                store.save({key: "courseRes", data});
-            });
+        infoQuery.getCourseSchedule(year, term).then(data => {
+            setApiRes(data);
+            store.save({key: "courseRes", data});
+        });
     }
 
     function init() {
@@ -82,54 +86,63 @@ export function CourseScheduleCard() {
                 <Flex justifyContent="space-between">
                     <Text h4>课表</Text>
                     <Flex gap={15} justifyContent="flex-end">
-                        {currentWeek !== realCurrentWeek && (
-                            <Icon
-                                name="back"
-                                size={24}
+                        {rest.activePage + 1 !== realCurrentWeek && (
+                            <Pressable
+                                android_ripple={userTheme.ripple}
                                 onPress={() => {
-                                    setCurrentWeek(realCurrentWeek);
-                                }}
-                            />
+                                    rest.setPage(realCurrentWeek - 1);
+                                }}>
+                                <Icon name="back" size={24} />
+                            </Pressable>
                         )}
-                        <Icon
-                            name="left"
-                            size={24}
-                            onPress={() => {
-                                if (currentWeek > 1) {
-                                    setCurrentWeek(currentWeek - 1);
-                                }
-                            }}
-                        />
-                        <Icon
-                            name="right"
-                            size={24}
-                            onPress={() => {
-                                if (currentWeek < 20) {
-                                    setCurrentWeek(currentWeek + 1);
-                                }
-                            }}
-                        />
-                        <Icon name="setting" size={24} onPress={() => setCourseScheduleSettingVisible(true)} />
-                        <Icon name="sync" size={24} onPress={getCourseSchedule} />
+                        <Pressable
+                            android_ripple={userTheme.ripple}
+                            onPress={() => setCourseScheduleSettingVisible(true)}>
+                            <Icon name="setting" size={24} />
+                        </Pressable>
+                        <Pressable android_ripple={userTheme.ripple} onPress={getCourseSchedule}>
+                            <Icon name="sync" size={24} />
+                        </Pressable>
                     </Flex>
                 </Flex>
             </Card.Title>
             <Card.Divider />
-            <Flex>
-                {currentWeek === realCurrentWeek ? (
-                    <Text>（第{currentWeek}周）</Text>
-                ) : (
-                    <Text>
-                        （第{currentWeek}周，目前为第{realCurrentWeek}周）
-                    </Text>
+            <AnimatedPagerView
+                testID="pager-view"
+                ref={ref}
+                style={style.pagerView}
+                initialPage={realCurrentWeek - 1}
+                layoutDirection="ltr"
+                overdrag={rest.overdragEnabled}
+                scrollEnabled={rest.scrollEnabled}
+                pageMargin={10}
+                onPageSelected={rest.onPageSelected}
+                onPageScrollStateChanged={rest.onPageScrollStateChanged}
+                orientation="horizontal">
+                {useMemo(
+                    () =>
+                        rest.pages.map((_, index) => (
+                            <View testID="pager-view-content" key={index} collapsable={false}>
+                                <Flex inline>
+                                    {index + 1 === realCurrentWeek ? (
+                                        <Text>（第{index + 1}周）</Text>
+                                    ) : (
+                                        <Text>
+                                            （第{index + 1}周，目前为第{realCurrentWeek}周）
+                                        </Text>
+                                    )}
+                                    <Text>点击课程查看详情</Text>
+                                </Flex>
+                                <CourseScheduleTable
+                                    onCoursePress={showCourseDetail}
+                                    courseList={apiRes?.kbList ?? []}
+                                    currentWeek={index + 1}
+                                />
+                            </View>
+                        )),
+                    [rest.pages, realCurrentWeek, apiRes?.kbList],
                 )}
-                <Text>点击课程查看详情</Text>
-            </Flex>
-            <CourseScheduleTable
-                onCoursePress={showCourseDetail}
-                courseList={apiRes?.kbList ?? []}
-                currentWeek={currentWeek}
-            />
+            </AnimatedPagerView>
             {apiRes?.sjkList && (
                 <>
                     <Card.Divider />
@@ -143,14 +156,14 @@ export function CourseScheduleCard() {
                     <ListItem bottomDivider>
                         <Flex gap={10}>
                             <Text>课表周数</Text>
-                            <Text>{currentWeek}</Text>
+                            <Text>{rest.activePage + 1}</Text>
                             <Flex>
                                 <Slider
                                     step={1}
                                     minimumValue={1}
                                     maximumValue={20}
                                     allowTouchTrack
-                                    value={currentWeek}
+                                    value={rest.activePage + 1}
                                     thumbStyle={{
                                         height: 25,
                                         width: 25,
@@ -158,7 +171,7 @@ export function CourseScheduleCard() {
                                         borderColor: theme.colors.background,
                                         borderWidth: 5,
                                     }}
-                                    onValueChange={setCurrentWeek}
+                                    onValueChange={v => rest.setPage(v - 1)}
                                 />
                             </Flex>
                         </Flex>
@@ -170,7 +183,7 @@ export function CourseScheduleCard() {
                                 <Picker
                                     {...userTheme.components.Picker}
                                     selectedValue={year}
-                                    onValueChange={(v, index) => setYear(v)}>
+                                    onValueChange={v => setYear(v)}>
                                     {Array.from(SchoolYears).map(value => {
                                         return <Picker.Item value={+value[0]} label={value[1]} key={value[0]} />;
                                     })}
@@ -180,7 +193,7 @@ export function CourseScheduleCard() {
                                 <Picker
                                     {...userTheme.components.Picker}
                                     selectedValue={term}
-                                    onValueChange={(v, index) => setTerm(v)}>
+                                    onValueChange={v => setTerm(v)}>
                                     {Array.from(SchoolTerms).map(value => {
                                         return <Picker.Item value={value[0]} label={value[1]} key={value[0]} />;
                                     })}
