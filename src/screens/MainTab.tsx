@@ -10,23 +10,26 @@ import {Color} from "../js/color.ts";
 const Tab = createBottomTabNavigator();
 
 export function MainTab() {
-    const {theme} = useUserTheme();
+    const {theme, userTheme} = useUserTheme();
     return (
         <Tab.Navigator
             screenOptions={{
                 headerShadowVisible: false,
                 tabBarActiveTintColor: theme.colors.primary,
                 headerStyle: {
-                    backgroundColor: new Color(theme.colors.background).setAlpha(theme.mode === "dark" ? 0.5 : 0.4)
-                        .rgbaString,
+                    backgroundColor: new Color(theme.colors.background).setAlpha(
+                        ((theme.mode === "dark" ? 0.5 : 0.4) * userTheme.bgOpacity) / 100,
+                    ).rgbaString,
                 },
                 sceneStyle: {
-                    backgroundColor: new Color(theme.colors.background).setAlpha(theme.mode === "dark" ? 0.8 : 0.4)
-                        .rgbaString,
+                    backgroundColor: new Color(theme.colors.background).setAlpha(
+                        ((theme.mode === "dark" ? 0.8 : 0.4) * userTheme.bgOpacity) / 100,
+                    ).rgbaString,
                 },
                 tabBarStyle: {
-                    backgroundColor: new Color(theme.colors.background).setAlpha(theme.mode === "dark" ? 0.9 : 0.75)
-                        .rgbaString,
+                    backgroundColor: new Color(theme.colors.background).setAlpha(
+                        ((theme.mode === "dark" ? 0.9 : 0.75) * userTheme.bgOpacity) / 100,
+                    ).rgbaString,
                 },
             }}>
             <Tab.Screen

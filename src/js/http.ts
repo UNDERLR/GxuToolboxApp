@@ -1,4 +1,7 @@
 import axios from "axios";
+import {userMgr} from "./mgr/user.ts";
+import {ToastAndroid} from "react-native";
+import Clipboard from "@react-native-clipboard/clipboard";
 
 // 默认导出实例
 export const http = axios.create({
@@ -10,11 +13,30 @@ export const http = axios.create({
 });
 
 http.interceptors.request.use(config => {
-    if (config.headers.getContentType(/urlencoded/).length > 0) {
-        config.data = objectToFormUrlEncoded(config.data);
-    }
+    userMgr
+        .getAccount()
+        .then(data => {
+            if (!data.username || !data.password) {
+                ToastAndroid.show("未正确设置账号，请前往设置设置账号", ToastAndroid.SHORT);
+            }
+            if (config.headers.getContentType(/urlencoded/).length > 0) {
+                config.data = objectToFormUrlEncoded(config.data);
+            }
+        })
+        .catch(() => {
+            ToastAndroid.show("未正确设置账号，请前往设置设置账号", ToastAndroid.SHORT);
+        });
     return config;
 });
+
+http.interceptors.response.use(
+    response => {
+        return response;
+    },
+    error => {
+        return Promise.reject(error);
+    },
+);
 
 export function urlWithParams(url: string, params: Record<string, any> = {}): string {
     Object.keys(params).forEach(key => {

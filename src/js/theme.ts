@@ -1,6 +1,6 @@
 import {createTheme, useTheme} from "@rneui/themed";
 import {DarkTheme, DefaultTheme} from "@react-navigation/native";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {PressableAndroidRippleConfig, useColorScheme} from "react-native";
 import {PickerProps} from "@react-native-picker/picker";
 import {store} from "./store.ts";
@@ -18,6 +18,12 @@ export const theme = createTheme({
             },
             trackStyle: {
                 height: 5,
+                marginTop: undefined,
+            },
+            thumbStyle: {
+                height: 20,
+                width: 20,
+                backgroundColor: "gray",
             },
         },
         Text: {
@@ -31,6 +37,32 @@ export const theme = createTheme({
 export function useUserTheme() {
     const uiTheme = useTheme();
     const colorScheme = useColorScheme();
+
+    // 添加对 colorScheme 的监听
+    useEffect(() => {
+        store.load({key: "userTheme"}).then(savedTheme => {
+            if (savedTheme) {
+                const newUiTheme = createTheme({
+                    ...theme,
+                    ...savedTheme.uiTheme,
+                    mode: colorScheme,
+                    lightColors: {
+                        ...theme.lightColors,
+                        primary: savedTheme.colors.primary,
+                    },
+                    darkColors: {
+                        ...theme.darkColors,
+                        primary: savedTheme.colors.primary,
+                    },
+                });
+                update({
+                    ...savedTheme,
+                    uiTheme: newUiTheme,
+                });
+            }
+        });
+    }, [colorScheme]);
+
     const DefaultUserTheme = {
         ripple: {
             color: uiTheme.theme.colors.grey4,
@@ -42,12 +74,19 @@ export function useUserTheme() {
                 },
                 mode: "dropdown",
             } as PickerProps,
+
+            Slider: {
+                trackStyle: {
+                    marginTop: undefined,
+                },
+            },
         },
         uiTheme: theme,
         colors: {
             primary: uiTheme.theme.colors.primary,
         },
         bgUri: "",
+        bgOpacity: 100,
     };
     const DefaultNavigationTheme = {
         light: {
@@ -72,49 +111,57 @@ export function useUserTheme() {
 
     const [navigationTheme, setNavigationTheme] = useState(DefaultNavigationTheme);
     const [userTheme, setUserTheme] = useState(DefaultUserTheme);
+    const update = useCallback(
+        (newUserTheme: typeof DefaultUserTheme) => {
+            const newUiTheme = createTheme({
+                ...theme,
+                ...newUserTheme.uiTheme,
+                mode: colorScheme,
+                lightColors: {
+                    primary: newUserTheme.colors.primary,
+                },
+                darkColors: {
+                    primary: newUserTheme.colors.primary,
+                },
+            });
 
-    function update(newUserTheme: typeof DefaultUserTheme) {
-        const newUiTheme = createTheme({
-            ...theme,
-            ...newUserTheme.uiTheme,
-            mode: colorScheme,
-            lightColors: {
-                primary: newUserTheme.colors.primary,
-            },
-            darkColors: {
-                primary: newUserTheme.colors.primary,
-            },
-        });
-        uiTheme.replaceTheme(newUiTheme);
-        setUserTheme(newUserTheme);
-        setNavigationTheme(old => {
-            return {
-                light: {
-                    ...old.light,
-                    colors: {
-                        ...old.light.colors,
-                        ...newUiTheme.lightColors,
+            // 批量更新状态
+            Promise.resolve().then(() => {
+                uiTheme.replaceTheme(newUiTheme);
+                setUserTheme(newUserTheme);
+                setNavigationTheme(old => ({
+                    light: {
+                        ...old.light,
+                        colors: {
+                            ...old.light.colors,
+                            ...newUiTheme.lightColors,
+                        },
                     },
-                },
-                dark: {
-                    ...old.dark,
-                    colors: {
-                        ...old.dark.colors,
-                        ...newUiTheme.darkColors,
+                    dark: {
+                        ...old.dark,
+                        colors: {
+                            ...old.dark.colors,
+                            ...newUiTheme.darkColors,
+                        },
                     },
-                },
-            };
-        });
-    }
+                }));
+            });
+        },
+        [colorScheme, uiTheme, userTheme],
+    );
 
     const updateUserTheme = (newUserTheme: typeof DefaultUserTheme) => {
-        store.save({key: "userTheme", data: newUserTheme});
+        // 先更新UI
         update(newUserTheme);
+        // 后台保存
+        store.save({key: "userTheme", data: newUserTheme}).catch(error => {
+            console.error("保存主题失败:", error);
+        });
     };
 
     useEffect(() => {
         store.load({key: "userTheme"}).then(userTheme => {
-            update(userTheme);
+            update({...DefaultUserTheme, uiTheme: {...theme}, ...userTheme});
         });
     }, []);
     return {userTheme, updateUserTheme, ...uiTheme, navigationTheme, setNavigationTheme};

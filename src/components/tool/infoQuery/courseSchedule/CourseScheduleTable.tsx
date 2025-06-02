@@ -110,11 +110,12 @@ export function CourseScheduleTable(props: Props) {
 
     return (
         <View style={courseScheduleStyle.courseSchedule}>
+            {/*时间段高亮*/}
             {typeof currentTimeSpan === "number" && (
                 <View style={[timeSpanHighLightTop, courseScheduleStyle.timeSpanHighLight]} />
             )}
             {/*时间表渲染*/}
-            <View style={courseScheduleStyle.weekdayContainer}>
+            <View style={[courseScheduleStyle.timeSpanContainer,courseScheduleStyle.weekdayContainer]}>
                 <View style={courseScheduleStyle.weekdayItem}>
                     <Text style={courseScheduleStyle.weekdayText}>
                         {moment(courseScheduleData.startDay).add(currentWeek, "w").month() + 1 + "月"}
@@ -123,6 +124,7 @@ export function CourseScheduleTable(props: Props) {
                 {courseScheduleData.timeSpanList.map((time, index) => {
                     return (
                         <Flex
+                            inline
                             key={`timespan-${index}`}
                             style={courseScheduleStyle.timeSpanItem}
                             justifyContent="center">
@@ -194,15 +196,17 @@ export function CourseScheduleTable(props: Props) {
                                     onPress={e => props.onCoursePress?.(course)}
                                     style={[itemStyle.course, courseScheduleStyle.courseItem]}
                                     key={`day${index}-${course.kcmc}`}>
-                                    <Text style={itemStyle.text}>{course.kcmc}</Text>
-                                    <Text style={itemStyle.text}>
-                                        <Icon type="fontawesome" name="map-marker" />
-                                        {"\n" + course.cdmc.replace("-", "\n")}
-                                    </Text>
-                                    <Text style={itemStyle.text}>
-                                        <Icon name="user" />
-                                        {"\n" + course.xm}
-                                    </Text>
+                                    <Flex direction="column" gap={5}>
+                                        <Text style={itemStyle.text}>{course.kcmc}</Text>
+                                        <Text style={itemStyle.text}>
+                                            <Icon type="fontawesome" name="map-marker" />
+                                            {"\n" + course.cdmc.replace("-", "\n")}
+                                        </Text>
+                                        <Text style={itemStyle.text} ellipsizeMode="tail" numberOfLines={5}>
+                                            <Icon name="user" />
+                                            {"\n" + course.xm}
+                                        </Text>
+                                    </Flex>
                                 </Pressable>
                             );
                         })}
