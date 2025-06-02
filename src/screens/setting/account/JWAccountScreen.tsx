@@ -5,19 +5,20 @@ import {jwxt} from "../../../js/jw/jwxt.ts";
 import {userMgr} from "../../../js/mgr/user.ts";
 import {Icon} from "../../../components/un-ui/Icon.tsx";
 
-function getToken(username: string, password: string) {
+async function getToken(username: string, password: string) {
     userMgr.storeAccount(username, password);
-    jwxt.getPublicKey().then(data => {
-        if (data.exponent) {
-            jwxt.login(username, password, data.modulus, data.exponent).then(res => {
-                if (res.status === 200) {
-                    ToastAndroid.show("获取成功", ToastAndroid.SHORT);
-                } else {
-                    ToastAndroid.show(`获取失败，错误码：${res.status}`, ToastAndroid.SHORT);
-                }
-            });
+    ToastAndroid.show("开始尝试获取Token", ToastAndroid.SHORT);
+    const data = await jwxt.getPublicKey();
+    if (data.exponent) {
+        // 尝试登录
+        await jwxt.login(username, password, data.modulus, data.exponent);
+        // 检验Token
+        if (await jwxt.testToken(false)) {
+            ToastAndroid.show("获取成功", ToastAndroid.SHORT);
+        } else {
+            ToastAndroid.show("获取失败，请检查帐密是否正确", ToastAndroid.SHORT);
         }
-    });
+    }
 }
 
 export function JWAccountScreen() {

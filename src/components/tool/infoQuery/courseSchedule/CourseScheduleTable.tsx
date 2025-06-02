@@ -195,7 +195,7 @@ export function CourseScheduleTable(props: Props) {
                                 <Pressable
                                     onPress={e => props.onCoursePress?.(course)}
                                     style={[itemStyle.course, courseScheduleStyle.courseItem]}
-                                    key={`day${index}-${course.kcmc}`}>
+                                    key={`day${index}-${course.kcmc}-${course.jc}`}>
                                     <Flex direction="column" gap={5}>
                                         <Text style={itemStyle.text}>{course.kcmc}</Text>
                                         <Text style={itemStyle.text}>
