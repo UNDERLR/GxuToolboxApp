@@ -3,20 +3,20 @@ import {getEncryptedPassword} from "../rasPassword";
 import CookieManager from "@react-native-cookies/cookies";
 import {AxiosResponse} from "axios";
 import {userMgr} from "../mgr/user.ts";
+import {SchoolTerms} from "../../type/global.ts";
 import {ToastAndroid} from "react-native";
 
 export const jwxt = {
     getPublicKey: (): Promise<{modulus: string; exponent: string}> => {
-        CookieManager.clearAll();
-        return new Promise(resolve => {
-            http.get(
+        return new Promise(async resolve => {
+            await CookieManager.clearAll();
+            const res = await http.get(
                 urlWithParams("/xtgl/login_getPublicKey.html", {
                     time: Date.now(),
                 }),
-            ).then(res => {
-                console.log(res);
-                resolve(res.data);
-            });
+            );
+            console.log(res);
+            resolve(res.data);
         });
     },
 
@@ -43,14 +43,41 @@ export const jwxt = {
         });
     },
 
-    refreshToken(fb: (res: any) => void) {
-        userMgr.getAccount().then(({username, password}) => {
-            userMgr.storeAccount(username, password);
-            jwxt.getPublicKey().then(data => {
-                if (data.exponent) {
-                    jwxt.login(username, password, data.modulus, data.exponent).then(res => fb(res));
-                }
+    refreshToken: () => {
+        return new Promise(resolve => {
+            userMgr.getAccount().then(({username, password}) => {
+                userMgr.storeAccount(username, password);
+                jwxt.getPublicKey().then(data => {
+                    if (data.exponent) {
+                        jwxt.login(username, password, data.modulus, data.exponent).then(res => resolve(res));
+                    }
+                });
             });
+        });
+    },
+
+    testToken: (autoRefresh = true) => {
+        return new Promise(async resolve => {
+            const res = await http.post("/kbcx/xskbcx_cxXsgrkb.html", {
+                xnm: "2021",
+                xqm: SchoolTerms[0][0],
+            });
+            if (typeof res.data === "object") {
+                resolve(true);
+            } else {
+                if (autoRefresh) {
+                    // 自动刷新逻辑
+                    await jwxt.refreshToken();
+                    if (await jwxt.testToken(false)) {
+                        resolve(true);
+                    } else {
+                        ToastAndroid.show("自动刷新Token失败，请检查账号设置", ToastAndroid.SHORT);
+                        resolve(false);
+                    }
+                } else {
+                    resolve(false);
+                }
+            }
         });
     },
 };

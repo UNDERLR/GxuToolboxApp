@@ -1,6 +1,6 @@
 import {BottomSheet, Card, ListItem, Slider, Text} from "@rneui/themed";
 import {infoQuery} from "../../../../js/jw/infoQuery.ts";
-import {Pressable, StyleSheet, View} from "react-native";
+import {Pressable, StyleSheet, ToastAndroid, View} from "react-native";
 import {store} from "../../../../js/store.ts";
 import {CourseScheduleQueryRes} from "../../../../type/api/classScheduleAPI.ts";
 import {useEffect, useMemo, useState} from "react";
@@ -59,7 +59,9 @@ export function CourseScheduleCard() {
     });
 
     function getCourseSchedule() {
+        ToastAndroid.show("刷新课表中...", ToastAndroid.SHORT);
         infoQuery.getCourseSchedule(year, term).then(data => {
+            ToastAndroid.show("获取课表成功", ToastAndroid.SHORT);
             setApiRes(data);
             store.save({key: "courseRes", data});
         });
@@ -118,6 +120,8 @@ export function CourseScheduleCard() {
                 pageMargin={10}
                 onPageSelected={rest.onPageSelected}
                 onPageScrollStateChanged={rest.onPageScrollStateChanged}
+                offscreenPageLimit={2}
+                overScrollMode="never"
                 orientation="horizontal">
                 {useMemo(
                     () =>

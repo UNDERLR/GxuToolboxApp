@@ -19,9 +19,6 @@ http.interceptors.request.use(config => {
             if (!data.username || !data.password) {
                 ToastAndroid.show("未正确设置账号，请前往设置设置账号", ToastAndroid.SHORT);
             }
-            if (config.headers.getContentType(/urlencoded/).length > 0) {
-                config.data = objectToFormUrlEncoded(config.data);
-            }
         })
         .catch(() => {
             ToastAndroid.show("未正确设置账号，请前往设置设置账号", ToastAndroid.SHORT);

@@ -80,13 +80,13 @@ export function ExamInfo() {
                 item.jxbmc,
                 item.ksmc,
             ]);
+            ToastAndroid.show("获取考试信息成功", ToastAndroid.SHORT);
             setTableData({
                 ...tableData,
                 body: tableBody,
             });
             setApiRes(res);
             store.save({key: "examInfo", data: res});
-            ToastAndroid.show("获取考试信息成功", ToastAndroid.SHORT);
         });
     }
 

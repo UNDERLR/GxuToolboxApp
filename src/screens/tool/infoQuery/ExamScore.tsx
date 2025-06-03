@@ -89,13 +89,13 @@ export function ExamScore() {
                 item.jxbmc,
                 item.jsxm,
             ]);
+            ToastAndroid.show("获取考试信息成功", ToastAndroid.SHORT);
             setTableData({
                 ...tableData,
                 body: tableBody,
             });
             setApiRes(res);
             store.save({key: "examScore", data: res});
-            ToastAndroid.show("获取考试信息成功", ToastAndroid.SHORT);
         });
     }
 
