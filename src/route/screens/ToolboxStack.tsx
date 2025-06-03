@@ -16,12 +16,12 @@ export function ToolboxStack() {
             screenOptions={{
                 headerShadowVisible: false,
                 headerStyle: {
-                    backgroundColor: new Color(theme.colors.background).setAlpha(
+                    backgroundColor: Color(theme.colors.background).setAlpha(
                         ((theme.mode === "dark" ? 0.7 : 0.9) * userTheme.bgOpacity) / 100,
                     ).rgbaString,
                 },
                 contentStyle: {
-                    backgroundColor: new Color(theme.colors.background).setAlpha(
+                    backgroundColor: Color(theme.colors.background).setAlpha(
                         ((theme.mode === "dark" ? 0.5 : 0.6) * userTheme.bgOpacity) / 100,
                     ).rgbaString,
                 },
@@ -34,7 +34,7 @@ export function ToolboxStack() {
                 options={{
                     title: "工具箱",
                     headerStyle: {
-                        backgroundColor: new Color(theme.colors.background).setAlpha(
+                        backgroundColor: Color(theme.colors.background).setAlpha(
                             ((theme.mode === "dark" ? 0.5 : 0.4) * userTheme.bgOpacity) / 100,
                         ).rgbaString,
                     },

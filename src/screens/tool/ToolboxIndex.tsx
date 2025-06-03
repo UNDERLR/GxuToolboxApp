@@ -61,7 +61,7 @@ export function ToolboxIndex() {
 
     const data = {
         style: {
-            cardBg: new Color(theme.colors.background).setAlpha(
+            cardBg: Color(theme.colors.background).setAlpha(
                 0.1 + ((theme.mode === "light" ? 0.7 : 0.4) * userTheme.bgOpacity) / 100,
             ).rgbaString,
             settingItemRipple: {

@@ -1,3 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
+// @ts-nocheck
+/**
+ * HTML标准色
+ */
 export enum BaseColor {
     "black" = "#000000",
     "silver" = "#c0c0c0",
@@ -147,129 +153,229 @@ export enum BaseColor {
     "yellowgreen" = "#9acd32",
 }
 
-export class Color {
-    public hex: string;
-    public rgba: number[];
+// 定义颜色接口
+export interface IColor {
+    rgba: number[];
 
-    constructor(...args: any) {
-        if (args.length === 1 && typeof args[0] === "string" && BaseColor[args[0]]) {
-            // 转换基础色名称
-            args[0] = BaseColor[args[0]];
-        }
-        if (args.length === 1 && typeof args[0] === "string") {
+    setAlpha(alpha: number): IColor;
+
+    hexString: (alpha?: boolean) => string;
+    readonly rgbString: string;
+    readonly rgbaString: string;
+    readonly rgbaArray: number[];
+    readonly hslaArray: number[];
+    readonly hslaString: string;
+    readonly luminance: number;
+}
+
+type legalColorType = [string] | [number, number, number] | [number, number, number, number];
+
+/**
+ * 颜色类，进行颜色相关运算
+ * @param args 传入的参数，支持以下几种类型：<br/>
+ *   Hex(str): #RRGGBB, #RRGGBBAA <br/>
+ *   rgb(number): 直接传RGBA，3-4个number，支持字符串
+ */
+export function Color(...args: legalColorType): IColor {
+    /**
+     * hex字符串，初始化生成
+     */
+    let hex: string;
+    /**
+     * 颜色rgba对应的值，rgb：0-255，a：0-100
+     */
+    let rgba: number[];
+
+    if (args.length === 1 && typeof args[0] === "string" && BaseColor[args[0]]) {
+        // 转换基础色名称
+        args[0] = BaseColor[args[0]];
+    }
+
+    if (args.length === 1 && typeof args[0] === "string") {
+        if (args[0].startsWith("rgb")) {
+            // Parse rgb/rgba string
+            const values = args[0].match(/\d+(\.\d+)?/g);
+            if (!values) throw new Error("Invalid rgb/rgba format");
+
+            if (values.length === 3) {
+                // rgb format
+                rgba = [...values.map(v => parseInt(v)), 1];
+                hex =
+                    "#" +
+                    rgba
+                        .slice(0, 3)
+                        .map(v => Math.round(v).toString(16).padStart(2, "0"))
+                        .join("");
+            } else if (values.length === 4) {
+                // rgba format
+                rgba = values.map((v, i) => (i === 3 ? parseFloat(v) : parseInt(v)));
+                hex =
+                    "#" +
+                    rgba
+                        .slice(0, 3)
+                        .map(v => Math.round(v).toString(16).padStart(2, "0"))
+                        .join("");
+            } else {
+                throw new Error("Invalid rgb/rgba format");
+            }
+        } else {
             // 转换 hex 颜色
-            if (!args[0].startsWith("#")) args[0] = "#" + args[0];
-            this.hex = args[0];
-            if (this.hex.length === 7) {
+            const hexColor = args[0].startsWith("#") ? args[0] : "#" + args[0];
+            hex = hexColor;
+
+            if (hexColor.length === 7) {
                 // #RRGGBB
-                const r = parseInt(this.hex.slice(1, 3), 16);
-                const g = parseInt(this.hex.slice(3, 5), 16);
-                const b = parseInt(this.hex.slice(5, 7), 16);
-                this.rgba = [r, g, b, 1];
-            }
-            if (this.hex.length === 9) {
+                const r = parseInt(hexColor.slice(1, 3), 16);
+                const g = parseInt(hexColor.slice(3, 5), 16);
+                const b = parseInt(hexColor.slice(5, 7), 16);
+                rgba = [r, g, b, 1];
+            } else if (hexColor.length === 9) {
                 // #RRGGBBAA
-                this.rgba[3] = parseInt(this.hex.slice(7, 9), 16) / 255;
+                const r = parseInt(hexColor.slice(1, 3), 16);
+                const g = parseInt(hexColor.slice(3, 5), 16);
+                const b = parseInt(hexColor.slice(5, 7), 16);
+                const a = parseInt(hexColor.slice(7, 9), 16) / 255;
+                rgba = [r, g, b, a];
             }
-        } else if (
-            args.length === 3 &&
-            typeof args[0] === "number" &&
-            typeof args[1] === "number" &&
-            typeof args[2] === "number"
-        ) {
-            // 转换 RGB 颜色
-            this.hex = "#" + args.map(v => Math.round(v).toString(16).padStart(2, "0")).join("");
-            this.rgba = [args[0], args[1], args[2], 1];
-        } else if (
-            args.length === 4 &&
-            typeof args[0] === "number" &&
-            typeof args[1] === "number" &&
-            typeof args[2] === "number" &&
-            typeof args[3] === "number"
-        ) {
-            // 转换 RGBA 颜色
-            this.hex = "#" + args.map(v => Math.round(v).toString(16).padStart(2, "0")).join("");
-            this.hex = this.hex.slice(0, -2);
-            this.rgba = [args[0], args[1], args[2], args[3]];
-        } else {
-            throw new Error("Invalid arguments");
         }
+    } else if (
+        args.length === 3 &&
+        typeof args[0] === "number" &&
+        typeof args[1] === "number" &&
+        typeof args[2] === "number"
+    ) {
+        // 转换 RGB 颜色
+        rgba = [...args, 1];
+        hex = "#" + args.map(v => Math.round(v).toString(16).padStart(2, "0")).join("");
+    } else if (
+        args.length === 4 &&
+        typeof args[0] === "number" &&
+        typeof args[1] === "number" &&
+        typeof args[2] === "number" &&
+        typeof args[3] === "number"
+    ) {
+        // 转换 RGBA 颜色
+        rgba = [...args];
+        hex =
+            "#" +
+            args
+                .slice(0, 3)
+                .map(v => Math.round(v).toString(16).padStart(2, "0"))
+                .join("");
+    } else {
+        throw new Error("Invalid arguments");
     }
 
-    public setAlpha(alpha: number): Color {
-        this.rgba[3] = alpha;
-        return this;
-    }
+    return {
+        get rgba() {
+            return rgba;
+        },
 
-    public hexString(alpha = false): string {
-        if (alpha) {
-            return (
-                this.hex +
-                Math.round(this.rgba[3] * 255)
-                    .toString(16)
-                    .padStart(2, "0")
-            );
-        } else return this.hex;
-    }
+        /**
+         * 设置透明度，0-1
+         * @param alpha 0-1
+         */
+        setAlpha(alpha: number): IColor {
+            rgba[3] = alpha;
+            return this;
+        },
 
-    public get rgbString(): string {
-        return `rgb(${this.rgba.slice(0, 3).join(", ")})`;
-    }
-
-    public get rgbaArray(): number[] {
-        return this.rgba;
-    }
-
-    public get rgbaString(): string {
-        return `rgba(${this.rgba.join(", ")})`;
-    }
-
-    public get hslaArray(): number[] {
-        const [r, g, b, a] = this.rgba;
-        const max = Math.max(r, g, b);
-        const min = Math.min(r, g, b);
-        const l = (max + min) / 2;
-        let h = 0;
-        let s = 0;
-        if (max === min) {
-            h = s = 0; // achromatic
-        } else {
-            const d = max - min;
-            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-            switch (max) {
-                case r:
-                    h = (g - b) / d + (g < b ? 6 : 0);
-                    break;
-                case g:
-                    h = (b - r) / d + 2;
-                    break;
-                case b:
-                    h = (r - g) / d + 4;
-                    break;
+        /**
+         * 获取hex字符串
+         * @param alpha 是否带有透明度
+         */
+        hexString(alpha = false): string {
+            if (alpha) {
+                return (
+                    hex +
+                    Math.round(rgba[3] * 255)
+                        .toString(16)
+                        .padStart(2, "0")
+                );
             }
-            h /= 6;
-        }
-        return [h, s, l, a];
-    }
+            return hex;
+        },
 
-    public get hslaString(): string {
-        const [h, s, l, a] = this.hslaArray;
-        return `hsla(${h * 360}, ${s * 100}%, ${l * 100}%, ${a})`;
-    }
+        /**
+         * rgb字符串
+         */
+        get rgbString(): string {
+            return `rgb(${rgba.slice(0, 3).join(", ")})`;
+        },
 
-    public get luminance(): number {
-        return this.hslaArray[2];
-    }
+        /**
+         * rgba字符串
+         */
+        get rgbaString(): string {
+            return `rgba(${rgba.join(", ")})`;
+        },
+
+        /**
+         * rgba数组
+         */
+        get rgbaArray(): number[] {
+            return [...rgba];
+        },
+
+        /**
+         * hsla数组
+         */
+        get hslaArray(): number[] {
+            const [r, g, b, a] = rgba;
+            const max = Math.max(r, g, b);
+            const min = Math.min(r, g, b);
+            const l = (max + min) / 2;
+            let h = 0;
+            let s = 0;
+
+            if (max !== min) {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch (max) {
+                    case r:
+                        h = (g - b) / d + (g < b ? 6 : 0);
+                        break;
+                    case g:
+                        h = (b - r) / d + 2;
+                        break;
+                    case b:
+                        h = (r - g) / d + 4;
+                        break;
+                }
+                h /= 6;
+            }
+            return [h, s, l, a];
+        },
+
+        /**
+         * hsla字符串
+         */
+        get hslaString(): string {
+            const [h, s, l, a] = this.hslaArray;
+            return `hsla(${h * 360}, ${s * 100}%, ${l * 100}%, ${a})`;
+        },
+
+        /**
+         * 获取hsl中的l（明度），用于判断深浅色等
+         */
+        get luminance(): number {
+            return this.hslaArray[2];
+        },
+    };
 }
 
-function mix(color1: Color, color2: Color, ratio: number) {
-    const r = (1 - ratio) * color1.rgba[0] + ratio * color2.rgba[0];
-    const g = (1 - ratio) * color1.rgba[1] + ratio * color2.rgba[1];
-    const b = (1 - ratio) * color1.rgba[2] + ratio * color2.rgba[2];
-    const a = (1 - ratio) * color1.rgba[3] + ratio * color2.rgba[3];
-    return new Color(r, g, b, a);
+export namespace Color {
+    /**
+     * 混合两种颜色
+     * @param color1 第一个颜色
+     * @param color2 第二个颜色
+     * @param ratio 比例，0-1，越小越接近第一个颜色，反之接近第二颜色
+     */
+    export function mix(color1: IColor, color2: IColor, ratio: number): IColor {
+        const r = (1 - ratio) * color1.rgba[0] + ratio * color2.rgba[0];
+        const g = (1 - ratio) * color1.rgba[1] + ratio * color2.rgba[1];
+        const b = (1 - ratio) * color1.rgba[2] + ratio * color2.rgba[2];
+        const a = (1 - ratio) * color1.rgba[3] + ratio * color2.rgba[3];
+        return Color(r, g, b, a);
+    }
 }
-
-export const color = {
-    mix,
-};

@@ -68,9 +68,9 @@ export function PracticalCourseList(props: Props) {
             {courseList.map((course: PracticalCourseItem) => {
                 const itemStyle = StyleSheet.create({
                     course: {
-                        backgroundColor: new Color(course.backgroundColor).setAlpha(theme.mode === "light" ? 0.3 : 0.1)
+                        backgroundColor: Color(course.backgroundColor).setAlpha(theme.mode === "light" ? 0.3 : 0.1)
                             .rgbaString,
-                        borderColor: color.mix(new Color(course.backgroundColor), new Color(theme.colors.grey4), 0.8)
+                        borderColor: Color.mix(Color(course.backgroundColor), Color(theme.colors.grey4), 0.8)
                             .rgbaString,
                     },
                 });

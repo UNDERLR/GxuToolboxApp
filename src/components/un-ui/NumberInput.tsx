@@ -30,7 +30,7 @@ export function NumberInput(props: Props) {
             borderRightColor: theme.colors.grey4,
             backgroundColor:
                             props.value <= (props.min ?? Number.MIN_SAFE_INTEGER)
-                                ? new Color(theme.colors.grey5).setAlpha(0.5).rgbaString
+                                ? Color(theme.colors.grey5).setAlpha(0.5).rgbaString
                                 : undefined,
         },
         input: {
@@ -43,7 +43,7 @@ export function NumberInput(props: Props) {
             borderLeftColor: theme.colors.grey4,
             backgroundColor:
                             props.value >= (props.max ?? Number.MAX_SAFE_INTEGER)
-                                ? new Color(theme.colors.grey5).setAlpha(0.5).rgbaString
+                                ? Color(theme.colors.grey5).setAlpha(0.5).rgbaString
                                 : undefined,
         },
     });
@@ -70,7 +70,7 @@ export function NumberInput(props: Props) {
                         size={props.size / 2 ?? 15}
                         color={
                             props.value <= (props.min ?? Number.MIN_SAFE_INTEGER)
-                                ? new Color(theme.colors.black).setAlpha(0.5).rgbaString
+                                ? Color(theme.colors.black).setAlpha(0.5).rgbaString
                                 : undefined
                         }
                     />
@@ -89,7 +89,7 @@ export function NumberInput(props: Props) {
                         size={props.size / 2 ?? 15}
                         color={
                             props.value >= (props.max ?? Number.MAX_SAFE_INTEGER)
-                                ? new Color(theme.colors.black).setAlpha(0.5).rgbaString
+                                ? Color(theme.colors.black).setAlpha(0.5).rgbaString
                                 : undefined
                         }
                     />

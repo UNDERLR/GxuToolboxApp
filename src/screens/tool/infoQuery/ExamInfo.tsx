@@ -47,13 +47,13 @@ export function ExamInfo() {
         },
         tableBorder: {
             borderWidth: 2,
-            borderColor: color.mix(new Color(theme.colors.primary), new Color(theme.colors.grey4), 0.4).rgbaString,
+            borderColor: Color.mix(Color(theme.colors.primary), Color(theme.colors.grey4), 0.4).rgbaString,
         },
         tableHeader: {
             backgroundColor: color
                 .mix(
-                    new Color(theme.colors.primary),
-                    new Color(theme.colors.background),
+                    Color(theme.colors.primary),
+                    Color(theme.colors.background),
                     theme.mode === "dark" ? 0.7 : 0.2,
                 )
                 .setAlpha(theme.mode === "dark" ? 0.3 : 0.6).rgbaString,

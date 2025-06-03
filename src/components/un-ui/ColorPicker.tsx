@@ -16,12 +16,12 @@ interface Props {
 export function ColorPicker(props: Partial<Props>) {
     const {theme, userTheme} = useUserTheme();
     const [dialogVisible, setDialogVisible] = useState(false);
-    const defaultColor = new Color(props.color ?? BaseColor.black);
+    const defaultColor = Color(props.color ?? BaseColor.black);
     const [r, setR] = useState(defaultColor.rgba[0]);
     const [g, setG] = useState(defaultColor.rgba[1]);
     const [b, setB] = useState(defaultColor.rgba[2]);
     const [a, setA] = useState(defaultColor.rgba[3]);
-    const value = new Color(r, g, b, a);
+    const value = Color(r, g, b, a);
     const style = StyleSheet.create({
         labelContainer: {
             borderColor: theme.colors.grey4,

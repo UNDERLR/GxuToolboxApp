@@ -7,7 +7,7 @@ import {
     ToastAndroid,
     View,
 } from "react-native";
-import {Button, Slider, Text} from "@rneui/themed";
+import {Button, Text} from "@rneui/themed";
 import {Color} from "../../js/color.ts";
 import {useNavigation} from "@react-navigation/native";
 import {Icon} from "../../components/un-ui/Icon.tsx";
@@ -18,6 +18,7 @@ import moment from "moment/moment";
 import {ColorPicker} from "../../components/un-ui/ColorPicker.tsx";
 import {useUserTheme} from "../../js/theme.ts";
 import {launchImageLibrary} from "react-native-image-picker";
+import {UnSlider} from "../../components/un-ui/UnSlider.tsx";
 
 interface settingSection {
     title: string;
@@ -138,7 +139,7 @@ export function SettingIndex() {
 
     const data = {
         style: {
-            cardBg: new Color(theme.colors.background).setAlpha(
+            cardBg: Color(theme.colors.background).setAlpha(
                 0.1 + ((theme.mode === "light" ? 0.7 : 0.4) * userTheme.bgOpacity) / 100,
             ).rgbaString,
             settingItemRipple: {

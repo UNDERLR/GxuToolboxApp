@@ -143,7 +143,7 @@ export function CourseScheduleTable(props: Props) {
                 const itemStyle = StyleSheet.create({
                     activeContainer: {
                         ...courseScheduleStyle.weekdayContainer,
-                        backgroundColor: new Color(theme.colors.primary).setAlpha(0.2).rgbaString,
+                        backgroundColor: Color(theme.colors.primary).setAlpha(0.2).rgbaString,
                     },
                     activeText: {
                         ...courseScheduleStyle.weekdayText,
@@ -173,12 +173,12 @@ export function CourseScheduleTable(props: Props) {
                                         span * courseScheduleData.style.timeSpanHeight -
                                         courseScheduleData.style.courseItemMargin * 2,
                                     position: "absolute",
-                                    backgroundColor: new Color(course.backgroundColor).setAlpha(
+                                    backgroundColor: Color(course.backgroundColor).setAlpha(
                                         theme.mode === "light" ? 0.3 : 0.1,
                                     ).rgbaString,
-                                    borderColor: color.mix(
-                                        new Color(course.backgroundColor),
-                                        new Color(theme.colors.grey4),
+                                    borderColor: Color.mix(
+                                        Color(course.backgroundColor),
+                                        Color(theme.colors.grey4),
                                         0.7,
                                     ).rgbaString,
                                     top:

@@ -281,7 +281,7 @@ export function useCourseScheduleStyle() {
             left: 0,
             overflow: "hidden",
             borderRadius: 5,
-            backgroundColor: new Color(theme.colors.primary).setAlpha(0.1).rgbaString,
+            backgroundColor: Color(theme.colors.primary).setAlpha(0.1).rgbaString,
         },
         courseSchedule: {
             flex: 1,
@@ -336,7 +336,7 @@ export function useCourseScheduleStyle() {
             ...courseScheduleStyle,
             timeSpanHighLight: {
                 ...courseScheduleStyle.timeSpanHighLight,
-                backgroundColor: new Color(theme.colors.primary).setAlpha(0.1).rgbaString,
+                backgroundColor: Color(theme.colors.primary).setAlpha(0.1).rgbaString,
             },
         });
     }, [theme]);

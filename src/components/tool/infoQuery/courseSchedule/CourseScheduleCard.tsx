@@ -38,7 +38,7 @@ export function CourseScheduleCard() {
 
     const style = StyleSheet.create({
         card: {
-            backgroundColor: new Color(theme.colors.background).setAlpha(
+            backgroundColor: Color(theme.colors.background).setAlpha(
                 0.05 + ((theme.mode === "dark" ? 0.6 : 0.7) * userTheme.bgOpacity) / 100,
             ).rgbaString,
             borderRadius: 5,
