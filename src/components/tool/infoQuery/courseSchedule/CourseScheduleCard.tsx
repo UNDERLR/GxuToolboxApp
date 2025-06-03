@@ -1,20 +1,20 @@
 import {BottomSheet, Card, ListItem, Slider, Text} from "@rneui/themed";
-import {infoQuery} from "../../../../js/jw/infoQuery.ts";
+import {infoQuery} from "@/js/jw/infoQuery.ts";
 import {Pressable, StyleSheet, ToastAndroid, View} from "react-native";
-import {store} from "../../../../js/store.ts";
-import {CourseScheduleQueryRes} from "../../../../type/api/classScheduleAPI.ts";
+import {store} from "@/js/store.ts";
+import {CourseScheduleQueryRes} from "@/type/api/classScheduleAPI.ts";
 import {useEffect, useMemo, useState} from "react";
 import {PracticalCourseList} from "./PracticalCourseList.tsx";
-import Flex from "../../../un-ui/Flex.tsx";
-import {Icon} from "../../../un-ui/Icon.tsx";
+import Flex from "@/components/un-ui/Flex.tsx";
+import {Icon} from "@/components/un-ui/Icon.tsx";
 import moment from "moment";
-import {Course, useCourseScheduleData} from "../../../../type/infoQuery/course/course.ts";
+import {Course, useCourseScheduleData} from "@/type/infoQuery/course/course.ts";
 import {CourseScheduleTable} from "./CourseScheduleTable.tsx";
 import {Picker} from "@react-native-picker/picker";
-import {SchoolTerms, SchoolYears} from "../../../../type/global.ts";
+import {SchoolTerms, SchoolYears} from "@/type/global.ts";
 import {CourseDetail} from "./CourseDetail.tsx";
-import {useUserTheme} from "../../../../js/theme.ts";
-import {Color} from "../../../../js/color.ts";
+import {useUserTheme} from "@/js/theme.ts";
+import {Color} from "@/js/color.ts";
 import {usePagerView} from "react-native-pager-view";
 
 export function CourseScheduleCard() {

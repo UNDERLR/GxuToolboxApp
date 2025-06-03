@@ -1,10 +1,10 @@
 import React from "react";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
-import {ToolboxIndex} from "../../screens/tool/ToolboxIndex.tsx";
-import {ExamInfo} from "../../screens/tool/infoQuery/ExamInfo.tsx";
-import {ExamScore} from "../../screens/tool/infoQuery/ExamScore.tsx";
-import {Color} from "../../js/color.ts";
-import {useUserTheme} from "../../js/theme.ts";
+import {ToolboxIndex} from "@/screens/tool/ToolboxIndex.tsx";
+import {ExamInfo} from "@/screens/tool/infoQuery/ExamInfo.tsx";
+import {ExamScore} from "@/screens/tool/infoQuery/ExamScore.tsx";
+import {Color} from "@/js/color.ts";
+import {useUserTheme} from "@/js/theme.ts";
 
 const Stack = createNativeStackNavigator();
 

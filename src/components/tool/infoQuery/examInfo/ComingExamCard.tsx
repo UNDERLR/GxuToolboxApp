@@ -1,12 +1,12 @@
 import {Card, Text} from "@rneui/themed";
-import Flex from "../../../un-ui/Flex.tsx";
+import Flex from "@/components/un-ui/Flex.tsx";
 import {ScrollView, StyleSheet} from "react-native";
-import {color, Color} from "../../../../js/color.ts";
-import {useUserTheme} from "../../../../js/theme.ts";
+import {color, Color} from "@/js/color.ts";
+import {useUserTheme} from "@/js/theme.ts";
 import {useEffect, useState} from "react";
-import {ExamInfo} from "../../../../type/infoQuery/exam/examInfo.ts";
-import {store} from "../../../../js/store.ts";
-import {ExamInfoQueryRes} from "../../../../type/api/examInfoAPI.ts";
+import {ExamInfo} from "@/type/infoQuery/exam/examInfo.ts";
+import {store} from "@/js/store.ts";
+import {ExamInfoQueryRes} from "@/type/api/examInfoAPI.ts";
 import moment from "moment/moment";
 import {Row, Rows, Table} from "react-native-reanimated-table";
 

@@ -1,10 +1,10 @@
-import {Course} from "../../../../type/infoQuery/course/course.ts";
+import {Course} from "@/type/infoQuery/course/course.ts";
 import {Pressable, StyleSheet, ToastAndroid, View, ViewProps} from "react-native";
 import {ListItem, Text} from "@rneui/themed";
-import {Icon} from "../../../un-ui/Icon.tsx";
-import Flex from "../../../un-ui/Flex.tsx";
+import {Icon} from "@/components/un-ui/Icon.tsx";
+import Flex from "@/components/un-ui/Flex.tsx";
 import Clipboard from "@react-native-clipboard/clipboard";
-import {useUserTheme} from "../../../../js/theme.ts";
+import {useUserTheme} from "@/js/theme.ts";
 
 interface Props extends ViewProps {
     course: Course;

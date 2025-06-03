@@ -4,7 +4,7 @@ import axios, {AxiosResponse} from "axios";
 import {PermissionsAndroid, StyleSheet, ToastAndroid} from "react-native";
 import Flex from "./un-ui/Flex";
 import packageJSON from "../../package.json";
-import {downloadAndInstallApk} from "../js/DownloadAndInstallApk.ts";
+import {downloadAndInstallApk} from "@/js/DownloadAndInstallApk.ts";
 
 enum ChannelList {
     release = "release",

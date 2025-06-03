@@ -1,5 +1,5 @@
 import {GestureResponderEvent, PanResponder, PanResponderGestureState, ScrollView, View} from "react-native";
-import {CourseScheduleCard} from "../components/tool/infoQuery/courseSchedule/CourseScheduleCard.tsx";
+import {CourseScheduleCard} from "@/components/tool/infoQuery/courseSchedule/CourseScheduleCard.tsx";
 import {useRef, useState} from "react";
 
 export function HomeScreen() {

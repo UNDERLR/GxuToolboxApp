@@ -1,7 +1,7 @@
-import {BaseColor, Color} from "../../../js/color.ts";
+import {BaseColor, Color} from "@/js/color.ts";
 import {useEffect, useState} from "react";
 import {StyleSheet} from "react-native";
-import {useUserTheme} from "../../../js/theme.ts";
+import {useUserTheme} from "@/js/theme.ts";
 
 export interface Course {
     //？

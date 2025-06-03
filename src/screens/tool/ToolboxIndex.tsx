@@ -8,12 +8,12 @@ import {
     View,
 } from "react-native";
 import {Text} from "@rneui/themed";
-import {Color} from "../../js/color.ts";
+import {Color} from "@/js/color.ts";
 import {useNavigation} from "@react-navigation/native";
-import {Icon} from "../../components/un-ui/Icon.tsx";
-import Flex from "../../components/un-ui/Flex.tsx";
+import {Icon} from "@/components/un-ui/Icon.tsx";
+import Flex from "@/components/un-ui/Flex.tsx";
 import Clipboard from "@react-native-clipboard/clipboard";
-import {useUserTheme} from "../../js/theme.ts";
+import {useUserTheme} from "@/js/theme.ts";
 
 interface settingSection {
     title: string;

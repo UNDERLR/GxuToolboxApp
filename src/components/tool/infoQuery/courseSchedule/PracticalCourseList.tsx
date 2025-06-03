@@ -1,8 +1,8 @@
-import {PracticalCourse, useCourseScheduleStyle} from "../../../../type/infoQuery/course/course.ts";
+import {PracticalCourse, useCourseScheduleStyle} from "@/type/infoQuery/course/course.ts";
 import {StyleSheet, View} from "react-native";
-import {BaseColor, color, Color} from "../../../../js/color.ts";
-import Flex from "../../../un-ui/Flex.tsx";
-import {Icon} from "../../../un-ui/Icon.tsx";
+import {BaseColor, color, Color} from "@/js/color.ts";
+import Flex from "@/components/un-ui/Flex.tsx";
+import {Icon} from "@/components/un-ui/Icon.tsx";
 import {Text, useTheme} from "@rneui/themed";
 import {useEffect, useState} from "react";
 

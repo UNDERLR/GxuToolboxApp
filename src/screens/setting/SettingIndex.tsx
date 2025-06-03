@@ -8,17 +8,17 @@ import {
     View,
 } from "react-native";
 import {Button, Text} from "@rneui/themed";
-import {Color} from "../../js/color.ts";
+import {Color} from "@/js/color.ts";
 import {useNavigation} from "@react-navigation/native";
-import {Icon} from "../../components/un-ui/Icon.tsx";
-import Flex from "../../components/un-ui/Flex.tsx";
+import {Icon} from "@/components/un-ui/Icon.tsx";
+import Flex from "@/components/un-ui/Flex.tsx";
 import packageJson from "../../../package.json";
 import Clipboard from "@react-native-clipboard/clipboard";
 import moment from "moment/moment";
-import {ColorPicker} from "../../components/un-ui/ColorPicker.tsx";
-import {useUserTheme} from "../../js/theme.ts";
+import {ColorPicker} from "@/components/un-ui/ColorPicker.tsx";
+import {useUserTheme} from "@/js/theme.ts";
 import {launchImageLibrary} from "react-native-image-picker";
-import {UnSlider} from "../../components/un-ui/UnSlider.tsx";
+import {UnSlider} from "@/components/un-ui/UnSlider.tsx";
 
 interface settingSection {
     title: string;
@@ -98,9 +98,7 @@ export function SettingIndex() {
                     label: "背景蒙版相对透明度（需重启）",
                     type: "any",
                     value: (
-                        <Flex gap={10} inline style={{width: "45%"}}>
-                            <Text>{userTheme.bgOpacity}</Text>
-                            <Slider
+                        <UnSlider style={{width: "45%"}}
                                 step={1}
                                 minimumValue={0}
                                 maximumValue={130}
@@ -109,7 +107,6 @@ export function SettingIndex() {
                                     updateUserTheme({...userTheme, bgOpacity: v});
                                 }}
                             />
-                        </Flex>
                     ),
                 },
             ],

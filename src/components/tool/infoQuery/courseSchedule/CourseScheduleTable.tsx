@@ -1,12 +1,12 @@
-import {Course, useCourseScheduleData, useCourseScheduleStyle} from "../../../../type/infoQuery/course/course.ts";
+import {Course, useCourseScheduleData, useCourseScheduleStyle} from "@/type/infoQuery/course/course.ts";
 import {Pressable, StyleProp, StyleSheet, TextStyle, View, ViewStyle} from "react-native";
 import moment from "moment/moment";
-import {color, Color} from "../../../../js/color.ts";
-import {Icon} from "../../../un-ui/Icon.tsx";
+import {color, Color} from "@/js/color.ts";
+import {Icon} from "@/components/un-ui/Icon.tsx";
 import {Text} from "@rneui/themed";
 import {useEffect, useState} from "react";
-import Flex from "../../../un-ui/Flex.tsx";
-import {useUserTheme} from "../../../../js/theme.ts";
+import Flex from "@/components/un-ui/Flex.tsx";
+import {useUserTheme} from "@/js/theme.ts";
 
 interface Props {
     courseList: Course[];

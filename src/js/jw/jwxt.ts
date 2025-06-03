@@ -1,9 +1,9 @@
-import {http, urlWithParams} from "../http.ts";
-import {getEncryptedPassword} from "../rasPassword";
+import {http, urlWithParams} from "@/js/http.ts";
+import {getEncryptedPassword} from "@/js/rasPassword";
 import CookieManager from "@react-native-cookies/cookies";
 import {AxiosResponse} from "axios";
-import {userMgr} from "../mgr/user.ts";
-import {SchoolTerms} from "../../type/global.ts";
+import {userMgr} from "@/js/mgr/user.ts";
+import {SchoolTerms} from "@/type/global.ts";
 import {ToastAndroid} from "react-native";
 
 export const jwxt = {

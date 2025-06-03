@@ -1,8 +1,8 @@
-import {useUserTheme} from "../../js/theme.ts";
+import {useUserTheme} from "@/js/theme.ts";
 import {Pressable, StyleSheet, View} from "react-native";
 import Flex from "./Flex.tsx";
 import {Button, Dialog, Slider, Text} from "@rneui/themed";
-import {BaseColor, Color} from "../../js/color.ts";
+import {BaseColor, Color} from "@/js/color.ts";
 import {useState} from "react";
 
 interface Props {

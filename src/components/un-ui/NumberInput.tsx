@@ -2,8 +2,8 @@ import {Pressable, StyleSheet, View} from "react-native";
 import Flex from "./Flex.tsx";
 import {Text} from "@rneui/themed";
 import {Icon} from "./Icon.tsx";
-import {useUserTheme} from "../../js/theme.ts";
-import {Color} from "../../js/color.ts";
+import {useUserTheme} from "@/js/theme.ts";
+import {Color} from "@/js/color.ts";
 
 interface Props {
     value: number;

@@ -2,16 +2,16 @@ import {ScrollView, StyleSheet, ToastAndroid, View} from "react-native";
 import {Button, Divider, Text} from "@rneui/themed";
 import {useEffect, useState} from "react";
 import moment from "moment/moment";
-import Flex from "../../../components/un-ui/Flex.tsx";
+import Flex from "@/components/un-ui/Flex.tsx";
 import {Picker} from "@react-native-picker/picker";
-import {SchoolTerms, SchoolYears} from "../../../type/global.ts";
-import {infoQuery} from "../../../js/jw/infoQuery.ts";
-import {NumberInput} from "../../../components/un-ui/NumberInput.tsx";
+import {SchoolTerms, SchoolYears} from "@/type/global.ts";
+import {infoQuery} from "@/js/jw/infoQuery.ts";
+import {NumberInput} from "@/components/un-ui/NumberInput.tsx";
 import {Row, Rows, Table} from "react-native-reanimated-table";
-import {useUserTheme} from "../../../js/theme.ts";
-import {ExamInfoQueryRes} from "../../../type/api/examInfoAPI.ts";
-import {store} from "../../../js/store.ts";
-import {Color, color} from "../../../js/color.ts";
+import {useUserTheme} from "@/js/theme.ts";
+import {ExamInfoQueryRes} from "@/type/api/examInfoAPI.ts";
+import {store} from "@/js/store.ts";
+import {Color, color} from "@/js/color.ts";
 
 export function ExamInfo() {
     const {theme, userTheme} = useUserTheme();

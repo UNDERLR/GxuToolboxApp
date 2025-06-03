@@ -1,9 +1,9 @@
 import {StyleSheet, ToastAndroid, View} from "react-native";
 import {Button, Input, Text} from "@rneui/themed";
 import {useEffect, useState} from "react";
-import {jwxt} from "../../../js/jw/jwxt.ts";
-import {userMgr} from "../../../js/mgr/user.ts";
-import {Icon} from "../../../components/un-ui/Icon.tsx";
+import {jwxt} from "@/js/jw/jwxt.ts";
+import {userMgr} from "@/js/mgr/user.ts";
+import {Icon} from "@/components/un-ui/Icon.tsx";
 
 async function getToken(username: string, password: string) {
     userMgr.storeAccount(username, password);

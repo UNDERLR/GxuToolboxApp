@@ -1,9 +1,9 @@
 import {ImageBackground, StatusBar, StyleSheet, useColorScheme, View} from "react-native";
 import {NavigationContainer} from "@react-navigation/native";
-import {RootStack} from "../route/RootStack.tsx";
+import {RootStack} from "@/route/RootStack.tsx";
 import React, {useEffect, useState} from "react";
-import {useUserTheme} from "../js/theme.ts";
-import {CheckUpdate} from "../components/CheckUpdate.tsx";
+import {useUserTheme} from "@/js/theme.ts";
+import {CheckUpdate} from "@/components/CheckUpdate.tsx";
 
 export function Root() {
     const {theme, navigationTheme, userTheme} = useUserTheme();

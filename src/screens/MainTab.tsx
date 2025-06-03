@@ -1,11 +1,11 @@
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import {HomeScreen} from "./HomeScreen.tsx";
-import {HomeHeaderRight} from "../components/header/HomeHeaderRight.tsx";
-import {Icon} from "../components/un-ui/Icon.tsx";
-import {SettingStack} from "../route/screens/SettingStack.tsx";
-import {ToolboxStack} from "../route/screens/ToolboxStack.tsx";
-import {useUserTheme} from "../js/theme.ts";
-import {Color} from "../js/color.ts";
+import {HomeHeaderRight} from "@/components/header/HomeHeaderRight.tsx";
+import {Icon} from "@/components/un-ui/Icon.tsx";
+import {SettingStack} from "@/route/screens/SettingStack.tsx";
+import {ToolboxStack} from "@/route/screens/ToolboxStack.tsx";
+import {useUserTheme} from "@/js/theme.ts";
+import {Color} from "@/js/color.ts";
 
 const Tab = createBottomTabNavigator();
 
