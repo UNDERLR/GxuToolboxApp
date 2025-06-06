@@ -16,6 +16,7 @@ import {CourseDetail} from "./CourseDetail.tsx";
 import {useUserTheme} from "@/js/theme.ts";
 import {Color} from "@/js/color.ts";
 import {usePagerView} from "react-native-pager-view";
+import {UnSlider} from "@/components/un-ui/UnSlider.tsx";
 
 export function CourseScheduleCard() {
     const {theme, userTheme} = useUserTheme();
@@ -160,21 +161,13 @@ export function CourseScheduleCard() {
                     <ListItem bottomDivider>
                         <Flex gap={10}>
                             <Text>课表周数</Text>
-                            <Text>{rest.activePage + 1}</Text>
                             <Flex>
-                                <Slider
+                                <UnSlider
                                     step={1}
                                     minimumValue={1}
                                     maximumValue={20}
                                     allowTouchTrack
                                     value={rest.activePage + 1}
-                                    thumbStyle={{
-                                        height: 25,
-                                        width: 25,
-                                        backgroundColor: theme.colors.grey1,
-                                        borderColor: theme.colors.background,
-                                        borderWidth: 5,
-                                    }}
                                     onValueChange={v => rest.setPage(v - 1)}
                                 />
                             </Flex>

@@ -11,7 +11,7 @@ import {Row, Rows, Table} from "react-native-reanimated-table";
 import {useUserTheme} from "@/js/theme.ts";
 import {ExamInfoQueryRes} from "@/type/api/examInfoAPI.ts";
 import {store} from "@/js/store.ts";
-import {Color, color} from "@/js/color.ts";
+import {Color} from "@/js/color.ts";
 
 export function ExamInfo() {
     const {theme, userTheme} = useUserTheme();
@@ -50,7 +50,7 @@ export function ExamInfo() {
             borderColor: Color.mix(Color(theme.colors.primary), Color(theme.colors.grey4), 0.4).rgbaString,
         },
         tableHeader: {
-            backgroundColor: color
+            backgroundColor: Color
                 .mix(
                     Color(theme.colors.primary),
                     Color(theme.colors.background),
@@ -133,12 +133,12 @@ export function ExamInfo() {
                 <Flex direction="column" gap={15} alignItems="flex-start">
                     <Flex alignItems="flex-end" gap={5}>
                         <Text h4>查询结果</Text>
-                        <Text>{`第${apiRes.currentPage}/${apiRes.totalPage}页，共有${apiRes.totalCount}条结果`}</Text>
+                        <Text>{`第${apiRes.currentPage ?? 1}/${apiRes.totalPage ?? 1}页，共有${apiRes.totalCount ?? 0}条结果`}</Text>
                     </Flex>
                     <Flex gap={10}>
                         <Text>页数</Text>
                         <Flex inline>
-                            <NumberInput value={page} onChange={setPage} min={1} max={apiRes.totalPage} />
+                            <NumberInput value={page} onChange={setPage} min={1} max={apiRes.totalPage ?? 1} />
                         </Flex>
                         <Text>每页15条记录</Text>
                     </Flex>
@@ -162,7 +162,7 @@ export function ExamInfo() {
                     <Flex gap={10}>
                         <Text>页数</Text>
                         <Flex inline>
-                            <NumberInput value={page} onChange={setPage} min={1} max={apiRes.totalPage} />
+                            <NumberInput value={page} onChange={setPage} min={1} max={apiRes.totalPage ?? 1} />
                         </Flex>
                         <Text>每页15条记录</Text>
                     </Flex>

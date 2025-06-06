@@ -4,6 +4,7 @@ import Flex from "./Flex.tsx";
 import {Button, Dialog, Slider, Text} from "@rneui/themed";
 import {BaseColor, Color} from "@/js/color.ts";
 import {useState} from "react";
+import {UnSlider} from "@/components/un-ui/UnSlider.tsx";
 
 interface Props {
     size: number;
@@ -71,54 +72,36 @@ export function ColorPicker(props: Partial<Props>) {
                     </Flex>
                     <Flex gap={10}>
                         <Text>红</Text>
-                        <Text>{r}</Text>
                         <Flex>
-                            <Slider
+                            <UnSlider
                                 step={1}
                                 minimumValue={0}
                                 maximumValue={255}
                                 value={r}
-                                thumbStyle={{
-                                    height: 20,
-                                    width: 20,
-                                    backgroundColor: theme.colors.grey1,
-                                }}
                                 onValueChange={setR}
                             />
                         </Flex>
                     </Flex>
                     <Flex gap={10}>
                         <Text>绿</Text>
-                        <Text>{g}</Text>
                         <Flex>
-                            <Slider
+                            <UnSlider
                                 step={1}
                                 minimumValue={0}
                                 maximumValue={255}
                                 value={g}
-                                thumbStyle={{
-                                    height: 20,
-                                    width: 20,
-                                    backgroundColor: theme.colors.grey1,
-                                }}
                                 onValueChange={setG}
                             />
                         </Flex>
                     </Flex>
                     <Flex gap={10}>
                         <Text>蓝</Text>
-                        <Text>{b}</Text>
                         <Flex>
-                            <Slider
+                            <UnSlider
                                 step={1}
                                 minimumValue={0}
                                 maximumValue={255}
                                 value={b}
-                                thumbStyle={{
-                                    height: 20,
-                                    width: 20,
-                                    backgroundColor: theme.colors.grey1,
-                                }}
                                 onValueChange={setB}
                             />
                         </Flex>

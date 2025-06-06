@@ -1,7 +1,7 @@
 import {Card, Text} from "@rneui/themed";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {ScrollView, StyleSheet} from "react-native";
-import {color, Color} from "@/js/color.ts";
+import {Color} from "@/js/color.ts";
 import {useUserTheme} from "@/js/theme.ts";
 import {useEffect, useState} from "react";
 import {ExamInfo} from "@/type/infoQuery/exam/examInfo.ts";

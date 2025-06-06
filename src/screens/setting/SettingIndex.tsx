@@ -27,7 +27,7 @@ interface settingSection {
 
 interface SettingItem {
     label: string;
-    type: "navigation" | "text" | "link" | "any";
+    type: "navigation" | "text" | "link" | "any" | "blockAny";
     navigation?: string;
     value?: any;
     url?: string;
@@ -96,17 +96,17 @@ export function SettingIndex() {
                 },
                 {
                     label: "背景蒙版相对透明度（需重启）",
-                    type: "any",
+                    type: "blockAny",
                     value: (
-                        <UnSlider style={{width: "45%"}}
-                                step={1}
-                                minimumValue={0}
-                                maximumValue={130}
-                                value={userTheme.bgOpacity}
-                                onValueChange={v => {
-                                    updateUserTheme({...userTheme, bgOpacity: v});
-                                }}
-                            />
+                        <UnSlider
+                            step={1}
+                            minimumValue={0}
+                            maximumValue={130}
+                            value={userTheme.bgOpacity}
+                            onValueChange={v => {
+                                updateUserTheme({...userTheme, bgOpacity: v});
+                            }}
+                        />
                     ),
                 },
             ],
@@ -233,6 +233,15 @@ export function SettingIndex() {
                             return (
                                 <Flex style={style.settingItem} justifyContent="space-between">
                                     <Text>{item.label}</Text>
+                                    {item.value}
+                                </Flex>
+                            );
+                        case "blockAny":
+                            return (
+                                <Flex direction="column" alignItems="flex-start" gap={10} style={style.settingItem}>
+                                    <View>
+                                        <Text>{item.label}</Text>
+                                    </View>
                                     {item.value}
                                 </Flex>
                             );

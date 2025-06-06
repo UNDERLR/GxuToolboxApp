@@ -1,5 +1,5 @@
 import {ScrollView, StyleSheet, ToastAndroid, View} from "react-native";
-import {Button, Divider, ListItem, Text} from "@rneui/themed";
+import {Button, Divider, Text} from "@rneui/themed";
 import {useEffect, useState} from "react";
 import moment from "moment/moment";
 import Flex from "@/components/un-ui/Flex.tsx";
@@ -11,7 +11,7 @@ import {Row, Rows, Table} from "react-native-reanimated-table";
 import {useUserTheme} from "@/js/theme.ts";
 import {ExamInfoQueryRes} from "@/type/api/examInfoAPI.ts";
 import {store} from "@/js/store.ts";
-import {color, Color} from "@/js/color.ts";
+import {Color} from "@/js/color.ts";
 
 export function ExamScore() {
     const {theme, userTheme} = useUserTheme();
@@ -50,16 +50,15 @@ export function ExamScore() {
             borderColor: Color.mix(Color(theme.colors.primary), Color(theme.colors.grey4), 0.4).rgbaString,
         },
         tableHeader: {
-            backgroundColor: color
-                .mix(
-                    Color(theme.colors.primary),
-                    Color(theme.colors.background),
-                    theme.mode === "dark" ? 0.7 : 0.2,
-                )
-                .setAlpha(theme.mode === "dark" ? 0.3 : 0.6).rgbaString,
+            backgroundColor: Color.mix(
+                Color(theme.colors.primary),
+                Color(theme.colors.background),
+                theme.mode === "dark" ? 0.7 : 0.2,
+            ).setAlpha(theme.mode === "dark" ? 0.3 : 0.6).rgbaString,
         },
         tableHeaderText: {},
     });
+
     function init() {
         store.load({key: "examScore"}).then(data => {
             setApiRes(data);
@@ -134,7 +133,7 @@ export function ExamScore() {
                             </Picker>
                         </View>
                     </Flex>
-                    <View style={{width:"100%"}}>
+                    <View style={{width: "100%"}}>
                         <Button onPress={query}>查询</Button>
                     </View>
                 </Flex>
@@ -142,12 +141,12 @@ export function ExamScore() {
                 <Flex direction="column" gap={15} alignItems="flex-start">
                     <Flex alignItems="flex-end" gap={5}>
                         <Text h4>查询结果</Text>
-                        <Text>{`第${apiRes.currentPage}/${apiRes.totalPage}页，共有${apiRes.totalCount}条结果`}</Text>
+                        <Text>{`第${apiRes.currentPage ?? 1}/${apiRes.totalPage ?? 1}页，共有${apiRes.totalCount ?? 0}条结果`}</Text>
                     </Flex>
                     <Flex gap={10}>
                         <Text>页数</Text>
                         <Flex inline>
-                            <NumberInput value={page} onChange={setPage} min={1} max={apiRes.totalPage} />
+                            <NumberInput value={page} onChange={setPage} min={1} max={apiRes.totalPage ?? 1} />
                         </Flex>
                         <Text>每页15条记录</Text>
                     </Flex>
@@ -171,7 +170,7 @@ export function ExamScore() {
                     <Flex gap={10}>
                         <Text>页数</Text>
                         <Flex inline>
-                            <NumberInput value={page} onChange={setPage} min={1} max={apiRes.totalPage} />
+                            <NumberInput value={page} onChange={setPage} min={1} max={apiRes.totalPage ?? 1} />
                         </Flex>
                         <Text>每页15条记录</Text>
                     </Flex>

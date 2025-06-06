@@ -82,8 +82,8 @@ android {
         applicationId "com.gxu_tool_app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 10200
-        versionName "1.2.0 beta"
+        versionCode 10300
+        versionName "1.3.0 beta"
     }
     signingConfigs {
         debug {

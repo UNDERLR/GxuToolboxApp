@@ -16,10 +16,6 @@ export const theme = createTheme({
             style: {
                 flex: 1,
             },
-            trackStyle: {
-                height: 5,
-                marginTop: undefined,
-            },
             thumbStyle: {
                 height: 20,
                 width: 20,
