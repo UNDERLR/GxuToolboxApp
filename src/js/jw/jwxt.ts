@@ -15,7 +15,6 @@ export const jwxt = {
                     time: Date.now(),
                 }),
             );
-            console.log(res);
             resolve(res.data);
         });
     },

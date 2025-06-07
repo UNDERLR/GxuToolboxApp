@@ -1,4 +1,4 @@
-import {BottomSheet, Card, ListItem, Slider, Text} from "@rneui/themed";
+import {BottomSheet, Card, ListItem, Text} from "@rneui/themed";
 import {infoQuery} from "@/js/jw/infoQuery.ts";
 import {Pressable, StyleSheet, ToastAndroid, View} from "react-native";
 import {store} from "@/js/store.ts";
@@ -8,7 +8,12 @@ import {PracticalCourseList} from "./PracticalCourseList.tsx";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {Icon} from "@/components/un-ui/Icon.tsx";
 import moment from "moment";
-import {Course, useCourseScheduleData} from "@/type/infoQuery/course/course.ts";
+import {
+    Course,
+    CourseScheduleContext, DefaultCourseScheduleData,
+    generateCourseScheduleStyle,
+    useCourseScheduleData,
+} from "@/type/infoQuery/course/course.ts";
 import {CourseScheduleTable} from "./CourseScheduleTable.tsx";
 import {Picker} from "@react-native-picker/picker";
 import {SchoolTerms, SchoolYears} from "@/type/global.ts";
@@ -23,8 +28,15 @@ export function CourseScheduleCard() {
     const {AnimatedPagerView, ref, ...rest} = usePagerView({pagesAmount: 20});
 
     const [apiRes, setApiRes] = useState<CourseScheduleQueryRes>();
-    const {courseScheduleData} = useCourseScheduleData();
+    const {courseScheduleData, updateCourseScheduleData} = useCourseScheduleData();
+    const [courseScheduleStyle, setCourseScheduleStyle] = useState(
+        generateCourseScheduleStyle(courseScheduleData, theme),
+    );
     const startDay = moment(courseScheduleData.startDay);
+    useEffect(() => {
+        let newStyle = generateCourseScheduleStyle(courseScheduleData, theme);
+        setCourseScheduleStyle(newStyle);
+    }, [courseScheduleData, theme]);
 
     const realCurrentWeek = Math.ceil(moment.duration(moment().diff(startDay)).asWeeks());
     const [year, setYear] = useState(moment().isBefore(moment("8", "M"), "M") ? moment().year() - 1 : moment().year());
@@ -35,7 +47,7 @@ export function CourseScheduleCard() {
     );
     const [courseScheduleSettingVisible, setCourseScheduleSettingVisible] = useState(false);
     const [courseDetailVisible, setCourseDetailVisible] = useState(false);
-    const [activeCourse, setActiveCourse] = useState<Course>({});
+    const [activeCourse, setActiveCourse] = useState<Course>({} as Course);
 
     const style = StyleSheet.create({
         card: {
@@ -84,127 +96,149 @@ export function CourseScheduleCard() {
         getCourseSchedule();
     }, [year, term]);
     return (
-        <Card containerStyle={style.card}>
-            <Card.Title style={style.cardTitle}>
-                <Flex justifyContent="space-between">
-                    <Text h4>课表</Text>
-                    <Flex gap={15} justifyContent="flex-end">
-                        {rest.activePage + 1 !== realCurrentWeek && (
+        <CourseScheduleContext.Provider value={{courseScheduleData, courseScheduleStyle}}>
+            <Card containerStyle={style.card}>
+                <Card.Title style={style.cardTitle}>
+                    <Flex justifyContent="space-between">
+                        <Text h4>课表</Text>
+                        <Flex gap={15} justifyContent="flex-end">
+                            {rest.activePage + 1 !== realCurrentWeek && (
+                                <Pressable
+                                    android_ripple={userTheme.ripple}
+                                    onPress={() => {
+                                        rest.setPage(realCurrentWeek - 1);
+                                    }}>
+                                    <Icon name="back" size={24} />
+                                </Pressable>
+                            )}
                             <Pressable
                                 android_ripple={userTheme.ripple}
-                                onPress={() => {
-                                    rest.setPage(realCurrentWeek - 1);
-                                }}>
-                                <Icon name="back" size={24} />
+                                onPress={() => setCourseScheduleSettingVisible(true)}>
+                                <Icon name="setting" size={24} />
                             </Pressable>
-                        )}
-                        <Pressable
-                            android_ripple={userTheme.ripple}
-                            onPress={() => setCourseScheduleSettingVisible(true)}>
-                            <Icon name="setting" size={24} />
-                        </Pressable>
-                        <Pressable android_ripple={userTheme.ripple} onPress={getCourseSchedule}>
-                            <Icon name="sync" size={24} />
-                        </Pressable>
+                            <Pressable android_ripple={userTheme.ripple} onPress={getCourseSchedule}>
+                                <Icon name="sync" size={24} />
+                            </Pressable>
+                        </Flex>
                     </Flex>
-                </Flex>
-            </Card.Title>
-            <Card.Divider />
-            <AnimatedPagerView
-                testID="pager-view"
-                ref={ref}
-                style={style.pagerView}
-                initialPage={realCurrentWeek - 1}
-                layoutDirection="ltr"
-                overdrag={rest.overdragEnabled}
-                scrollEnabled={rest.scrollEnabled}
-                pageMargin={10}
-                onPageSelected={rest.onPageSelected}
-                onPageScrollStateChanged={rest.onPageScrollStateChanged}
-                offscreenPageLimit={2}
-                overScrollMode="never"
-                orientation="horizontal">
-                {useMemo(
-                    () =>
-                        rest.pages.map((_, index) => (
-                            <View testID="pager-view-content" key={index} collapsable={false}>
-                                <Flex inline>
-                                    {index + 1 === realCurrentWeek ? (
-                                        <Text>（第{index + 1}周）</Text>
-                                    ) : (
-                                        <Text>
-                                            （第{index + 1}周，目前为第{realCurrentWeek}周）
-                                        </Text>
-                                    )}
-                                    <Text>点击课程查看详情</Text>
-                                </Flex>
-                                <CourseScheduleTable
-                                    onCoursePress={showCourseDetail}
-                                    courseList={apiRes?.kbList ?? []}
-                                    currentWeek={index + 1}
-                                />
-                            </View>
-                        )),
-                    [rest.pages, realCurrentWeek, apiRes?.kbList],
+                </Card.Title>
+                <Card.Divider />
+                <AnimatedPagerView
+                    testID="pager-view"
+                    ref={ref}
+                    style={style.pagerView}
+                    initialPage={realCurrentWeek - 1}
+                    layoutDirection="ltr"
+                    overdrag={rest.overdragEnabled}
+                    scrollEnabled={rest.scrollEnabled}
+                    pageMargin={10}
+                    onPageSelected={rest.onPageSelected}
+                    onPageScrollStateChanged={rest.onPageScrollStateChanged}
+                    offscreenPageLimit={2}
+                    overScrollMode="never"
+                    orientation="horizontal">
+                    {useMemo(
+                        () =>
+                            rest.pages.map((_, index) => (
+                                <View testID="pager-view-content" key={index} collapsable={false}>
+                                    <Flex inline>
+                                        {index + 1 === realCurrentWeek ? (
+                                            <Text>（第{index + 1}周）</Text>
+                                        ) : (
+                                            <Text>
+                                                （第{index + 1}周，目前为第{realCurrentWeek}周）
+                                            </Text>
+                                        )}
+                                        <Text>点击课程查看详情</Text>
+                                    </Flex>
+                                    <CourseScheduleTable
+                                        onCoursePress={showCourseDetail}
+                                        courseList={apiRes?.kbList ?? []}
+                                        currentWeek={index + 1}
+                                    />
+                                </View>
+                            )),
+                        [rest.pages, realCurrentWeek, apiRes?.kbList],
+                    )}
+                </AnimatedPagerView>
+                {apiRes?.sjkList && (
+                    <>
+                        <Card.Divider />
+                        <PracticalCourseList courseList={apiRes.sjkList} />
+                    </>
                 )}
-            </AnimatedPagerView>
-            {apiRes?.sjkList && (
-                <>
-                    <Card.Divider />
-                    <PracticalCourseList courseList={apiRes.sjkList} />
-                </>
-            )}
-            <BottomSheet
-                isVisible={courseScheduleSettingVisible}
-                onBackdropPress={() => setCourseScheduleSettingVisible(false)}>
-                <View style={style.bottomSheetContainer}>
-                    <ListItem bottomDivider>
-                        <Flex gap={10}>
-                            <Text>课表周数</Text>
+                {/* 课表卡片设置 */}
+                <BottomSheet
+                    isVisible={courseScheduleSettingVisible}
+                    onBackdropPress={() => setCourseScheduleSettingVisible(false)}>
+                    <View style={style.bottomSheetContainer}>
+                        <ListItem bottomDivider>
+                            <Text>课程元素高度</Text>
                             <Flex>
                                 <UnSlider
                                     step={1}
-                                    minimumValue={1}
-                                    maximumValue={20}
+                                    minimumValue={5}
+                                    maximumValue={100}
                                     allowTouchTrack
-                                    value={rest.activePage + 1}
-                                    onValueChange={v => rest.setPage(v - 1)}
+                                    value={courseScheduleData.style.timeSpanHeight}
+                                    onValueChange={v =>
+                                        updateCourseScheduleData({
+                                            ...courseScheduleData,
+                                            style: {...courseScheduleData.style, timeSpanHeight: v},
+                                        })
+                                    }
                                 />
                             </Flex>
-                        </Flex>
-                    </ListItem>
-                    <ListItem bottomDivider>
-                        <Flex gap={10}>
-                            <Text>学期</Text>
-                            <View style={{flex: 1}}>
-                                <Picker
-                                    {...userTheme.components.Picker}
-                                    selectedValue={year}
-                                    onValueChange={v => setYear(v)}>
-                                    {Array.from(SchoolYears).map(value => {
-                                        return <Picker.Item value={+value[0]} label={value[1]} key={value[0]} />;
-                                    })}
-                                </Picker>
-                            </View>
-                            <View style={{flex: 1}}>
-                                <Picker
-                                    {...userTheme.components.Picker}
-                                    selectedValue={term}
-                                    onValueChange={v => setTerm(v)}>
-                                    {Array.from(SchoolTerms).map(value => {
-                                        return <Picker.Item value={value[0]} label={value[1]} key={value[0]} />;
-                                    })}
-                                </Picker>
-                            </View>
-                        </Flex>
-                    </ListItem>
-                </View>
-            </BottomSheet>
-            <BottomSheet isVisible={courseDetailVisible} onBackdropPress={() => setCourseDetailVisible(false)}>
-                <View style={style.bottomSheetContainer}>
-                    <CourseDetail course={activeCourse} />
-                </View>
-            </BottomSheet>
-        </Card>
+                        </ListItem>
+                        <ListItem>
+                            <Flex gap={10}>
+                                <Text>学期</Text>
+                                <View style={{flex: 1}}>
+                                    <Picker
+                                        {...userTheme.components.Picker}
+                                        selectedValue={year}
+                                        onValueChange={v => setYear(v)}>
+                                        {Array.from(SchoolYears).map(value => {
+                                            return <Picker.Item value={+value[0]} label={value[1]} key={value[0]} />;
+                                        })}
+                                    </Picker>
+                                </View>
+                                <View style={{flex: 1}}>
+                                    <Picker
+                                        {...userTheme.components.Picker}
+                                        selectedValue={term}
+                                        onValueChange={v => setTerm(v)}>
+                                        {Array.from(SchoolTerms).map(value => {
+                                            return <Picker.Item value={value[0]} label={value[1]} key={value[0]} />;
+                                        })}
+                                    </Picker>
+                                </View>
+                            </Flex>
+                        </ListItem>
+                        <ListItem>
+                            <Flex gap={10}>
+                                <Text>课表周数</Text>
+                                <Flex>
+                                    <UnSlider
+                                        step={1}
+                                        minimumValue={1}
+                                        maximumValue={20}
+                                        allowTouchTrack
+                                        value={rest.activePage + 1}
+                                        onValueChange={v => rest.setPage(v - 1)}
+                                    />
+                                </Flex>
+                            </Flex>
+                        </ListItem>
+                    </View>
+                </BottomSheet>
+                {/* 课表课程信息 */}
+                <BottomSheet isVisible={courseDetailVisible} onBackdropPress={() => setCourseDetailVisible(false)}>
+                    <View style={style.bottomSheetContainer}>
+                        <CourseDetail course={activeCourse} />
+                    </View>
+                </BottomSheet>
+            </Card>
+        </CourseScheduleContext.Provider>
     );
 }

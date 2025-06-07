@@ -4,6 +4,6 @@ module.exports = {
     rules: {
         quotes: ["warn", "double"],
         semi: "warn",
-        "react-native/no-inline-styles": null,
+        "react-native/no-inline-styles": 0,
     },
 };

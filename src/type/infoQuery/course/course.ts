@@ -1,7 +1,7 @@
 import {BaseColor, Color} from "@/js/color.ts";
-import {useEffect, useState} from "react";
+import {createContext, useCallback, useEffect, useState} from "react";
 import {StyleSheet} from "react-native";
-import {useUserTheme} from "@/js/theme.ts";
+import {store} from "@/js/store.ts";
 
 export interface Course {
     //？
@@ -225,6 +225,11 @@ const CourseScheduleData = {
         courseItemMargin: 2,
         courseItemBorderWidth: 2,
     },
+    courseInfoVisible: {
+        name: true,
+        position: true,
+        teacher: true,
+    },
     startDay: "2025-02-24",
     randomColor: [
         BaseColor.pink,
@@ -265,17 +270,11 @@ const CourseScheduleData = {
     ],
 };
 
-export function useCourseScheduleData() {
-    const [courseScheduleData, setCourseScheduleData] = useState<typeof CourseScheduleData>(CourseScheduleData);
-    return {courseScheduleData, setCourseScheduleData};
-}
-
-export function useCourseScheduleStyle() {
-    const {theme} = useUserTheme();
-    const CourseScheduleStyle = StyleSheet.create({
+export function generateCourseScheduleStyle(data: typeof CourseScheduleData, theme: any) {
+    return StyleSheet.create({
         timeSpanHighLight: {
             position: "absolute",
-            height: CourseScheduleData.style.timeSpanHeight,
+            height: data.style.timeSpanHeight,
             flex: 1,
             width: "100%",
             left: 0,
@@ -299,7 +298,7 @@ export function useCourseScheduleStyle() {
         weekdayItem: {
             alignItems: "center",
             justifyContent: "center",
-            height: CourseScheduleData.style.weekdayHeight,
+            height: data.style.weekdayHeight,
         },
         weekdayText: {
             fontSize: 14,
@@ -307,7 +306,7 @@ export function useCourseScheduleStyle() {
             color: theme.colors.grey2,
         },
         timeSpanItem: {
-            height: CourseScheduleData.style.timeSpanHeight,
+            height: data.style.timeSpanHeight,
         },
         timeSpanText: {
             textAlign: "center",
@@ -319,7 +318,7 @@ export function useCourseScheduleStyle() {
             width: "96%",
             marginHorizontal: "2%",
             borderRadius: 5,
-            borderWidth: CourseScheduleData.style.courseItemBorderWidth,
+            borderWidth: data.style.courseItemBorderWidth,
             borderStyle: "solid",
             padding: 5,
         },
@@ -329,16 +328,37 @@ export function useCourseScheduleStyle() {
             marginVertical: 10,
         },
     });
-    const [courseScheduleStyle, setCourseScheduleStyle] = useState<typeof CourseScheduleStyle>(CourseScheduleStyle);
-    // 疑似不是最优
-    useEffect(() => {
-        setCourseScheduleStyle({
-            ...courseScheduleStyle,
-            timeSpanHighLight: {
-                ...courseScheduleStyle.timeSpanHighLight,
-                backgroundColor: Color(theme.colors.primary).setAlpha(0.1).rgbaString,
-            },
-        });
-    }, [theme]);
-    return {courseScheduleStyle, setCourseScheduleStyle};
 }
+
+export function useCourseScheduleData() {
+    const [courseScheduleData, setCourseScheduleData] = useState<typeof CourseScheduleData>(CourseScheduleData);
+    const updateCourseScheduleData = useCallback(
+        (data: Partial<typeof CourseScheduleData>) => {
+            const newData = {
+                ...courseScheduleData,
+                ...data,
+            };
+            setCourseScheduleData(newData);
+            store.save({key: "courseScheduleSetting", data: newData});
+        },
+        [courseScheduleData],
+    );
+
+    useEffect(() => {
+        store
+            .load({key: "courseScheduleSetting"})
+            .then(data => {
+                updateCourseScheduleData(data);
+            })
+            .catch(err => {
+                console.error("加载课程表设置失败:", err);
+            });
+    }, [updateCourseScheduleData]);
+
+    return {courseScheduleData, updateCourseScheduleData};
+}
+
+export const CourseScheduleContext = createContext<{
+    courseScheduleData: typeof CourseScheduleData;
+    courseScheduleStyle: ReturnType<typeof generateCourseScheduleStyle>;
+} | null>(null);

@@ -1,12 +1,12 @@
-import {Course, useCourseScheduleData, useCourseScheduleStyle} from "@/type/infoQuery/course/course.ts";
-import {Pressable, StyleProp, StyleSheet, TextStyle, View, ViewStyle} from "react-native";
+import {Course, CourseScheduleContext, generateCourseScheduleStyle} from "@/type/infoQuery/course/course.ts";
+import {StyleProp, StyleSheet, TextStyle, View, ViewStyle} from "react-native";
 import moment from "moment/moment";
 import {Color} from "@/js/color.ts";
-import {Icon} from "@/components/un-ui/Icon.tsx";
 import {Text} from "@rneui/themed";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {useUserTheme} from "@/js/theme.ts";
+import {CourseItem} from "@/components/tool/infoQuery/courseSchedule/CourseItem.tsx";
 
 interface Props {
     courseList: Course[];
@@ -20,10 +20,9 @@ interface CourseItem extends Course {
 }
 
 export function CourseScheduleTable(props: Props) {
+    const {courseScheduleData, courseScheduleStyle} = useContext(CourseScheduleContext)!;
     const {theme} = useUserTheme();
     const [courseSchedule, setCourseSchedule] = useState<CourseItem[][]>([[], [], [], [], [], [], []]);
-    const {courseScheduleData} = useCourseScheduleData();
-    const {courseScheduleStyle} = useCourseScheduleStyle();
     const startDay = moment(courseScheduleData.startDay);
     const [currentTime, setCurrentTime] = useState(moment().format());
     const currentWeek = props.currentWeek ?? Math.ceil(moment.duration(moment().diff(startDay)).asWeeks());
@@ -115,7 +114,7 @@ export function CourseScheduleTable(props: Props) {
                 <View style={[timeSpanHighLightTop, courseScheduleStyle.timeSpanHighLight]} />
             )}
             {/*时间表渲染*/}
-            <View style={[courseScheduleStyle.timeSpanContainer,courseScheduleStyle.weekdayContainer]}>
+            <View style={[courseScheduleStyle.timeSpanContainer, courseScheduleStyle.weekdayContainer]}>
                 <View style={courseScheduleStyle.weekdayItem}>
                     <Text style={courseScheduleStyle.weekdayText}>
                         {moment(courseScheduleData.startDay).add(currentWeek, "w").month() + 1 + "月"}
@@ -163,53 +162,13 @@ export function CourseScheduleTable(props: Props) {
                                 {`${weekday}\n${currentDay.month() + 1}-${currentDay.date()}`}
                             </Text>
                         </View>
-                        {courseSchedule[index].map(course => {
-                            const span =
-                                parseInt(course.jcs.split("-")[1], 10) - parseInt(course.jcs.split("-")[0], 10) + 1;
-                            const y = +course.jcs.split("-")[0] - 1;
-                            const itemStyle = StyleSheet.create({
-                                course: {
-                                    height:
-                                        span * courseScheduleData.style.timeSpanHeight -
-                                        courseScheduleData.style.courseItemMargin * 2,
-                                    position: "absolute",
-                                    backgroundColor: Color(course.backgroundColor).setAlpha(
-                                        theme.mode === "light" ? 0.3 : 0.1,
-                                    ).rgbaString,
-                                    borderColor: Color.mix(
-                                        Color(course.backgroundColor),
-                                        Color(theme.colors.grey4),
-                                        0.7,
-                                    ).rgbaString,
-                                    top:
-                                        courseScheduleData.style.weekdayHeight +
-                                        y * courseScheduleData.style.timeSpanHeight +
-                                        courseScheduleData.style.courseItemMargin,
-                                },
-                                text: {
-                                    textAlign: "center",
-                                },
-                            });
-                            return (
-                                // 课程元素
-                                <Pressable
-                                    onPress={e => props.onCoursePress?.(course)}
-                                    style={[itemStyle.course, courseScheduleStyle.courseItem]}
-                                    key={`day${index}-${course.kcmc}-${course.jc}`}>
-                                    <Flex direction="column" gap={5}>
-                                        <Text style={itemStyle.text}>{course.kcmc}</Text>
-                                        <Text style={itemStyle.text}>
-                                            <Icon type="fontawesome" name="map-marker" />
-                                            {"\n" + course.cdmc.replace("-", "\n")}
-                                        </Text>
-                                        <Text style={itemStyle.text} ellipsizeMode="tail" numberOfLines={5}>
-                                            <Icon name="user" />
-                                            {"\n" + course.xm}
-                                        </Text>
-                                    </Flex>
-                                </Pressable>
-                            );
-                        })}
+                        {courseSchedule[index].map((course, i) => (
+                            <CourseItem
+                                key={`day${index}-${course.kcmc}-${course.jc}`}
+                                course={course}
+                                index={i}
+                            />
+                        ))}
                     </View>
                 );
             })}
