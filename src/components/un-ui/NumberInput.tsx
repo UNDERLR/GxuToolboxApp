@@ -24,6 +24,7 @@ export function NumberInput(props: Props) {
             borderWidth: 1,
             borderRadius: 5,
             height: props.size ?? 30,
+            backgroundColor: Color(theme.colors.black).setAlpha(0.1).rgbaString,
         },
         leftIcon: {
             width: props.size ?? 30,
@@ -32,7 +33,7 @@ export function NumberInput(props: Props) {
             borderRightColor: theme.colors.grey4,
             backgroundColor:
                 props.value <= (props.min ?? Number.MIN_SAFE_INTEGER)
-                    ? Color(theme.colors.grey5).setAlpha(0.5).rgbaString
+                    ? Color(theme.colors.grey5).setAlpha(0.7).rgbaString
                     : undefined,
         },
         input: {
@@ -47,7 +48,7 @@ export function NumberInput(props: Props) {
             borderLeftColor: theme.colors.grey4,
             backgroundColor:
                 props.value >= (props.max ?? Number.MAX_SAFE_INTEGER)
-                    ? Color(theme.colors.grey5).setAlpha(0.5).rgbaString
+                    ? Color(theme.colors.grey5).setAlpha(0.7).rgbaString
                     : undefined,
         },
     });

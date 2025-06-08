@@ -1,6 +1,6 @@
 import {SliderProps} from "@rneui/base";
 import {Slider, Text} from "@rneui/themed";
-import {Pressable, StyleProp, StyleSheet} from "react-native";
+import {Pressable, StyleProp, StyleSheet, ViewStyle} from "react-native";
 import Flex from "./Flex.tsx";
 import {useUserTheme} from "@/js/theme.ts";
 import {Color} from "@/js/color.ts";
@@ -8,8 +8,8 @@ import {useState} from "react";
 import {NumberInput} from "@/components/un-ui/NumberInput.tsx";
 
 interface Props {
-    containerStyle?: StyleProp<any>;
-    sliderContainerStyle?: StyleProp<any>;
+    containerStyle?: StyleProp<ViewStyle>;
+    sliderContainerStyle?: StyleProp<ViewStyle>;
     inputMode?: boolean;
 }
 
@@ -19,17 +19,9 @@ export function UnSlider(props: Props & SliderProps) {
 
     const style = StyleSheet.create({
         valuePreviewText: {
-            backgroundColor: Color(theme.colors.background).setAlpha(0.7).rgbaString,
+            backgroundColor: Color(theme.colors.black).setAlpha(0.1).rgbaString,
             paddingHorizontal: 10,
-            paddingVertical: 2,
-            borderRadius: 4,
-        },
-        valueInput: {
-            width: 40,
-            color: theme.colors.black,
-            backgroundColor: Color(theme.colors.background).setAlpha(0.7).rgbaString,
-            paddingHorizontal: 10,
-            paddingVertical: 2,
+            paddingVertical: 6,
             borderRadius: 4,
         },
     });

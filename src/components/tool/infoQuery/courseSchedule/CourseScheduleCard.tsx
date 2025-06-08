@@ -22,6 +22,7 @@ import {useUserTheme} from "@/js/theme.ts";
 import {Color} from "@/js/color.ts";
 import {usePagerView} from "react-native-pager-view";
 import {UnSlider} from "@/components/un-ui/UnSlider.tsx";
+import {CourseCardSetting} from "@/components/tool/infoQuery/courseSchedule/CourseCardSetting.tsx";
 
 export function CourseScheduleCard() {
     const {theme, userTheme} = useUserTheme();
@@ -96,7 +97,7 @@ export function CourseScheduleCard() {
         getCourseSchedule();
     }, [year, term]);
     return (
-        <CourseScheduleContext.Provider value={{courseScheduleData, courseScheduleStyle}}>
+        <CourseScheduleContext.Provider value={{courseScheduleData, courseScheduleStyle, updateCourseScheduleData}}>
             <Card containerStyle={style.card}>
                 <Card.Title style={style.cardTitle}>
                     <Flex justifyContent="space-between">
@@ -171,67 +172,8 @@ export function CourseScheduleCard() {
                 <BottomSheet
                     isVisible={courseScheduleSettingVisible}
                     onBackdropPress={() => setCourseScheduleSettingVisible(false)}>
-                    <View style={style.bottomSheetContainer}>
-                        <ListItem bottomDivider>
-                            <Text>课程元素高度</Text>
-                            <Flex>
-                                <UnSlider
-                                    step={1}
-                                    minimumValue={5}
-                                    maximumValue={100}
-                                    allowTouchTrack
-                                    value={courseScheduleData.style.timeSpanHeight}
-                                    onValueChange={v =>
-                                        updateCourseScheduleData({
-                                            ...courseScheduleData,
-                                            style: {...courseScheduleData.style, timeSpanHeight: v},
-                                        })
-                                    }
-                                />
-                            </Flex>
-                        </ListItem>
-                        <ListItem>
-                            <Flex gap={10}>
-                                <Text>学期</Text>
-                                <View style={{flex: 1}}>
-                                    <Picker
-                                        {...userTheme.components.Picker}
-                                        selectedValue={year}
-                                        onValueChange={v => setYear(v)}>
-                                        {Array.from(SchoolYears).map(value => {
-                                            return <Picker.Item value={+value[0]} label={value[1]} key={value[0]} />;
-                                        })}
-                                    </Picker>
-                                </View>
-                                <View style={{flex: 1}}>
-                                    <Picker
-                                        {...userTheme.components.Picker}
-                                        selectedValue={term}
-                                        onValueChange={v => setTerm(v)}>
-                                        {Array.from(SchoolTerms).map(value => {
-                                            return <Picker.Item value={value[0]} label={value[1]} key={value[0]} />;
-                                        })}
-                                    </Picker>
-                                </View>
-                            </Flex>
-                        </ListItem>
-                        <ListItem>
-                            <Flex gap={10}>
-                                <Text>课表周数</Text>
-                                <Flex>
-                                    <UnSlider
-                                        step={1}
-                                        minimumValue={1}
-                                        maximumValue={20}
-                                        allowTouchTrack
-                                        value={rest.activePage + 1}
-                                        onValueChange={v => rest.setPage(v - 1)}
-                                    />
-                                </Flex>
-                            </Flex>
-                        </ListItem>
-                    </View>
-                </BottomSheet>
+                    <CourseCardSetting containerStyle={style.bottomSheetContainer} year={year} term={term} pageViewRest={rest} onYearChange={setYear} onTermChange={setTerm}/>
+                    </BottomSheet>
                 {/* 课表课程信息 */}
                 <BottomSheet isVisible={courseDetailVisible} onBackdropPress={() => setCourseDetailVisible(false)}>
                     <View style={style.bottomSheetContainer}>

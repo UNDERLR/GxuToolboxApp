@@ -361,4 +361,5 @@ export function useCourseScheduleData() {
 export const CourseScheduleContext = createContext<{
     courseScheduleData: typeof CourseScheduleData;
     courseScheduleStyle: ReturnType<typeof generateCourseScheduleStyle>;
+    updateCourseScheduleData: (data: Partial<typeof CourseScheduleData>) => void;
 } | null>(null);
