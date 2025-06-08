@@ -2,7 +2,7 @@ import {BottomSheet, Card, ListItem, Text} from "@rneui/themed";
 import {infoQuery} from "@/js/jw/infoQuery.ts";
 import {Pressable, StyleSheet, ToastAndroid, View} from "react-native";
 import {store} from "@/js/store.ts";
-import {CourseScheduleQueryRes} from "@/type/api/classScheduleAPI.ts";
+import {CourseScheduleQueryRes} from "@/type/api/infoQuery/classScheduleAPI.ts";
 import {useEffect, useMemo, useState} from "react";
 import {PracticalCourseList} from "./PracticalCourseList.tsx";
 import Flex from "@/components/un-ui/Flex.tsx";

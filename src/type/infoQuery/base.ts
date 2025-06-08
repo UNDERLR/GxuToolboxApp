@@ -1,0 +1,29 @@
+export interface Profession {
+    /** 学院代码 */
+    jg_id: string;
+    /** 学院名称 */
+    jgmc: string;
+    /**  */
+    jgpxzd: string;
+    /** 专业代码 */
+    zyh: string;
+    /** 专业代码 */
+    zyh_id: string;
+    /** 专业名称和专业代码 */
+    zymc: string;
+}
+
+export interface Class extends Profession {
+    /** 班级代号 */
+    bh: string;
+    /** 班级代号 */
+    bh_id: string;
+    /** 班级名称 */
+    bj: string;
+    /** 年级id */
+    njdm_id: string;
+    /** 年级名称 */
+    njmc: string;
+    /**  */
+    xqh_id: string;
+}

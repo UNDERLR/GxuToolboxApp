@@ -9,7 +9,7 @@ import {infoQuery} from "@/js/jw/infoQuery.ts";
 import {NumberInput} from "@/components/un-ui/NumberInput.tsx";
 import {Row, Rows, Table} from "react-native-reanimated-table";
 import {useUserTheme} from "@/js/theme.ts";
-import {ExamInfoQueryRes} from "@/type/api/examInfoAPI.ts";
+import {ExamInfoQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
 import {store} from "@/js/store.ts";
 import {Color} from "@/js/color.ts";
 

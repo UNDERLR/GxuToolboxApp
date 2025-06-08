@@ -1,8 +1,8 @@
 import {http, objectToFormUrlEncoded} from "@/js/http.ts";
-import {CourseScheduleQueryRes} from "@/type/api/classScheduleAPI.ts";
+import {CourseScheduleQueryRes} from "@/type/api/infoQuery/classScheduleAPI.ts";
 import {SchoolTerms, SchoolYears} from "@/type/global.ts";
 import moment from "moment/moment";
-import {ExamInfoQueryRes, ExamScoreQueryRes} from "@/type/api/examInfoAPI.ts";
+import {ExamInfoQueryRes, ExamScoreQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
 import {jwxt} from "./jwxt.ts";
 import {ToastAndroid} from "react-native";
 

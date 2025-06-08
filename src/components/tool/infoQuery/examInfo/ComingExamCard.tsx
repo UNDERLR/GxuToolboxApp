@@ -6,7 +6,7 @@ import {useUserTheme} from "@/js/theme.ts";
 import {useEffect, useState} from "react";
 import {ExamInfo} from "@/type/infoQuery/exam/examInfo.ts";
 import {store} from "@/js/store.ts";
-import {ExamInfoQueryRes} from "@/type/api/examInfoAPI.ts";
+import {ExamInfoQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
 import moment from "moment/moment";
 import {Row, Rows, Table} from "react-native-reanimated-table";
 

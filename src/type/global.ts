@@ -90,26 +90,44 @@ export const Schools = [
 ];
 
 export interface QueryModel {
+    /**  */
     currentPage: number;
+    /**  */
     currentResult: number;
+    /**  */
     entityOrField: boolean;
+    /**  */
     limit: number;
+    /**  */
     offset: number;
+    /**  */
     pageNo: number;
+    /**  */
     pageSize: number;
+    /**  */
     showCount: number;
+    /**  */
     sorts: any[];
+    /**  */
     totalCount: number;
+    /**  */
     totalPage: number;
+    /**  */
     totalResult: number;
 }
 
 export interface UserModel {
+    /**  */
     monitor: boolean;
+    /**  */
     roleCount: number;
+    /**  */
     roleKeys: string;
+    /**  */
     roleValues: string;
+    /**  */
     status: number;
+    /**  */
     usable: boolean;
 }
 
@@ -143,4 +161,22 @@ export interface QueryResRoot {
     totalPage: number;
     // 符合查询条件的总结果数，用于前端分页组件显示？
     totalResult: number;
+}
+
+// 教务分页查询时通用属性，目前仅在不带有返回根的接口存在
+export interface PageModel {
+    /**  */
+    queryModel: QueryModel,
+    /**  */
+    userModel: UserModel,
+    /**  */
+    listnav: string;
+    /**  */
+    localeKey: string;
+    /**  */
+    pageable: boolean;
+    /**  */
+    rangeable: boolean;
+    /** 结果数量，意义不明，总是为 `"0"`（目前） */
+    totalResult: string;
 }
