@@ -15,7 +15,7 @@ import {Color} from "@/js/color.ts";
 
 export function ExamInfo() {
     const {theme, userTheme} = useUserTheme();
-    const [apiRes, setApiRes] = useState<ExamInfoQueryRes>({});
+    const [apiRes, setApiRes] = useState<ExamInfoQueryRes>({} as ExamInfoQueryRes);
     const [year, setYear] = useState(moment().isBefore(moment("8", "M"), "M") ? moment().year() - 1 : moment().year());
     const [term, setTerm] = useState<string>(
         moment().isBetween(moment("02", "MM"), moment("08", "MM"), "month", "[]")
@@ -50,13 +50,11 @@ export function ExamInfo() {
             borderColor: Color.mix(Color(theme.colors.primary), Color(theme.colors.grey4), 0.4).rgbaString,
         },
         tableHeader: {
-            backgroundColor: Color
-                .mix(
-                    Color(theme.colors.primary),
-                    Color(theme.colors.background),
-                    theme.mode === "dark" ? 0.7 : 0.2,
-                )
-                .setAlpha(theme.mode === "dark" ? 0.3 : 0.6).rgbaString,
+            backgroundColor: Color.mix(
+                Color(theme.colors.primary),
+                Color(theme.colors.background),
+                theme.mode === "dark" ? 0.7 : 0.2,
+            ).setAlpha(theme.mode === "dark" ? 0.3 : 0.6).rgbaString,
         },
         tableHeaderText: {},
     });
@@ -69,7 +67,7 @@ export function ExamInfo() {
 
     function query() {
         infoQuery.getExamInfo(year, term, page).then(res => {
-            const tableBody = res.items.map((item, index) => [
+            const tableBody = res.items.map(item => [
                 item.kcmc,
                 item.kssj,
                 item.cdxqmc,
@@ -105,27 +103,21 @@ export function ExamInfo() {
                     <Flex gap={10}>
                         <Text>学期</Text>
                         <View style={{flex: 1}}>
-                            <Picker
-                                {...userTheme.components.Picker}
-                                selectedValue={year}
-                                onValueChange={(v, index) => setYear(v)}>
+                            <Picker {...userTheme.components.Picker} selectedValue={year} onValueChange={setYear}>
                                 {data.schoolYear.map(value => {
                                     return <Picker.Item value={+value[0]} label={value[1]} key={value[0]} />;
                                 })}
                             </Picker>
                         </View>
                         <View style={{flex: 1}}>
-                            <Picker
-                                {...userTheme.components.Picker}
-                                selectedValue={term}
-                                onValueChange={(v, index) => setTerm(v)}>
+                            <Picker {...userTheme.components.Picker} selectedValue={term} onValueChange={setTerm}>
                                 {data.schoolTerm.map(value => {
                                     return <Picker.Item value={value[0]} label={value[1]} key={value[0]} />;
                                 })}
                             </Picker>
                         </View>
                     </Flex>
-                    <View style={{width:"100%"}}>
+                    <View style={{width: "100%"}}>
                         <Button onPress={query}>查询</Button>
                     </View>
                 </Flex>
@@ -133,7 +125,9 @@ export function ExamInfo() {
                 <Flex direction="column" gap={15} alignItems="flex-start">
                     <Flex alignItems="flex-end" gap={5}>
                         <Text h4>查询结果</Text>
-                        <Text>{`第${apiRes.currentPage ?? 1}/${apiRes.totalPage ?? 1}页，共有${apiRes.totalCount ?? 0}条结果`}</Text>
+                        <Text>{`第${apiRes.currentPage ?? 1}/${apiRes.totalPage ?? 1}页，共有${
+                            apiRes.totalCount ?? 0
+                        }条结果`}</Text>
                     </Flex>
                     <Flex gap={10}>
                         <Text>页数</Text>

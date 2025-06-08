@@ -79,7 +79,7 @@ export function ExamScore() {
 
     function query() {
         infoQuery.getExamScore(year, term, page).then(res => {
-            const tableBody = res.items.map((item, index) => [
+            const tableBody = res.items.map(item => [
                 item.xnmmc,
                 item.kcmc,
                 item.cj,
@@ -116,7 +116,7 @@ export function ExamScore() {
                             <Picker
                                 {...userTheme.components.Picker}
                                 selectedValue={year}
-                                onValueChange={(v, index) => setYear(v)}>
+                                onValueChange={setYear}>
                                 {data.schoolYear.map(value => {
                                     return <Picker.Item value={+value[0]} label={value[1]} key={value[0]} />;
                                 })}
@@ -126,7 +126,7 @@ export function ExamScore() {
                             <Picker
                                 {...userTheme.components.Picker}
                                 selectedValue={term}
-                                onValueChange={(v, index) => setTerm(v)}>
+                                onValueChange={setTerm}>
                                 {data.schoolTerm.map(value => {
                                     return <Picker.Item value={value[0]} label={value[1]} key={value[0]} />;
                                 })}
