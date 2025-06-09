@@ -1,10 +1,11 @@
-import {CourseScheduleContext, PracticalCourse} from "@/type/infoQuery/course/course.ts";
+import {PracticalCourse} from "@/type/infoQuery/course/course.ts";
 import {StyleSheet, View} from "react-native";
 import {BaseColor, Color} from "@/js/color.ts";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {Icon} from "@/components/un-ui/Icon.tsx";
 import {Text, useTheme} from "@rneui/themed";
 import {useContext, useEffect, useState} from "react";
+import {CourseScheduleContext} from "@/js/jw/course.ts";
 
 interface Props {
     courseList: PracticalCourse[];

@@ -4,8 +4,9 @@ import {Color} from "@/js/color.ts";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {Text} from "@rneui/themed";
 import {Icon} from "@/components/un-ui/Icon.tsx";
-import {Course, CourseScheduleContext} from "@/type/infoQuery/course/course.ts";
+import {Course} from "@/type/infoQuery/course/course.ts";
 import {useUserTheme} from "@/js/theme.ts";
+import {CourseScheduleContext} from "@/js/jw/course.ts";
 
 interface CourseItem extends Course {
     // 在课程表中显示的背景颜色

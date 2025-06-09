@@ -1,4 +1,4 @@
-import {BottomSheet, Card, ListItem, Text} from "@rneui/themed";
+import {BottomSheet, Card, Text} from "@rneui/themed";
 import {infoQuery} from "@/js/jw/infoQuery.ts";
 import {Pressable, StyleSheet, ToastAndroid, View} from "react-native";
 import {store} from "@/js/store.ts";
@@ -8,21 +8,15 @@ import {PracticalCourseList} from "./PracticalCourseList.tsx";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {Icon} from "@/components/un-ui/Icon.tsx";
 import moment from "moment";
-import {
-    Course,
-    CourseScheduleContext, DefaultCourseScheduleData,
-    generateCourseScheduleStyle,
-    useCourseScheduleData,
-} from "@/type/infoQuery/course/course.ts";
+import {Course} from "@/type/infoQuery/course/course.ts";
 import {CourseScheduleTable} from "./CourseScheduleTable.tsx";
-import {Picker} from "@react-native-picker/picker";
 import {SchoolTerms, SchoolYears} from "@/type/global.ts";
 import {CourseDetail} from "./CourseDetail.tsx";
 import {useUserTheme} from "@/js/theme.ts";
 import {Color} from "@/js/color.ts";
 import {usePagerView} from "react-native-pager-view";
-import {UnSlider} from "@/components/un-ui/UnSlider.tsx";
 import {CourseCardSetting} from "@/components/tool/infoQuery/courseSchedule/CourseCardSetting.tsx";
+import {CourseScheduleContext, generateCourseScheduleStyle, useCourseScheduleData} from "@/js/jw/course.ts";
 
 export function CourseScheduleCard() {
     const {theme, userTheme} = useUserTheme();
@@ -172,8 +166,15 @@ export function CourseScheduleCard() {
                 <BottomSheet
                     isVisible={courseScheduleSettingVisible}
                     onBackdropPress={() => setCourseScheduleSettingVisible(false)}>
-                    <CourseCardSetting containerStyle={style.bottomSheetContainer} year={year} term={term} pageViewRest={rest} onYearChange={setYear} onTermChange={setTerm}/>
-                    </BottomSheet>
+                    <CourseCardSetting
+                        containerStyle={style.bottomSheetContainer}
+                        year={year}
+                        term={term}
+                        pageViewRest={rest}
+                        onYearChange={setYear}
+                        onTermChange={setTerm}
+                    />
+                </BottomSheet>
                 {/* 课表课程信息 */}
                 <BottomSheet isVisible={courseDetailVisible} onBackdropPress={() => setCourseDetailVisible(false)}>
                     <View style={style.bottomSheetContainer}>

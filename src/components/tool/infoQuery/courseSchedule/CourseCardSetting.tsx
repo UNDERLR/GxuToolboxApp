@@ -5,11 +5,11 @@ import Flex from "@/components/un-ui/Flex.tsx";
 import {UnSlider} from "@/components/un-ui/UnSlider.tsx";
 import {Picker} from "@react-native-picker/picker";
 import {SchoolTerms, SchoolYears} from "@/type/global.ts";
-import {CourseScheduleContext} from "@/type/infoQuery/course/course.ts";
 import {useUserTheme} from "@/js/theme.ts";
 import {usePagerView} from "react-native-pager-view";
 import {UnDateTimePicker} from "@/components/un-ui/UnDateTimePicker.tsx";
 import moment from "moment/moment";
+import {CourseScheduleContext} from "@/js/jw/course.ts";
 
 interface Props {
     containerStyle?: StyleProp<ViewStyle>;
