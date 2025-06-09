@@ -165,6 +165,7 @@ export function CourseScheduleTable(props: Props) {
                         </View>
                         {courseSchedule[index].map((course, i) => (
                             <CourseItem
+                                onCoursePress={props.onCoursePress}
                                 key={`day${index}-${course.kcmc}-${course.jc}`}
                                 course={course}
                                 index={i}
