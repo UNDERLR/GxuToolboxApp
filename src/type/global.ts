@@ -131,39 +131,41 @@ export interface UserModel {
     usable: boolean;
 }
 
-// 教务系统查询类请求接口返回的基本数据类型，看上去是数据库分页查询时的通用参数
-export interface QueryResRoot {
-    // 当前页
+/** 教务系统查询类请求接口返回的基本数据类型，看上去是数据库分页查询时的通用参数 */
+export interface QueryResRoot<T> {
+    /** 结果列表 */
+    items: T[];
+    /** 当前页 */
     currentPage: number;
-    // 当前结果？
+    /** 当前结果？ */
     currentResult: number;
-    // 是否是实体还是字段？
+    /** 是否是实体还是字段？ */
     entityOrField: boolean;
-    // 每页显示数量
+    /** 每页显示数量 */
     limit: number;
-    // 分页偏移量
+    /** 分页偏移量 */
     offset: number;
-    // 页码？
+    /** 页码？ */
     pageNo: number;
-    // 每页显示数量
+    /** 每页显示数量 */
     pageSize: number;
-    // 显示数据总数（？）可能用于遍历
+    /** 显示数据总数（？）可能用于遍历 */
     showCount: number;
-    // 排序字段？
+    /** 排序字段？ */
     sortName: string;
-    // 排序方式，asc/desc
+    /** 排序方式，asc/desc */
     sortOrder: string;
-    // 排序字段列表？
+    /** 排序字段列表？ */
     sorts: any[];
-    // 符合查询条件的总数，包括没有返回的数据，用于前端分页组件计算总页数等等
+    /** 符合查询条件的总数，包括没有返回的数据，用于前端分页组件计算总页数等等 */
     totalCount: number;
-    // 符合查询条件的总页数，用于前端分页组件显示
+    /** 符合查询条件的总页数，用于前端分页组件显示 */
     totalPage: number;
-    // 符合查询条件的总结果数，用于前端分页组件显示？
+    /** 符合查询条件的总结果数，用于前端分页组件显示？ */
     totalResult: number;
 }
 
-// 教务分页查询时通用属性，目前仅在不带有返回根的接口存在
+/** 教务分页查询时通用属性，目前仅在不带有返回根的接口存在 */
 export interface PageModel {
     /**  */
     queryModel: QueryModel,
