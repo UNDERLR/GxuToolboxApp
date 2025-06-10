@@ -80,17 +80,14 @@ export const jwxt = {
     },
 
     getInfo: async (): Promise<UserInfo | undefined> => {
-        const res = await http.post("/xtgl/index_cxYhxxIndex.html?xt=jw&localeKey=zh_CN");
+        const res = await http.post("/xsxxxggl/xsgrxxwh_cxXsgrxx.html?gnmkdm=N100801");
         if (typeof res.data === "string") {
             const doc = new DOMParser().parseFromString(res.data.replace(/[\b\f\n\r\t]/g, ""));
-            const infoEle = doc.querySelector("div.media-body");
-            const nameAndCharacterText = decodeHTMLEntities(infoEle?.children[0].innerText);
-            const schoolAndClassText = decodeHTMLEntities(infoEle?.children[1].innerText);
             const info = {
-                name: nameAndCharacterText.split("  ")[0],
-                character: nameAndCharacterText.split("  ")[1],
-                school: schoolAndClassText.split(" ")[0],
-                class: schoolAndClassText.split(" ")[1],
+                // name: doc,
+                // character: nameAndCharacterText.split("  ")[1],
+                // school: schoolAndClassText.split(" ")[0],
+                // class: schoolAndClassText.split(" ")[1],
             } as UserInfo;
             store.save({
                 key: "userInfo",

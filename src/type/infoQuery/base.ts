@@ -1,6 +1,6 @@
 import {SchoolLabel} from "@/type/global.ts";
 
-export interface Profession {
+export interface Subject {
     /** 学院代码 */
     jg_id: string;
     /** 学院名称 */
@@ -15,7 +15,7 @@ export interface Profession {
     zymc: string;
 }
 
-export interface Class extends Profession {
+export interface Class extends Subject {
     /** 班级代号 */
     bh: string;
     /** 班级代号 */
@@ -39,4 +39,6 @@ export interface UserInfo {
     school: SchoolLabel;
     /** 班级 */
     class: string;
+    /** 专业 */
+    subject: string;
 }

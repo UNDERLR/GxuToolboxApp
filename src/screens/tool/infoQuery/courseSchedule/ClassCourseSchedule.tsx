@@ -12,7 +12,7 @@ import {UserInfo} from "@/type/infoQuery/base.ts";
 export function ClassCourseSchedule() {
     const {userTheme} = useUserTheme();
     const [userInfo, setUserInfo] = useState<UserInfo>();
-    const [professionList, setProfessionList] = useState<string[][]>([]);
+    const [subjectList, setSubjectList] = useState<string[][]>([]);
     const [classList, setClassList] = useState<string[][]>([]);
     // params
     const [year, setYear] = useState(moment().isBefore(moment("8", "M"), "M") ? moment().year() - 1 : moment().year());
@@ -24,7 +24,7 @@ export function ClassCourseSchedule() {
     const [school, setSchool] = useState<SchoolValue>(
         Schools[Schools.findIndex(v => v[1] === (userInfo?.school ?? Schools[0][1]))][0],
     );
-    const [profession, setProfession] = useState("");
+    const [subject, setSubject] = useState("");
     const [grade, setGrade] = useState(moment().year());
     const [classId, setClassId] = useState("");
 
@@ -42,34 +42,34 @@ export function ClassCourseSchedule() {
         const schoolIndex = Schools.findIndex(v => v[1] === (storeUserInfo?.school ?? Schools[0][1]));
         const newSchool = Schools[schoolIndex][0];
         setSchool(newSchool);
-        const newProfessionList = await getProfessionList(newSchool, false);
-        const professionIndex = newProfessionList.findIndex(
+        const newSubjectList = await getSubjectList(newSchool, false);
+        const subjectIndex = newSubjectList.findIndex(
             v => v[1].indexOf(storeUserInfo.class.replace(/\d*/g, "")) > -1,
         );
-        const newProfession = newProfessionList[professionIndex][0];
-        setProfession(newProfession);
+        const newSubject = newSubjectList[subjectIndex][0];
+        setSubject(newSubject);
         const newGrade = 2000 + parseInt(storeUserInfo.class.match(/\d{2}/)![0], 10);
         setGrade(newGrade);
-        const newClassList = await getClassList(newSchool, newProfession, newGrade, false);
+        const newClassList = await getClassList(newSchool, newSubject, newGrade, false);
         setClassList(newClassList);
     };
 
-    const getProfessionList = async (schoolId = school, reload = true) => {
-        const professionRes = await infoQuery.getProfessionList(schoolId);
-        const newProfessionList = professionRes.map(item => [item.zyh_id, item.zymc]);
+    const getSubjectList = async (schoolId = school, reload = true) => {
+        const subjectRes = await infoQuery.getSubjectList(schoolId);
+        const newSubjectList = subjectRes.map(item => [item.zyh_id, item.zymc]);
         if (reload) {
-            setProfessionList(newProfessionList);
+            setSubjectList(newSubjectList);
         }
-        return newProfessionList;
+        return newSubjectList;
     };
 
     const getClassList = async (
         schoolId: SchoolValue = school,
-        professionId: string = profession,
+        subjectId: string = subject,
         gradeId: number = grade,
         reload = true,
     ) => {
-        const classListRes = await infoQuery.getClassList(schoolId, professionId, gradeId);
+        const classListRes = await infoQuery.getClassList(schoolId, subjectId, gradeId);
         const newClassList = classListRes.map(item => [item.bh_id, item.bj]);
         if (reload) {
             setClassList(newClassList);
@@ -79,12 +79,12 @@ export function ClassCourseSchedule() {
     };
 
     useEffect(() => {
-        getProfessionList();
+        getSubjectList();
     }, [school]);
 
     useEffect(() => {
         getClassList();
-    }, [profession, grade]);
+    }, [subject, grade]);
 
     useEffect(() => {
         init();
@@ -121,22 +121,22 @@ export function ClassCourseSchedule() {
                             </Picker>
                         </View>
                     </Flex>
-                    {professionList.length > 0 && (
+                    {subjectList.length > 0 && (
                         <Flex gap={10}>
                             <Text>专业</Text>
                             <View style={{flex: 1}}>
                                 <Picker
                                     {...userTheme.components.Picker}
-                                    selectedValue={profession}
-                                    onValueChange={setProfession}>
-                                    {professionList.map(value => {
+                                    selectedValue={subject}
+                                    onValueChange={setSubject}>
+                                    {subjectList.map(value => {
                                         return <Picker.Item value={value[0]} label={value[1]} key={value[0]} />;
                                     })}
                                 </Picker>
                             </View>
                         </Flex>
                     )}
-                    {profession && (
+                    {subject && (
                         <Flex gap={10}>
                             <Text>年级</Text>
                             <View style={{flex: 1}}>
@@ -172,7 +172,7 @@ export function ClassCourseSchedule() {
                 </Flex>
                 <Divider />
                 <Flex direction="column" gap={15} alignItems="flex-start">
-                    <Text>{profession}</Text>
+                    <Text>{subject}</Text>
                     <Text>{school}</Text>
                     <Text>{JSON.stringify(userInfo)}</Text>
                 </Flex>

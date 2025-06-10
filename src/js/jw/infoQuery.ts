@@ -7,7 +7,7 @@ import {jwxt} from "./jwxt.ts";
 import {ToastAndroid} from "react-native";
 import {UserInfo} from "@/type/infoQuery/base.ts";
 import {store} from "@/js/store.ts";
-import {GetClassListRes, GetProfessionListRes} from "@/type/api/base.ts";
+import {GetClassListRes, GetSubjectListRes} from "@/type/api/base.ts";
 
 export const defaultYear = moment().isBefore(moment("8", "M"), "M") ? moment().year() - 1 : moment().year();
 
@@ -17,16 +17,16 @@ export const infoQuery = {
             key: "userInfo",
         });
     },
-    getProfessionList: async (schoolId: SchoolValue): Promise<GetProfessionListRes> => {
+    getSubjectList: async (schoolId: SchoolValue): Promise<GetSubjectListRes> => {
         const res = await http.get(urlWithParams("/xtgl/comm_cxZydmList.html", {
             jg_id: schoolId,
         }));
         return res.data;
     },
-    getClassList: async (schoolId: SchoolValue, professionId: string, grade: number): Promise<GetClassListRes> => {
+    getClassList: async (schoolId: SchoolValue, subjectId: string, grade: number): Promise<GetClassListRes> => {
         const res = await http.get(urlWithParams("/xtgl/comm_cxBjdmList.html", {
             jg_id: schoolId,
-            zyh_id: professionId,
+            zyh_id: subjectId,
             njdm_id: grade,
         }));
         return res.data;
