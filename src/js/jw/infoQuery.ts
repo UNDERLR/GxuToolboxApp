@@ -5,10 +5,17 @@ import moment from "moment/moment";
 import {ExamInfoQueryRes, ExamScoreQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
 import {jwxt} from "./jwxt.ts";
 import {ToastAndroid} from "react-native";
+import {UserInfo} from "@/type/infoQuery/base.ts";
+import {store} from "@/js/store.ts";
 
 export const defaultYear = moment().isBefore(moment("8", "M"), "M") ? moment().year() - 1 : moment().year();
 
 export const infoQuery = {
+    getUserInfo: async (): Promise<UserInfo> => {
+        return await store.load<UserInfo>({
+            key: "userInfo",
+        });
+    },
     getCourseSchedule: (year: number, term: string): Promise<CourseScheduleQueryRes> => {
         const yearIndex = SchoolYears.findIndex(v => +v[0] === year);
         return new Promise(async (resolve, reject) => {

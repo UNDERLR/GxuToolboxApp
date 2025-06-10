@@ -27,3 +27,14 @@ export interface Class extends Profession {
     /**  */
     xqh_id: string;
 }
+
+export interface UserInfo {
+    /** 名字 */
+    name: string;
+    /** 用户身份 */
+    character: string;
+    /** 学院 */
+    school: string;
+    /** 班级 */
+    class: string;
+}

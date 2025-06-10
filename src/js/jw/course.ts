@@ -133,12 +133,15 @@ export function useCourseScheduleData() {
         store
             .load({key: "courseScheduleSetting"})
             .then(data => {
-                updateCourseScheduleData(data);
+                setCourseScheduleData(prevData => ({
+                    ...prevData,
+                    ...data,
+                }));
             })
             .catch(err => {
                 console.error("加载课程表设置失败:", err);
             });
-    }, [updateCourseScheduleData]);
+    }, []); // 移除依赖，只在组件挂载时执行一次
 
     return {courseScheduleData, updateCourseScheduleData};
 }
