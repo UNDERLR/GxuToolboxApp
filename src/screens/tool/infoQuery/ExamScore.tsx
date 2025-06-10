@@ -106,8 +106,6 @@ export function ExamScore() {
     return (
         <ScrollView>
             <View style={style.container}>
-                <Text h3>考试成绩查询</Text>
-                <Divider />
                 <Text h4>查询参数</Text>
                 <Flex gap={10} direction="column" alignItems="flex-start">
                     <Flex gap={10}>

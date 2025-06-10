@@ -96,8 +96,6 @@ export function ExamInfo() {
     return (
         <ScrollView>
             <View style={style.container}>
-                <Text h3>考试信息查询</Text>
-                <Divider />
                 <Flex gap={10} direction="column" alignItems="flex-start">
                     <Text h4>查询参数</Text>
                     <Flex gap={10}>
