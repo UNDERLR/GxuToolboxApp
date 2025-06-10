@@ -102,7 +102,7 @@ export function CourseCardSetting(props: Props) {
                                 {...userTheme.components.Picker}
                                 selectedValue={props.year}
                                 onValueChange={props.onYearChange}>
-                                {Array.from(SchoolYears).map(value => {
+                                {SchoolYears.map(value => {
                                     return <Picker.Item value={+value[0]} label={value[1]} key={value[0]} />;
                                 })}
                             </Picker>
@@ -112,7 +112,7 @@ export function CourseCardSetting(props: Props) {
                                 {...userTheme.components.Picker}
                                 selectedValue={props.term}
                                 onValueChange={props.onTermChange}>
-                                {Array.from(SchoolTerms).map(value => {
+                                {SchoolTerms.map(value => {
                                     return <Picker.Item value={value[0]} label={value[1]} key={value[0]} />;
                                 })}
                             </Picker>

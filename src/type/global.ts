@@ -23,13 +23,17 @@ export const SchoolYears = [
     ["2007", "2007-2008"],
     ["2006", "2006-2007"],
     ["2005", "2005-2006"],
-];
+] as const;
+export type SchoolYearValue = typeof SchoolYears[number][0];
+export type SchoolYearLabel = typeof SchoolYears[number][1];
 
 export const SchoolTerms = [
     ["3", "秋季学期"],
     ["12", "春季学期"],
-    // ["16", "3"],
-];
+    ["16", "3"],
+]as const;
+export type SchoolTermValue = typeof SchoolTerms[number][0];
+export type SchoolTermLabel = typeof SchoolTerms[number][1];
 
 export const Schools = [
     ["10100", "党委办公室、校长办公室（校务督查办公室、法治与法务办公室）"],
@@ -87,7 +91,9 @@ export const Schools = [
     ["41600", "中国－东盟研究院／广西创新发展研究院"],
     ["60100", "资产经营有限公司"],
     ["60200", "农牧产业发展研究院"],
-];
+] as const;
+export type SchoolValue = typeof Schools[number][0];
+export type SchoolLabel = typeof Schools[number][1];
 
 export interface QueryModel {
     /**  */

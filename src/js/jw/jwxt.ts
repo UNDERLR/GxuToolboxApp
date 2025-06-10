@@ -81,7 +81,6 @@ export const jwxt = {
 
     getInfo: async (): Promise<UserInfo | undefined> => {
         const res = await http.post("/xtgl/index_cxYhxxIndex.html?xt=jw&localeKey=zh_CN");
-        console.log(res);
         if (typeof res.data === "string") {
             const doc = new DOMParser().parseFromString(res.data.replace(/[\b\f\n\r\t]/g, ""));
             const infoEle = doc.querySelector("div.media-body");
@@ -92,7 +91,7 @@ export const jwxt = {
                 character: nameAndCharacterText.split("  ")[1],
                 school: schoolAndClassText.split(" ")[0],
                 class: schoolAndClassText.split(" ")[1],
-            };
+            } as UserInfo;
             store.save({
                 key: "userInfo",
                 data: info,

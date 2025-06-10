@@ -1,3 +1,5 @@
+import {SchoolLabel} from "@/type/global.ts";
+
 export interface Profession {
     /** 学院代码 */
     jg_id: string;
@@ -32,9 +34,9 @@ export interface UserInfo {
     /** 名字 */
     name: string;
     /** 用户身份 */
-    character: string;
+    character: "学生";
     /** 学院 */
-    school: string;
+    school: SchoolLabel;
     /** 班级 */
     class: string;
 }

@@ -7,7 +7,7 @@ import {
     ToastAndroid,
     View,
 } from "react-native";
-import {Text} from "@rneui/themed";
+import {ListItem, Text} from "@rneui/themed";
 import {Color} from "@/js/color.ts";
 import {useNavigation} from "@react-navigation/native";
 import {Icon} from "@/components/un-ui/Icon.tsx";
@@ -29,35 +29,47 @@ interface ToolboxItem {
     url?: string;
 }
 
+const toolList = [
+    {
+        title: "课程表",
+        data: [
+            // {
+            //     label: "课表查询",
+            //     icon: <Icon name="calendar" size={20} />,
+            //     type: "navigation",
+            //     navigation: "courseSchedule",
+            // },
+            {
+                label: "班级课表查询",
+                icon: <Icon name="calendar" size={20} />,
+                type: "navigation",
+                navigation: "classCourseSchedule",
+            },
+        ],
+    },
+    {
+        title: "考试",
+        data: [
+            {
+                label: "考试信息查询",
+                icon: <Icon name="book" size={20} />,
+                type: "navigation",
+                navigation: "examInfo",
+            },
+            {
+                label: "考试成绩查询",
+                icon: <Icon name="barschart" size={20} />,
+                type: "navigation",
+                navigation: "examScore",
+            },
+        ],
+    },
+] as settingSection[];
+
 export function ToolboxIndex() {
     const navigation = useNavigation();
     const {theme, userTheme} = useUserTheme();
 
-    const toolList = [
-        {
-            title: "信息查询",
-            data: [
-                // {
-                //     label: "课表查询",
-                //     icon: <Icon name="calendar" size={20} />,
-                //     type: "navigation",
-                //     navigation: "courseSchedule",
-                // },
-                {
-                    label: "考试信息查询",
-                    icon: <Icon name="book" size={20} />,
-                    type: "navigation",
-                    navigation: "examInfo",
-                },
-                {
-                    label: "考试成绩查询",
-                    icon: <Icon name="barschart" size={20} />,
-                    type: "navigation",
-                    navigation: "examScore",
-                },
-            ],
-        },
-    ] as settingSection[];
 
     const data = {
         style: {
@@ -165,9 +177,9 @@ export function ToolboxIndex() {
                 }}
                 contentContainerStyle={style.settingSectionContainer}
                 renderSectionHeader={({section: {title}}) => (
-                    <View style={style.settingSectionHeader}>
+                    <ListItem.Subtitle style={style.settingSectionHeader}>
                         <Text h4>{title}</Text>
-                    </View>
+                    </ListItem.Subtitle>
                 )}
             />
         </View>
