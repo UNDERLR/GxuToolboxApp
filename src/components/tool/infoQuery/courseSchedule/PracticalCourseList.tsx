@@ -65,7 +65,7 @@ export function PracticalCourseList(props: Props) {
 
     return (
         <View>
-            <Text style={{textAlign: "center"}}>其他课程</Text>
+            <Text style={{textAlign: "center"}}>实践课</Text>
             {courseList.map((course: PracticalCourseItem) => {
                 const itemStyle = StyleSheet.create({
                     course: {
@@ -77,7 +77,7 @@ export function PracticalCourseList(props: Props) {
                 });
                 return (
                     <View
-                        key={course.kcmc}
+                        key={`${course.kcmc}-${Math.random()}`}
                         style={[
                             itemStyle.course,
                             courseScheduleStyle.courseItem,

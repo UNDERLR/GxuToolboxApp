@@ -4,7 +4,6 @@ import Flex from "@/components/un-ui/Flex.tsx";
 import {BottomSheet, Text} from "@rneui/themed";
 import {CourseScheduleTable} from "@/components/tool/infoQuery/courseSchedule/CourseScheduleTable.tsx";
 import {usePagerView} from "react-native-pager-view";
-import {Color} from "@/js/color.ts";
 import {CourseScheduleContext} from "@/js/jw/course.ts";
 import {useUserTheme} from "@/js/theme.ts";
 import moment from "moment/moment";
@@ -13,33 +12,25 @@ import {CourseDetail} from "@/components/tool/infoQuery/courseSchedule/CourseDet
 import {CourseScheduleQueryRes} from "@/type/api/infoQuery/classScheduleAPI.ts";
 
 interface Props {
-    startDay: moment.MomentInput;
+    startDay?: moment.MomentInput;
     onCoursePress?: (course: Course) => void;
     pageView: ReturnType<typeof usePagerView>;
     courseApiRes?: CourseScheduleQueryRes;
 }
 
 export function CourseScheduleView(props: Props) {
-    const {theme, userTheme} = useUserTheme();
-    const {courseScheduleData, courseScheduleStyle} = useContext(CourseScheduleContext)!;
+    const {theme} = useUserTheme();
+    const {courseScheduleData} = useContext(CourseScheduleContext)!;
     const {AnimatedPagerView, ref, ...rest} = props.pageView;
-    const realCurrentWeek = Math.ceil(moment.duration(moment().diff(props.startDay)).asWeeks());
+    const [startDay, setStartDay] = useState(props.startDay ?? props.courseApiRes?.weekNum[0].rq.split("/")[0]);
+    const realCurrentWeek = Math.ceil(
+        moment.duration(moment().diff(startDay)).asWeeks(),
+    );
 
     const [courseDetailVisible, setCourseDetailVisible] = useState(false);
     const [activeCourse, setActiveCourse] = useState<Course>({} as Course);
 
     const style = StyleSheet.create({
-        card: {
-            backgroundColor: Color(theme.colors.background).setAlpha(
-                0.05 + ((theme.mode === "dark" ? 0.6 : 0.7) * userTheme.bgOpacity) / 100,
-            ).rgbaString,
-            borderRadius: 5,
-            paddingHorizontal: 0,
-            marginHorizontal: 5,
-        },
-        cardTitle: {
-            paddingHorizontal: 15,
-        },
         pagerView: {
             width: "100%",
             height: courseScheduleData.style.timeSpanHeight * 13 + courseScheduleData.style.weekdayHeight + 50,
@@ -87,6 +78,7 @@ export function CourseScheduleView(props: Props) {
                                     <Text>点击课程查看详情</Text>
                                 </Flex>
                                 <CourseScheduleTable
+                                    startDay={startDay}
                                     onCoursePress={showCourseDetail}
                                     courseList={props.courseApiRes?.kbList ?? []}
                                     currentWeek={index + 1}

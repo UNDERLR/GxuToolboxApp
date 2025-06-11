@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {ScrollView, StyleSheet, ToastAndroid, View} from "react-native";
-import {Button, Divider, Text} from "@rneui/themed";
+import {Button, Card, Divider, Text} from "@rneui/themed";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {Picker} from "@react-native-picker/picker";
 import {PageModel, Schools, SchoolTerms, SchoolTermValue, SchoolValue, SchoolYears} from "@/type/global.ts";
@@ -10,12 +10,17 @@ import {infoQuery} from "@/js/jw/infoQuery.ts";
 import {Class, UserInfo} from "@/type/infoQuery/base.ts";
 import {CourseSchedule} from "@/type/infoQuery/course/course.ts";
 import {CourseScheduleQueryRes} from "@/type/api/infoQuery/classScheduleAPI.ts";
+import {CourseScheduleView} from "@/components/tool/infoQuery/courseSchedule/CourseScheduleView.tsx";
+import {usePagerView} from "react-native-pager-view";
+import {PracticalCourseList} from "@/components/tool/infoQuery/courseSchedule/PracticalCourseList.tsx";
+import {UnSlider} from "@/components/un-ui/UnSlider.tsx";
 
 export function ClassCourseSchedule() {
     const {userTheme} = useUserTheme();
     const [userInfo, setUserInfo] = useState<UserInfo>();
     const [subjectList, setSubjectList] = useState<string[][]>([]);
     const [classList, setClassList] = useState<string[][]>([]);
+    const pageView = usePagerView({pagesAmount: 20});
     // params
     const [year, setYear] = useState(moment().isBefore(moment("8", "M"), "M") ? moment().year() - 1 : moment().year());
     const [term, setTerm] = useState<SchoolTermValue>(
@@ -32,7 +37,7 @@ export function ClassCourseSchedule() {
     // scheduleList
     const [classScheduleList, setClassScheduleList] = useState<Array<CourseSchedule & Class & PageModel>>([]);
     const [classScheduleIndex, setClassScheduleIndex] = useState<number>();
-    const [classSchedule, setClassSchedule] = useState<CourseScheduleQueryRes>();
+    const [classScheduleApiRes, setClassScheduleApiRes] = useState<CourseScheduleQueryRes>();
 
     const style = StyleSheet.create({
         container: {
@@ -50,14 +55,14 @@ export function ClassCourseSchedule() {
 
     useEffect(() => {
         queryClassCourseScheduleList();
-    }, [classId]);
+    }, [classId, school, subject, grade, term, year]);
 
     const queryClassCourseSchedule = async (item = {}) => {
         ToastAndroid.show("正在获取班级课表", ToastAndroid.SHORT);
         const {xnm, xqm, njdm_id, jgdm, zyh_id, bh_id} = {...classScheduleList[classScheduleIndex ?? 0], ...item};
         const res = await infoQuery.getClassCourseSchedule(+xnm, xqm, jgdm, zyh_id, +njdm_id, bh_id);
         console.log(res);
-        setClassSchedule(res);
+        setClassScheduleApiRes(res);
     };
 
     useEffect(() => {
@@ -73,6 +78,7 @@ export function ClassCourseSchedule() {
         setSchool(newSchool);
 
         const newSubjectList = await getSubjectList(newSchool, false);
+        newSubjectList.unshift(["", "全部"]);
         const subjectIndex = newSubjectList.findIndex(v => v[1].indexOf(storeUserInfo.subject_id) > -1);
         const newSubject = newSubjectList[subjectIndex][0];
         setSubject(newSubject);
@@ -81,6 +87,7 @@ export function ClassCourseSchedule() {
         setGrade(newGrade);
 
         const newClassList = await getClassList(newSchool, newSubject, newGrade, false);
+        newClassList.unshift(["", "全部"]);
         setClassList(newClassList);
 
         const newClassIndex = newClassList.findIndex(v => v[1].indexOf(storeUserInfo.class) > -1);
@@ -91,6 +98,7 @@ export function ClassCourseSchedule() {
         const subjectRes = await infoQuery.getSubjectList(schoolId);
         const newSubjectList = subjectRes.map(item => [item.zyh_id, item.zymc]);
         if (reload) {
+            newSubjectList.unshift(["", "全部"]);
             setSubjectList(newSubjectList);
         }
         return newSubjectList;
@@ -105,6 +113,7 @@ export function ClassCourseSchedule() {
         const classListRes = await infoQuery.getClassList(schoolId, subjectId, gradeId);
         const newClassList = classListRes.map(item => [item.bh_id, item.bj]);
         if (reload) {
+            newClassList.unshift(["", "全部"]);
             setClassList(newClassList);
         }
         return newClassList;
@@ -147,7 +156,7 @@ export function ClassCourseSchedule() {
                         <Text>学院</Text>
                         <View style={{flex: 1}}>
                             <Picker {...userTheme.components.Picker} selectedValue={school} onValueChange={setSchool}>
-                                {Schools.map(value => {
+                                {[["", "全部"], ...Schools].map(value => {
                                     return <Picker.Item value={value[0]} label={value[1]} key={value[0]} />;
                                 })}
                             </Picker>
@@ -173,12 +182,14 @@ export function ClassCourseSchedule() {
                             <Text>年级</Text>
                             <View style={{width: "30%"}}>
                                 <Picker {...userTheme.components.Picker} selectedValue={grade} onValueChange={setGrade}>
-                                    {Array(25)
-                                        .fill(0)
-                                        .map((_, index) => {
-                                            const optionV = 2003 + index;
+                                    {[["", "全部"], ...Array(25).fill(0)].map((v, index, ori) => {
+                                        if (v === 0) {
+                                            const optionV = 2003 + (ori.length - index);
                                             return <Picker.Item value={optionV} label={optionV + ""} key={optionV} />;
-                                        })}
+                                        } else {
+                                            return <Picker.Item value={v[0]} label={v[1]} key={v[0]} />;
+                                        }
+                                    })}
                                 </Picker>
                             </View>
                             {classList.length > 0 && (
@@ -223,17 +234,30 @@ export function ClassCourseSchedule() {
                         <Divider />
                     </>
                 )}{" "}
-                {classSchedule && (
+                {classScheduleApiRes && (
                     <>
                         <Text h4>课表预览</Text>
                         <Divider />
+                        <Text>课表周数</Text>
+                        <Flex style={{padding: 10}}>
+                            <UnSlider
+                                step={1}
+                                minimumValue={1}
+                                maximumValue={classScheduleApiRes.weekNum.length ?? 20}
+                                allowTouchTrack
+                                value={pageView.activePage + 1}
+                                onValueChange={v => pageView.setPage(v - 1)}
+                            />
+                        </Flex>
+                        <CourseScheduleView pageView={pageView} courseApiRes={classScheduleApiRes} />
+                        {classScheduleApiRes?.sjkList && (
+                            <>
+                                <Card.Divider />
+                                <PracticalCourseList courseList={classScheduleApiRes.sjkList} />
+                            </>
+                        )}
                     </>
                 )}
-                <Flex direction="column" gap={15} alignItems="flex-start">
-                    <Text>{subject}</Text>
-                    <Text>{school}</Text>
-                    <Text>{JSON.stringify(userInfo)}</Text>
-                </Flex>
             </View>
         </ScrollView>
     );

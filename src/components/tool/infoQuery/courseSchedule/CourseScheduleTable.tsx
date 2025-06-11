@@ -13,6 +13,7 @@ interface Props {
     courseList: Course[];
     currentWeek?: number;
     onCoursePress?: (course: Course) => void;
+    startDay: moment.MomentInput;
 }
 
 interface CourseItem extends Course {
@@ -24,7 +25,7 @@ export function CourseScheduleTable(props: Props) {
     const {courseScheduleData, courseScheduleStyle} = useContext(CourseScheduleContext)!;
     const {theme} = useUserTheme();
     const [courseSchedule, setCourseSchedule] = useState<CourseItem[][]>([[], [], [], [], [], [], []]);
-    const startDay = moment(courseScheduleData.startDay);
+    const startDay = moment(props.startDay);
     const [currentTime, setCurrentTime] = useState(moment().format());
     const currentWeek = props.currentWeek ?? Math.ceil(moment.duration(moment().diff(startDay)).asWeeks());
     const currentTimeSpan = getCurrentTimeSpan();
@@ -166,7 +167,7 @@ export function CourseScheduleTable(props: Props) {
                         {courseSchedule[index].map((course, i) => (
                             <CourseItem
                                 onCoursePress={props.onCoursePress}
-                                key={`day${index}-${course.kcmc}-${course.jc}`}
+                                key={`day${index}-${course.kcmc}-${course.jc}-${Math.random()}`}
                                 course={course}
                                 index={i}
                             />

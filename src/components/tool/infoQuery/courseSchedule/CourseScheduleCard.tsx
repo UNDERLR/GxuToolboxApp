@@ -3,7 +3,7 @@ import {infoQuery} from "@/js/jw/infoQuery.ts";
 import {Pressable, StyleSheet, ToastAndroid} from "react-native";
 import {store} from "@/js/store.ts";
 import {CourseScheduleQueryRes} from "@/type/api/infoQuery/classScheduleAPI.ts";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {PracticalCourseList} from "./PracticalCourseList.tsx";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {Icon} from "@/components/un-ui/Icon.tsx";
@@ -13,7 +13,7 @@ import {useUserTheme} from "@/js/theme.ts";
 import {Color} from "@/js/color.ts";
 import {usePagerView} from "react-native-pager-view";
 import {CourseCardSetting} from "@/components/tool/infoQuery/courseSchedule/CourseCardSetting.tsx";
-import {CourseScheduleContext, generateCourseScheduleStyle, useCourseScheduleData} from "@/js/jw/course.ts";
+import {CourseScheduleContext} from "@/js/jw/course.ts";
 import {CourseScheduleView} from "@/components/tool/infoQuery/courseSchedule/CourseScheduleView.tsx";
 
 export function CourseScheduleCard() {
@@ -22,15 +22,8 @@ export function CourseScheduleCard() {
     const {...rest} = pagerView;
 
     const [apiRes, setApiRes] = useState<CourseScheduleQueryRes>();
-    const {courseScheduleData, updateCourseScheduleData} = useCourseScheduleData();
-    const [courseScheduleStyle, setCourseScheduleStyle] = useState(
-        generateCourseScheduleStyle(courseScheduleData, theme),
-    );
+    const {courseScheduleData} = useContext(CourseScheduleContext)!;
     const startDay = moment(courseScheduleData.startDay);
-    useEffect(() => {
-        let newStyle = generateCourseScheduleStyle(courseScheduleData, theme);
-        setCourseScheduleStyle(newStyle);
-    }, [courseScheduleData, theme]);
 
     const realCurrentWeek = Math.ceil(moment.duration(moment().diff(startDay)).asWeeks());
     const [year, setYear] = useState(moment().isBefore(moment("8", "M"), "M") ? moment().year() - 1 : moment().year());
@@ -83,54 +76,52 @@ export function CourseScheduleCard() {
         getCourseSchedule();
     }, [year, term]);
     return (
-        <CourseScheduleContext.Provider value={{courseScheduleData, courseScheduleStyle, updateCourseScheduleData}}>
-            <Card containerStyle={style.card}>
-                <Card.Title style={style.cardTitle}>
-                    <Flex justifyContent="space-between">
-                        <Text h4>课表</Text>
-                        <Flex gap={15} justifyContent="flex-end">
-                            {rest.activePage + 1 !== realCurrentWeek && (
-                                <Pressable
-                                    android_ripple={userTheme.ripple}
-                                    onPress={() => {
-                                        rest.setPage(realCurrentWeek - 1);
-                                    }}>
-                                    <Icon name="back" size={24} />
-                                </Pressable>
-                            )}
+        <Card containerStyle={style.card}>
+            <Card.Title style={style.cardTitle}>
+                <Flex justifyContent="space-between">
+                    <Text h4>课表</Text>
+                    <Flex gap={15} justifyContent="flex-end">
+                        {rest.activePage + 1 !== realCurrentWeek && (
                             <Pressable
                                 android_ripple={userTheme.ripple}
-                                onPress={() => setCourseScheduleSettingVisible(true)}>
-                                <Icon name="setting" size={24} />
+                                onPress={() => {
+                                    rest.setPage(realCurrentWeek - 1);
+                                }}>
+                                <Icon name="back" size={24} />
                             </Pressable>
-                            <Pressable android_ripple={userTheme.ripple} onPress={getCourseSchedule}>
-                                <Icon name="sync" size={24} />
-                            </Pressable>
-                        </Flex>
+                        )}
+                        <Pressable
+                            android_ripple={userTheme.ripple}
+                            onPress={() => setCourseScheduleSettingVisible(true)}>
+                            <Icon name="setting" size={24} />
+                        </Pressable>
+                        <Pressable android_ripple={userTheme.ripple} onPress={getCourseSchedule}>
+                            <Icon name="sync" size={24} />
+                        </Pressable>
                     </Flex>
-                </Card.Title>
-                <Card.Divider />
-                <CourseScheduleView startDay={startDay} courseApiRes={apiRes} pageView={pagerView} />
-                {apiRes?.sjkList && (
-                    <>
-                        <Card.Divider />
-                        <PracticalCourseList courseList={apiRes.sjkList} />
-                    </>
-                )}
-                {/* 课表卡片设置 */}
-                <BottomSheet
-                    isVisible={courseScheduleSettingVisible}
-                    onBackdropPress={() => setCourseScheduleSettingVisible(false)}>
-                    <CourseCardSetting
-                        containerStyle={style.bottomSheetContainer}
-                        year={year}
-                        term={term}
-                        pageViewRest={rest}
-                        onYearChange={setYear}
-                        onTermChange={setTerm}
-                    />
-                </BottomSheet>
-            </Card>
-        </CourseScheduleContext.Provider>
+                </Flex>
+            </Card.Title>
+            <Card.Divider />
+            <CourseScheduleView startDay={startDay} courseApiRes={apiRes} pageView={pagerView} />
+            {apiRes?.sjkList && (
+                <>
+                    <Card.Divider />
+                    <PracticalCourseList courseList={apiRes.sjkList} />
+                </>
+            )}
+            {/* 课表卡片设置 */}
+            <BottomSheet
+                isVisible={courseScheduleSettingVisible}
+                onBackdropPress={() => setCourseScheduleSettingVisible(false)}>
+                <CourseCardSetting
+                    containerStyle={style.bottomSheetContainer}
+                    year={year}
+                    term={term}
+                    pageViewRest={rest}
+                    onYearChange={setYear}
+                    onTermChange={setTerm}
+                />
+            </BottomSheet>
+        </Card>
     );
 }

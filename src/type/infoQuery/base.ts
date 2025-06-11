@@ -44,3 +44,14 @@ export interface UserInfo {
     /** 专业Id */
     subject_id: string;
 }
+
+export interface Week {
+    /** 周数 */
+    zs: string;
+    /** 周数名称 */
+    zsmc: string;
+    /** 日期（yyyy-MM-dd/yyyy-MM-dd） */
+    rq: string;
+    /** 周数和日期，例：1(2025-02-24至2025-03-02) */
+    zcrq: string;
+}
