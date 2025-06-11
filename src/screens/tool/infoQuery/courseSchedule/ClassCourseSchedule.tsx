@@ -61,7 +61,6 @@ export function ClassCourseSchedule() {
         ToastAndroid.show("正在获取班级课表", ToastAndroid.SHORT);
         const {xnm, xqm, njdm_id, jgdm, zyh_id, bh_id} = {...classScheduleList[classScheduleIndex ?? 0], ...item};
         const res = await infoQuery.getClassCourseSchedule(+xnm, xqm, jgdm, zyh_id, +njdm_id, bh_id);
-        console.log(res);
         setClassScheduleApiRes(res);
     };
 
@@ -180,7 +179,7 @@ export function ClassCourseSchedule() {
                     {subject && (
                         <Flex gap={10}>
                             <Text>年级</Text>
-                            <View style={{width: "30%"}}>
+                            <View style={{flex: 1}}>
                                 <Picker {...userTheme.components.Picker} selectedValue={grade} onValueChange={setGrade}>
                                     {[["", "全部"], ...Array(25).fill(0)].map((v, index, ori) => {
                                         if (v === 0) {
@@ -192,21 +191,21 @@ export function ClassCourseSchedule() {
                                     })}
                                 </Picker>
                             </View>
-                            {classList.length > 0 && (
-                                <>
-                                    <Text>班级</Text>
-                                    <View style={{flex: 1}}>
-                                        <Picker
-                                            {...userTheme.components.Picker}
-                                            selectedValue={classId}
-                                            onValueChange={setClassId}>
-                                            {classList.map(value => {
-                                                return <Picker.Item value={value[0]} label={value[1]} key={value[0]} />;
-                                            })}
-                                        </Picker>
-                                    </View>
-                                </>
-                            )}
+                        </Flex>
+                    )}
+                    {classList.length > 0 && (
+                        <Flex gap={10}>
+                            <Text>班级</Text>
+                            <View style={{flex: 1}}>
+                                <Picker
+                                    {...userTheme.components.Picker}
+                                    selectedValue={classId}
+                                    onValueChange={setClassId}>
+                                    {classList.map(value => {
+                                        return <Picker.Item value={value[0]} label={value[1]} key={value[0]} />;
+                                    })}
+                                </Picker>
+                            </View>
                         </Flex>
                     )}
                 </Flex>

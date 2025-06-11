@@ -21,7 +21,7 @@ interface Props {
 
 export function CourseItem(props: Props) {
     const {courseScheduleData, courseScheduleStyle} = useContext(CourseScheduleContext)!;
-    const {theme} = useUserTheme();
+    const {theme, userTheme} = useUserTheme();
     const {course, index} = props;
     const span = parseInt(course.jcs.split("-")[1], 10) - parseInt(course.jcs.split("-")[0], 10) + 1;
     const y = +course.jcs.split("-")[0] - 1;
@@ -56,9 +56,16 @@ export function CourseItem(props: Props) {
     return (
         // 课程元素
         <Pressable
-            onPress={e => props.onCoursePress?.(course)}
+            onPress={e => {
+                props.onCoursePress?.(course);
+                console.log(course);
+            }}
+            android_ripple={userTheme.ripple}
             style={[itemStyle.course, courseScheduleStyle.courseItem]}>
             <Flex direction="column" gap={5}>
+                {courseScheduleData.courseInfoVisible.name && course.jxbsftkbj === "1" && (
+                    <Text style={itemStyle.text}>调</Text>
+                )}
                 {courseScheduleData.courseInfoVisible.name && <Text style={itemStyle.text}>{course.kcmc}</Text>}
                 {courseScheduleData.courseInfoVisible.position && (
                     <Text style={itemStyle.text}>

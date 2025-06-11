@@ -30,6 +30,11 @@ export function CourseDetail(props: Props) {
             key: "cdmc",
         },
         {
+            label: "考核方式",
+            icon: <Icon type="fontawesome" name="pen" size={20} />,
+            key: "khfsmc",
+        },
+        {
             label: "上课教师",
             icon: <Icon name="user" size={20} />,
             key: "xm",

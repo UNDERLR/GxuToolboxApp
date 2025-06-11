@@ -37,7 +37,7 @@ export interface Course {
     jxb_id: string;
     /** 教学班名称 */
     jxbmc: string;
-    /** 教学班是否可（退课）标记 */
+    /** 是否调课 */
     jxbsftkbj: string;
     /** 教学班组成 */
     jxbzc: string;

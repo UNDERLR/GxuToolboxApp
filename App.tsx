@@ -62,8 +62,8 @@ function App(): React.JSX.Element {
 
     // 应用初始化
     useEffect(() => {
-        handleRequestPermission();
-        handleFileOperations();
+        // handleRequestPermission();
+        // handleFileOperations();
         jwxt.refreshToken().then(() => appRef.current?.forceUpdate());
     }, []);
 
