@@ -1,465 +1,184 @@
-type SelectorPart = {
-    tag?: string;
-    id?: string;
-    classes: string[];
-    pseudo?: string;
-};
-
-class Node {
-    children: Node[] = [];
-    parent: Node | null = null;
-
-    appendChild(child: Node) {
-        child.parent = this;
-        this.children.push(child);
-    }
-
-    get innerHTML(): string {
-        return "";
-    }
-
-    get innerText(): string {
-        return "";
-    }
+interface Node {
+    children: Node[];
+    parentNode?: Node;
+    tag: string;
+    attrs: {
+        id?: string;
+        class?: string;
+        [key: string]: string | undefined;
+    };
 }
 
-class TextNode extends Node {
-    constructor(public content: string) {
-        super();
+class HTMLNode implements Node {
+    children: HTMLNode[] = [];
+    parentNode?: HTMLNode;
+    tag: string;
+    attrs: Record<string, string>;
+
+    constructor(tag: string, attrs: Record<string, string> = {}, parent?: HTMLNode) {
+        this.tag = tag;
+        this.attrs = attrs;
+        this.parentNode = parent;
     }
 
-    get innerHTML(): string {
-        return this.content;
-    }
+    // 根据 ID 查找元素
+    getElementById(id: string): HTMLNode | null {
+        if (this.attrs.id === id) return this;
 
-    get innerText(): string {
-        return this.content;
-    }
-}
-
-class Element extends Node {
-    attributes: Record<string, string> = {};
-    classList: string[] = [];
-
-    constructor(public tagName: string) {
-        super();
-        this.tagName = tagName.toLowerCase();
-    }
-
-    get innerHTML(): string {
-        const attrs = Object.entries(this.attributes)
-            .map(([key, value]) => ` ${key}="${value}"`)
-            .join("");
-        const childrenHtml = this.children.map(child => (child instanceof Node ? child.innerHTML : "")).join("");
-        return `<${this.tagName}${attrs}>${childrenHtml}</${this.tagName}>`;
-    }
-
-    get innerText(): string {
-        return this.children.map(child => (child instanceof Node ? child.innerText : "")).join("");
-    }
-
-    setAttribute(name: string, value: string) {
-        this.attributes[name] = value;
-        if (name === "class") {
-            this.classList = value.split(/\s+/).filter(c => c);
-        } else if (name === "id") {
-            this.attributes.id = value;
-        }
-    }
-
-    matchesSelector(selector: string): boolean {
-        const parts = this.parseSelector(selector);
-        if (!parts) return false;
-        return this.matchesSelectorParts(parts);
-    }
-
-    private parseSelector(selector: string): SelectorPart[] | null {
-        const parts: SelectorPart[] = [];
-        const tokens = selector.match(/([#.:][^#.:\s]+)|([^\s#.:]+)/g) || [];
-
-        let current: SelectorPart = {classes: []};
-        for (const token of tokens) {
-            if (token.startsWith("#")) {
-                current.id = token.substring(1);
-            } else if (token.startsWith(".")) {
-                current.classes.push(token.substring(1));
-            } else if (token.startsWith(":")) {
-                current.pseudo = token;
-            } else if (token === ">") {
-                parts.push(current);
-                current = {classes: []};
-            } else {
-                current.tag = token.toLowerCase();
-            }
-        }
-        parts.push(current);
-
-        return parts.length > 0 ? parts : null;
-    }
-
-    private matchesSelectorParts(parts: SelectorPart[]): boolean {
-        let current: Element | null = this;
-        let partIndex = parts.length - 1;
-
-        while (current && partIndex >= 0) {
-            if (this.matchesSingleSelector(current, parts[partIndex])) {
-                partIndex--;
-            }
-            current = current.parent as Element | null;
+        for (const child of this.children) {
+            const found = child.getElementById(id);
+            if (found) return found;
         }
 
-        return partIndex === -1;
-    }
-
-    private matchesSingleSelector(element: Element, selector: SelectorPart): boolean {
-        // 检查标签名
-        if (selector.tag && selector.tag !== "*" && selector.tag !== element.tagName) {
-            return false;
-        }
-
-        // 检查ID
-        if (selector.id && selector.id !== element.attributes.id) {
-            return false;
-        }
-
-        // 检查class
-        if (selector.classes.length > 0) {
-            if (!selector.classes.every(cls => element.classList.includes(cls))) {
-                return false;
-            }
-        }
-
-        // 简单伪类支持
-        if (selector.pseudo) {
-            if (selector.pseudo === ":first-child") {
-                if (element.parent?.children[0] !== element) return false;
-            } else if (selector.pseudo === ":last-child") {
-                const siblings = element.parent?.children || [];
-                if (siblings[siblings.length - 1] !== element) return false;
-            }
-        }
-
-        return true;
-    }
-}
-
-class Document extends Node {
-    querySelector(selector: string): Element | null {
-        return this._querySelector(this, selector);
-    }
-
-    querySelectorAll(selector: string): Element[] {
-        const result: Element[] = [];
-        this._querySelectorAll(this, selector, result);
-        return result;
-    }
-
-    private _querySelector(node: Node, selector: string): Element | null {
-        for (const child of node.children) {
-            if (child instanceof Element) {
-                if (child.matchesSelector(selector)) {
-                    return child;
-                }
-                const found = this._querySelector(child, selector);
-                if (found) return found;
-            }
-        }
         return null;
     }
 
-    private _querySelectorAll(node: Node, selector: string, results: Element[]) {
-        for (const child of node.children) {
-            if (child instanceof Element) {
-                if (child.matchesSelector(selector)) {
-                    results.push(child);
-                }
-                this._querySelectorAll(child, selector, results);
-            }
+    // 根据类名查找元素
+    getElementsByClassName(className: string): HTMLNode[] {
+        const result: HTMLNode[] = [];
+
+        const classes = this.attrs.class?.split(/\s+/) || [];
+        if (classes.includes(className)) {
+            result.push(this);
         }
+
+        for (const child of this.children) {
+            result.push(...child.getElementsByClassName(className));
+        }
+
+        return result;
+    }
+
+    // 根据标签名查找元素
+    getElementsByTagName(tagName: string): HTMLNode[] {
+        const result: HTMLNode[] = [];
+
+        if (this.tag === tagName) {
+            result.push(this);
+        }
+
+        for (const child of this.children) {
+            result.push(...child.getElementsByTagName(tagName));
+        }
+
+        return result;
+    }
+
+    // 根据属性查找元素
+    getElementsByAttribute(attr: string, value?: string): HTMLNode[] {
+        const result: HTMLNode[] = [];
+
+        if (this.attrs[attr] !== undefined && (!value || this.attrs[attr] === value)) {
+            result.push(this);
+        }
+
+        for (const child of this.children) {
+            result.push(...child.getElementsByAttribute(attr, value));
+        }
+
+        return result;
+    }
+
+    // 获取文本内容
+    get textContent(): string {
+        if (this.tag === "text") {
+            return this.attrs.content || "";
+        }
+        return this.children.map(child => child.textContent).join("");
     }
 }
 
-export class DOMParser {
-    parseFromString(html: string): Document {
-        const doc = new Document();
-        const stack: Element[] = [];
-        let currentParent: Node = doc;
-        let textContent = "";
+function parseHTML(html: string): HTMLNode[] {
+    // 创建虚拟根节点
+    const root = new HTMLNode("root", {});
+    let currentParent: HTMLNode = root;
+    const stack: HTMLNode[] = [root];
+    let index = 0;
 
-        const flushText = () => {
-            if (textContent.trim()) {
-                currentParent.appendChild(new TextNode(textContent));
-                textContent = "";
-            }
-        };
-
-        const regex = /(<(\/?)([a-z][a-z0-9]*)([^>]*)>)|([^<]+)/gi;
-        let match;
-        while ((match = regex.exec(html)) !== null) {
-            if (match[5]) {
-                // 文本节点
-                textContent += match[5];
-            } else {
-                flushText();
-
-                const isClosing = !!match[2];
-                const tagName = match[3];
-                const attributes = match[4];
-
-                if (!isClosing) {
-                    const element = new Element(tagName);
-                    currentParent.appendChild(element);
-                    stack.push(element);
-                    currentParent = element;
-
-                    // 解析属性
-                    const attrRegex = /([\w-]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|(\S+)))?/g;
-                    let attrMatch;
-                    while ((attrMatch = attrRegex.exec(attributes)) !== null) {
-                        const name = attrMatch[1];
-                        const value = attrMatch[2] || attrMatch[3] || attrMatch[4] || "";
-                        element.setAttribute(name, value);
-                    }
-                } else {
-                    // 闭合标签
-                    stack.pop();
-                    currentParent = stack.length > 0 ? stack[stack.length - 1] : doc;
-                }
-            }
+    while (index < html.length) {
+        // 跳过空白字符
+        if (/[\s\n\t]/.test(html[index])) {
+            index++;
+            continue;
         }
-        flushText();
 
-        return doc;
-    }
-}
+        // 处理注释
+        if (html.startsWith("<!--", index)) {
+            const endIndex = html.indexOf("-->", index);
+            if (endIndex === -1) break;
+            index = endIndex + 3;
+            continue;
+        }
 
-// HTML实体解码映射表
-const HTML_ENTITIES = {
-    // 常用HTML实体
-    "&nbsp;": "\u00A0", // 不间断空格
-    "&lt;": "<",
-    "&gt;": ">",
-    "&amp;": "&",
-    "&quot;": '"',
-    "&apos;": "'",
-    "&#39;": "'",
+        // 处理结束标签
+        if (html[index] === "<" && html[index + 1] === "/") {
+            const endIndex = html.indexOf(">", index);
+            if (endIndex === -1) break;
 
-    // 扩展ASCII字符
-    "&iexcl;": "¡",
-    "&cent;": "¢",
-    "&pound;": "£",
-    "&curren;": "¤",
-    "&yen;": "¥",
-    "&brvbar;": "¦",
-    "&sect;": "§",
-    "&uml;": "¨",
-    "&copy;": "©",
-    "&ordf;": "ª",
-    "&laquo;": "«",
-    "&not;": "¬",
-    "&shy;": "\u00AD",
-    "&reg;": "®",
-    "&macr;": "¯",
-    "&deg;": "°",
-    "&plusmn;": "±",
-    "&sup2;": "²",
-    "&sup3;": "³",
-    "&acute;": "´",
-    "&micro;": "µ",
-    "&para;": "¶",
-    "&middot;": "·",
-    "&cedil;": "¸",
-    "&sup1;": "¹",
-    "&ordm;": "º",
-    "&raquo;": "»",
-    "&frac14;": "¼",
-    "&frac12;": "½",
-    "&frac34;": "¾",
-    "&iquest;": "¿",
+            const tagName = html.substring(index + 2, endIndex).trim();
+            if (stack.length > 1 && stack[stack.length - 1].tag === tagName) {
+                stack.pop();
+                currentParent = stack[stack.length - 1];
+            }
+            index = endIndex + 1;
+            continue;
+        }
 
-    // 拉丁字母
-    "&Agrave;": "À",
-    "&agrave;": "à",
-    "&Aacute;": "Á",
-    "&aacute;": "á",
-    "&Acirc;": "Â",
-    "&acirc;": "â",
-    "&Atilde;": "Ã",
-    "&atilde;": "ã",
-    "&Auml;": "Ä",
-    "&auml;": "ä",
-    "&Aring;": "Å",
-    "&aring;": "å",
-    "&AElig;": "Æ",
-    "&aelig;": "æ",
-    "&Ccedil;": "Ç",
-    "&ccedil;": "ç",
-    "&Egrave;": "È",
-    "&egrave;": "è",
-    "&Eacute;": "É",
-    "&eacute;": "é",
-    "&Ecirc;": "Ê",
-    "&ecirc;": "ê",
-    "&Euml;": "Ë",
-    "&euml;": "ë",
-    "&Igrave;": "Ì",
-    "&igrave;": "ì",
-    "&Iacute;": "Í",
-    "&iacute;": "í",
-    "&Icirc;": "Î",
-    "&icirc;": "î",
-    "&Iuml;": "Ï",
-    "&iuml;": "ï",
-    "&ETH;": "Ð",
-    "&eth;": "ð",
-    "&Ntilde;": "Ñ",
-    "&ntilde;": "ñ",
-    "&Ograve;": "Ò",
-    "&ograve;": "ò",
-    "&Oacute;": "Ó",
-    "&oacute;": "ó",
-    "&Ocirc;": "Ô",
-    "&ocirc;": "ô",
-    "&Otilde;": "Õ",
-    "&otilde;": "õ",
-    "&Ouml;": "Ö",
-    "&ouml;": "ö",
-    "&times;": "×",
-    "&Oslash;": "Ø",
-    "&oslash;": "ø",
-    "&Ugrave;": "Ù",
-    "&ugrave;": "ù",
-    "&Uacute;": "Ú",
-    "&uacute;": "ú",
-    "&Ucirc;": "Û",
-    "&ucirc;": "û",
-    "&Uuml;": "Ü",
-    "&uuml;": "ü",
-    "&Yacute;": "Ý",
-    "&yacute;": "ý",
-    "&THORN;": "Þ",
-    "&thorn;": "þ",
-    "&szlig;": "ß",
-    "&yuml;": "ÿ",
+        // 处理开始标签
+        if (html[index] === "<") {
+            const endIndex = html.indexOf(">", index);
+            if (endIndex === -1) break;
 
-    // 数学符号
-    "&forall;": "∀",
-    "&part;": "∂",
-    "&exist;": "∃",
-    "&empty;": "∅",
-    "&nabla;": "∇",
-    "&isin;": "∈",
-    "&notin;": "∉",
-    "&ni;": "∋",
-    "&prod;": "∏",
-    "&sum;": "∑",
-    "&minus;": "−",
-    "&lowast;": "∗",
-    "&radic;": "√",
-    "&prop;": "∝",
-    "&infin;": "∞",
-    "&ang;": "∠",
-    "&and;": "∧",
-    "&or;": "∨",
-    "&cap;": "∩",
-    "&cup;": "∪",
-    "&int;": "∫",
-    "&there4;": "∴",
-    "&sim;": "∼",
-    "&cong;": "≅",
-    "&asymp;": "≈",
-    "&ne;": "≠",
-    "&equiv;": "≡",
-    "&le;": "≤",
-    "&ge;": "≥",
-    "&sub;": "⊂",
-    "&sup;": "⊃",
-    "&nsub;": "⊄",
-    "&sube;": "⊆",
-    "&supe;": "⊇",
-    "&oplus;": "⊕",
-    "&otimes;": "⊗",
-    "&perp;": "⊥",
-    "&sdot;": "⋅",
+            const tagContent = html.substring(index + 1, endIndex);
+            const isSelfClosing =
+                tagContent.endsWith("/") ||
+                ["img", "br", "input", "meta", "link"].includes(tagContent.trim().split(/\s+/)[0].toLowerCase());
 
-    // 箭头符号
-    "&larr;": "←",
-    "&uarr;": "↑",
-    "&rarr;": "→",
-    "&darr;": "↓",
-    "&harr;": "↔",
-    "&crarr;": "↵",
-    "&lArr;": "⇐",
-    "&uArr;": "⇑",
-    "&rArr;": "⇒",
-    "&dArr;": "⇓",
-    "&hArr;": "⇔",
+            const cleanContent = isSelfClosing ? tagContent.replace(/\/$/, "").trim() : tagContent.trim();
 
-    // 其他符号
-    "&bull;": "•",
-    "&hellip;": "…",
-    "&prime;": "′",
-    "&Prime;": "″",
-    "&oline;": "‾",
-    "&frasl;": "⁄",
-    "&weierp;": "℘",
-    "&image;": "ℑ",
-    "&real;": "ℜ",
-    "&trade;": "™",
-    "&alefsym;": "ℵ",
-    "&spades;": "♠",
-    "&clubs;": "♣",
-    "&hearts;": "♥",
-    "&diams;": "♦",
+            // 解析标签名和属性
+            const spaceIndex = cleanContent.indexOf(" ");
+            const tagName =
+                spaceIndex === -1 ? cleanContent.toLowerCase() : cleanContent.substring(0, spaceIndex).toLowerCase();
 
-    // 引号和标点
-    "&ldquo;": '"',
-    "&rdquo;": '"',
-    "&lsquo;": "'",
-    "&rsquo;": "'",
-    "&sbquo;": "‚",
-    "&bdquo;": "„",
-    "&dagger;": "†",
-    "&Dagger;": "‡",
-    "&permil;": "‰",
-    "&lsaquo;": "‹",
-    "&rsaquo;": "›",
-    "&euro;": "€",
-};
+            const attrs: Record<string, string> = {};
+            if (spaceIndex !== -1) {
+                const attrString = cleanContent.substring(spaceIndex + 1);
+                const attrRegex = /([\w-]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))?/g;
+                let match: RegExpExecArray | null;
 
-/**
- * 解码HTML实体字符
- * @param {string} html - 包含HTML实体的字符串
- * @returns {string} 解码后的字符串
- */
-export function decodeHTMLEntities(html): string {
-    if (!html || typeof html !== "string") {
-        return html;
+                while ((match = attrRegex.exec(attrString)) !== null) {
+                    const name = match[1].toLowerCase();
+                    const value = match[2] || match[3] || match[4] || "";
+                    attrs[name] = value;
+                }
+            }
+
+            // 创建新节点
+            const newNode = new HTMLNode(tagName, attrs, currentParent);
+            currentParent.children.push(newNode);
+
+            // 非自闭合标签入栈
+            if (!isSelfClosing) {
+                stack.push(newNode);
+                currentParent = newNode;
+            }
+
+            index = endIndex + 1;
+            continue;
+        }
+
+        // 处理文本节点
+        const nextOpen = html.indexOf("<", index);
+        const textEnd = nextOpen === -1 ? html.length : nextOpen;
+        const textContent = html.substring(index, textEnd).trim();
+
+        if (textContent) {
+            currentParent.children.push(new HTMLNode("text", {content: textContent}, currentParent));
+        }
+
+        index = textEnd;
     }
 
-    return (
-        html
-            // 处理命名实体
-            .replace(/&[a-zA-Z][a-zA-Z0-9]*?;/g, match => {
-                return HTML_ENTITIES[match] || match;
-            })
-            // 处理数字实体 &#123;
-            .replace(/&#(\d+);/g, (match, code) => {
-                const num = parseInt(code, 10);
-                if (num >= 0 && num <= 1114111) {
-                    // Unicode范围
-                    return String.fromCharCode(num);
-                }
-                return match;
-            })
-            // 处理十六进制数字实体 &#x1F;
-            .replace(/&#[xX]([0-9a-fA-F]+);/g, (match, hex) => {
-                const num = parseInt(hex, 16);
-                if (num >= 0 && num <= 1114111) {
-                    // Unicode范围
-                    return String.fromCharCode(num);
-                }
-                return match;
-            })
-    );
+    return root.children;
 }

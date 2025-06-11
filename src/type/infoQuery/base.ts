@@ -33,12 +33,12 @@ export interface Class extends Subject {
 export interface UserInfo {
     /** 名字 */
     name: string;
-    /** 用户身份 */
-    character: "学生";
     /** 学院 */
     school: SchoolLabel;
     /** 班级 */
     class: string;
     /** 专业 */
     subject: string;
+    /** 专业Id */
+    subject_id: string;
 }
