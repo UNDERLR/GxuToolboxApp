@@ -6,8 +6,8 @@ import {userMgr} from "@/js/mgr/user.ts";
 import {SchoolTerms} from "@/type/global.ts";
 import {ToastAndroid} from "react-native";
 import {UserInfo} from "@/type/infoQuery/base.ts";
-import {parseHTML} from "@/js/domParser.ts";
 import {store} from "@/js/store.ts";
+import moment from "moment/moment";
 
 export const jwxt = {
     getPublicKey: (): Promise<{modulus: string; exponent: string}> => {
@@ -102,11 +102,11 @@ export const jwxt = {
             const info = {
                 name: getInfo("col_xm"),
                 school: getInfo("col_jg_id"),
+                grade: +(getInfo("col_njdm_id") ?? moment().year()),
                 class: getInfo("col_bh_id"),
                 subject: getInfo("col_zyh_id")?.replace(/\(\d+\)/, ""),
                 subject_id: getInfo("col_zyh_id")?.match(/(?<=\()\d+(?=\))/)![0],
             } as UserInfo;
-            console.log(info);
             store.save({
                 key: "userInfo",
                 data: info,

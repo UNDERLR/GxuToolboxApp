@@ -1,3 +1,5 @@
+import {SchoolTermValue} from "@/type/global.ts";
+
 export interface Course {
     /** ？ */
     bklxdjmc: string;
@@ -241,7 +243,7 @@ export interface CourseSchedule {
     rsdzjs: number;
     /**  */
     sfkckkb: boolean;
-    /**  */
+    /** 课表名称 */
     tjkbmc: string;
     /**  */
     tjkbzdm: string;
@@ -253,8 +255,8 @@ export interface CourseSchedule {
     xnm: string;
     /**  */
     xnmc: string;
-    /**  */
-    xqm: string;
+    /** 学期 */
+    xqm: SchoolTermValue;
     /**  */
     xqmc: string;
     /**  */

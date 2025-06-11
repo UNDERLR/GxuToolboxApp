@@ -1,10 +1,10 @@
-import {SchoolLabel} from "@/type/global.ts";
+import {SchoolLabel, SchoolValue} from "@/type/global.ts";
 
 export interface Subject {
     /** 学院代码 */
-    jg_id: string;
+    jg_id: SchoolValue;
     /** 学院名称 */
-    jgmc: string;
+    jgmc: SchoolLabel;
     /**  */
     jgpxzd: string;
     /** 专业代码 */
@@ -37,6 +37,8 @@ export interface UserInfo {
     school: SchoolLabel;
     /** 班级 */
     class: string;
+    /** 年级 */
+    grade: number;
     /** 专业 */
     subject: string;
     /** 专业Id */

@@ -1,6 +1,6 @@
 import {http, objectToFormUrlEncoded, urlWithParams} from "@/js/http.ts";
-import {CourseScheduleQueryRes} from "@/type/api/infoQuery/classScheduleAPI.ts";
-import {SchoolTerms, SchoolTermValue, SchoolValue, SchoolYears, SchoolYearValue} from "@/type/global.ts";
+import {CourseScheduleQueryRes, GetCourseScheduleListRes} from "@/type/api/infoQuery/classScheduleAPI.ts";
+import {SchoolTerms, SchoolTermValue, SchoolValue, SchoolYears} from "@/type/global.ts";
 import moment from "moment/moment";
 import {ExamInfoQueryRes, ExamScoreQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
 import {jwxt} from "./jwxt.ts";
@@ -18,17 +18,21 @@ export const infoQuery = {
         });
     },
     getSubjectList: async (schoolId: SchoolValue): Promise<GetSubjectListRes> => {
-        const res = await http.get(urlWithParams("/xtgl/comm_cxZydmList.html", {
-            jg_id: schoolId,
-        }));
+        const res = await http.get(
+            urlWithParams("/xtgl/comm_cxZydmList.html", {
+                jg_id: schoolId,
+            }),
+        );
         return res.data;
     },
     getClassList: async (schoolId: SchoolValue, subjectId: string, grade: number): Promise<GetClassListRes> => {
-        const res = await http.get(urlWithParams("/xtgl/comm_cxBjdmList.html", {
-            jg_id: schoolId,
-            zyh_id: subjectId,
-            njdm_id: grade,
-        }));
+        const res = await http.get(
+            urlWithParams("/xtgl/comm_cxBjdmList.html", {
+                jg_id: schoolId,
+                zyh_id: subjectId,
+                njdm_id: grade,
+            }),
+        );
         return res.data;
     },
     getCourseSchedule: (year: number, term: SchoolTermValue): Promise<CourseScheduleQueryRes> => {
@@ -50,6 +54,50 @@ export const infoQuery = {
                 reject(res);
             }
         });
+    },
+    getClassCourseScheduleList: async (
+        year?: number,
+        term?: SchoolTermValue,
+        schoolId?: SchoolValue,
+        subjectId?: string,
+        grade?: number,
+        classId?: string,
+    ): Promise<GetCourseScheduleListRes> => {
+        const reqBody = objectToFormUrlEncoded({
+            xnm: year,
+            xqm: term,
+            njdm_id: grade,
+            jg_id: schoolId,
+            zyh_id: subjectId,
+            bh_id: classId,
+            queryModel: {
+                showCount: 1000,
+            },
+        });
+        const res = await http.post("/kbdy/bjkbdy_cxBjkbdyTjkbList.html", reqBody);
+        return res.data;
+    },
+    getClassCourseSchedule: async (
+        year: number,
+        term: SchoolTermValue,
+        schoolId: SchoolValue,
+        subjectId: string,
+        grade: number,
+        classId: string,
+    ): Promise<CourseScheduleQueryRes> => {
+        const reqBody = objectToFormUrlEncoded({
+            xnm: year,
+            xqm: term,
+            njdm_id: grade,
+            jg_id: schoolId,
+            zyh_id: subjectId,
+            bh_id: classId,
+            // 不确定，但得有
+            tjkbzdm: 1,
+            tjkbzxsdm: 0,
+        });
+        const res = await http.post("/kbdy/bjkbdy_cxBjKb.html", reqBody);
+        return res.data;
     },
     getExamInfo: (year: number, term: SchoolTermValue, page: number = 1): Promise<ExamInfoQueryRes> => {
         const yearIndex = SchoolYears.findIndex(v => +v[0] === year);

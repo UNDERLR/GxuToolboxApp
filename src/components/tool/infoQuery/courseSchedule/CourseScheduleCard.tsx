@@ -38,7 +38,7 @@ export function CourseScheduleCard() {
     const [term, setTerm] = useState<string>(
         moment().isBetween(moment("02", "MM"), moment("08", "MM"), "month", "[]")
             ? SchoolTerms[1][0]
-            : SchoolYears[0][0],
+            : SchoolTerms[0][0],
     );
     const [courseScheduleSettingVisible, setCourseScheduleSettingVisible] = useState(false);
     const [courseDetailVisible, setCourseDetailVisible] = useState(false);

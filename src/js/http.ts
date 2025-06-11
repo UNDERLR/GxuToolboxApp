@@ -53,6 +53,9 @@ export function urlWithParams(url: string, params: Record<string, any> = {}): st
 export function objectToFormUrlEncoded(obj: any, prefix = ""): string {
     let res = "";
     for (const key in obj) {
+        if (obj[key] === undefined) {
+            break;
+        }
         if (typeof obj[key] === "object") {
             res += objectToFormUrlEncoded(obj[key], prefix + key + ".");
         } else res += prefix + key + "=" + encodeURIComponent(obj[key]) + "&";
