@@ -1,26 +1,25 @@
 import {BottomSheet, Card, Text} from "@rneui/themed";
 import {infoQuery} from "@/js/jw/infoQuery.ts";
-import {Pressable, StyleSheet, ToastAndroid, View} from "react-native";
+import {Pressable, StyleSheet, ToastAndroid} from "react-native";
 import {store} from "@/js/store.ts";
 import {CourseScheduleQueryRes} from "@/type/api/infoQuery/classScheduleAPI.ts";
-import {useEffect, useMemo, useState} from "react";
+import {useEffect, useState} from "react";
 import {PracticalCourseList} from "./PracticalCourseList.tsx";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {Icon} from "@/components/un-ui/Icon.tsx";
 import moment from "moment";
-import {Course} from "@/type/infoQuery/course/course.ts";
-import {CourseScheduleTable} from "./CourseScheduleTable.tsx";
-import {SchoolTerms, SchoolYears} from "@/type/global.ts";
-import {CourseDetail} from "./CourseDetail.tsx";
+import {SchoolTerms, SchoolTermValue} from "@/type/global.ts";
 import {useUserTheme} from "@/js/theme.ts";
 import {Color} from "@/js/color.ts";
 import {usePagerView} from "react-native-pager-view";
 import {CourseCardSetting} from "@/components/tool/infoQuery/courseSchedule/CourseCardSetting.tsx";
 import {CourseScheduleContext, generateCourseScheduleStyle, useCourseScheduleData} from "@/js/jw/course.ts";
+import {CourseScheduleView} from "@/components/tool/infoQuery/courseSchedule/CourseScheduleView.tsx";
 
 export function CourseScheduleCard() {
     const {theme, userTheme} = useUserTheme();
-    const {AnimatedPagerView, ref, ...rest} = usePagerView({pagesAmount: 20});
+    const pagerView = usePagerView({pagesAmount: 20});
+    const {...rest} = pagerView;
 
     const [apiRes, setApiRes] = useState<CourseScheduleQueryRes>();
     const {courseScheduleData, updateCourseScheduleData} = useCourseScheduleData();
@@ -35,14 +34,12 @@ export function CourseScheduleCard() {
 
     const realCurrentWeek = Math.ceil(moment.duration(moment().diff(startDay)).asWeeks());
     const [year, setYear] = useState(moment().isBefore(moment("8", "M"), "M") ? moment().year() - 1 : moment().year());
-    const [term, setTerm] = useState<string>(
+    const [term, setTerm] = useState<SchoolTermValue>(
         moment().isBetween(moment("02", "MM"), moment("08", "MM"), "month", "[]")
             ? SchoolTerms[1][0]
             : SchoolTerms[0][0],
     );
     const [courseScheduleSettingVisible, setCourseScheduleSettingVisible] = useState(false);
-    const [courseDetailVisible, setCourseDetailVisible] = useState(false);
-    const [activeCourse, setActiveCourse] = useState<Course>({} as Course);
 
     const style = StyleSheet.create({
         card: {
@@ -81,11 +78,6 @@ export function CourseScheduleCard() {
         });
     }
 
-    function showCourseDetail(course: Course) {
-        setActiveCourse(course);
-        setCourseDetailVisible(true);
-    }
-
     useEffect(() => {
         init();
         getCourseSchedule();
@@ -118,44 +110,7 @@ export function CourseScheduleCard() {
                     </Flex>
                 </Card.Title>
                 <Card.Divider />
-                <AnimatedPagerView
-                    testID="pager-view"
-                    ref={ref}
-                    style={style.pagerView}
-                    initialPage={realCurrentWeek - 1}
-                    layoutDirection="ltr"
-                    overdrag={rest.overdragEnabled}
-                    scrollEnabled={rest.scrollEnabled}
-                    pageMargin={10}
-                    onPageSelected={rest.onPageSelected}
-                    onPageScrollStateChanged={rest.onPageScrollStateChanged}
-                    offscreenPageLimit={2}
-                    overScrollMode="never"
-                    orientation="horizontal">
-                    {useMemo(
-                        () =>
-                            rest.pages.map((_, index) => (
-                                <View testID="pager-view-content" key={index} collapsable={false}>
-                                    <Flex inline>
-                                        {index + 1 === realCurrentWeek ? (
-                                            <Text>（第{index + 1}周）</Text>
-                                        ) : (
-                                            <Text>
-                                                （第{index + 1}周，目前为第{realCurrentWeek}周）
-                                            </Text>
-                                        )}
-                                        <Text>点击课程查看详情</Text>
-                                    </Flex>
-                                    <CourseScheduleTable
-                                        onCoursePress={showCourseDetail}
-                                        courseList={apiRes?.kbList ?? []}
-                                        currentWeek={index + 1}
-                                    />
-                                </View>
-                            )),
-                        [rest.pages, realCurrentWeek, apiRes?.kbList],
-                    )}
-                </AnimatedPagerView>
+                <CourseScheduleView startDay={startDay} courseApiRes={apiRes} pageView={pagerView} />
                 {apiRes?.sjkList && (
                     <>
                         <Card.Divider />
@@ -174,12 +129,6 @@ export function CourseScheduleCard() {
                         onYearChange={setYear}
                         onTermChange={setTerm}
                     />
-                </BottomSheet>
-                {/* 课表课程信息 */}
-                <BottomSheet isVisible={courseDetailVisible} onBackdropPress={() => setCourseDetailVisible(false)}>
-                    <View style={style.bottomSheetContainer}>
-                        <CourseDetail course={activeCourse} />
-                    </View>
                 </BottomSheet>
             </Card>
         </CourseScheduleContext.Provider>

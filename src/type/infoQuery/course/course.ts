@@ -1,4 +1,4 @@
-import {SchoolTermValue} from "@/type/global.ts";
+import {SchoolTermValue, SchoolValue} from "@/type/global.ts";
 
 export interface Course {
     /** ？ */
@@ -230,7 +230,7 @@ export interface CourseSchedule {
     /**  */
     id: string;
     /**  */
-    jgdm: string;
+    jgdm: SchoolValue;
     /**  */
     month: string;
     /**  */
