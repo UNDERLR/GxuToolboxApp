@@ -42,6 +42,8 @@ export function CourseScheduleCard() {
             borderRadius: 5,
             paddingHorizontal: 0,
             marginHorizontal: 5,
+            elevation: 0,           // Android 去除阴影
+            shadowOpacity: 0,       // iOS 去除阴影
         },
         cardTitle: {
             paddingHorizontal: 15,
