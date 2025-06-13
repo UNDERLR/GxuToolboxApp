@@ -5,11 +5,11 @@ import Flex from "@/components/un-ui/Flex.tsx";
 import {UnSlider} from "@/components/un-ui/UnSlider.tsx";
 import {Picker} from "@react-native-picker/picker";
 import {SchoolTerms, SchoolTermValue, SchoolYears} from "@/type/global.ts";
-import {useUserTheme} from "@/js/theme.ts";
 import {usePagerView} from "react-native-pager-view";
 import {UnDateTimePicker} from "@/components/un-ui/UnDateTimePicker.tsx";
 import moment from "moment/moment";
 import {CourseScheduleContext} from "@/js/jw/course.ts";
+import {UnPicker} from "@/components/un-ui/UnPicker.tsx";
 
 interface Props {
     containerStyle?: StyleProp<ViewStyle>;
@@ -22,7 +22,6 @@ interface Props {
 }
 
 export function CourseCardSetting(props: Props) {
-    const {userTheme} = useUserTheme();
     const {courseScheduleData, updateCourseScheduleData} = useContext(CourseScheduleContext)!;
 
     const infoVisibleOptions: Record<keyof typeof courseScheduleData.courseInfoVisible, string> = {
@@ -98,24 +97,18 @@ export function CourseCardSetting(props: Props) {
                     <Flex gap={10}>
                         <Text>学期</Text>
                         <View style={{flex: 1}}>
-                            <Picker
-                                {...userTheme.components.Picker}
-                                selectedValue={props.year}
-                                onValueChange={props.onYearChange}>
+                            <UnPicker selectedValue={props.year} onValueChange={props.onYearChange}>
                                 {SchoolYears.map(value => {
                                     return <Picker.Item value={+value[0]} label={value[1]} key={value[0]} />;
                                 })}
-                            </Picker>
+                            </UnPicker>
                         </View>
                         <View style={{flex: 1}}>
-                            <Picker
-                                {...userTheme.components.Picker}
-                                selectedValue={props.term}
-                                onValueChange={props.onTermChange}>
+                            <UnPicker selectedValue={props.term} onValueChange={props.onTermChange}>
                                 {SchoolTerms.map(value => {
                                     return <Picker.Item value={value[0]} label={value[1]} key={value[0]} />;
                                 })}
-                            </Picker>
+                            </UnPicker>
                         </View>
                     </Flex>
                     <Flex gap={10}>

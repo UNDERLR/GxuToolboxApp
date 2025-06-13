@@ -2,7 +2,6 @@ import React, {useEffect, useState} from "react";
 import {ScrollView, StyleSheet, ToastAndroid, View} from "react-native";
 import {Button, Card, Divider, Text} from "@rneui/themed";
 import Flex from "@/components/un-ui/Flex.tsx";
-import {Picker} from "@react-native-picker/picker";
 import {PageModel, Schools, SchoolTerms, SchoolTermValue, SchoolValue, SchoolYears} from "@/type/global.ts";
 import {useUserTheme} from "@/js/theme.ts";
 import moment from "moment/moment";
@@ -14,9 +13,11 @@ import {CourseScheduleView} from "@/components/tool/infoQuery/courseSchedule/Cou
 import {usePagerView} from "react-native-pager-view";
 import {PracticalCourseList} from "@/components/tool/infoQuery/courseSchedule/PracticalCourseList.tsx";
 import {UnSlider} from "@/components/un-ui/UnSlider.tsx";
+import {UnPicker} from "@/components/un-ui/UnPicker";
+import { Picker } from "@react-native-picker/picker";
 
 export function ClassCourseSchedule() {
-    const {theme, userTheme} = useUserTheme();
+    const {theme} = useUserTheme();
     const [userInfo, setUserInfo] = useState<UserInfo>();
     const [subjectList, setSubjectList] = useState<string[][]>([]);
     const [classList, setClassList] = useState<string[][]>([]);
@@ -138,44 +139,44 @@ export function ClassCourseSchedule() {
                     <Flex gap={10}>
                         <Text>学期</Text>
                         <View style={{flex: 1}}>
-                            <Picker {...userTheme.components.Picker} selectedValue={year} onValueChange={setYear}>
+                            <UnPicker selectedValue={year} onValueChange={setYear}>
                                 {SchoolYears.map(value => {
                                     return <Picker.Item value={+value[0]} label={value[1]} key={value[0]} />;
                                 })}
-                            </Picker>
+                            </UnPicker>
                         </View>
                         <View style={{flex: 1}}>
-                            <Picker {...userTheme.components.Picker} selectedValue={term} onValueChange={setTerm}>
+                            <UnPicker selectedValue={term} onValueChange={setTerm}>
                                 {SchoolTerms.map(value => {
                                     return <Picker.Item value={value[0]} label={value[1]} key={value[0]} />;
                                 })}
-                            </Picker>
+                            </UnPicker>
                         </View>
                     </Flex>
                     <Flex gap={10}>
                         <Text>学院</Text>
                         <View style={{flex: 1}}>
-                            <Picker {...userTheme.components.Picker} selectedValue={school} onValueChange={setSchool}>
+                            <UnPicker selectedValue={school} onValueChange={setSchool}>
                                 {[["", "全部"], ...Schools].map(value => {
                                     return <Picker.Item value={value[0]} label={value[1]} key={value[0]} />;
                                 })}
-                            </Picker>
+                            </UnPicker>
                         </View>
                     </Flex>
                     <Flex gap={10}>
                         <Text>专业</Text>
                         <View style={{flex: 1}}>
-                            <Picker {...userTheme.components.Picker} selectedValue={subject} onValueChange={setSubject}>
+                            <UnPicker selectedValue={subject} onValueChange={setSubject}>
                                 {subjectList.map(value => {
                                     return <Picker.Item value={value[0]} label={value[1]} key={value[0]} />;
                                 })}
-                            </Picker>
+                            </UnPicker>
                         </View>
                     </Flex>
                     <Flex gap={10}>
                         <Text>年级</Text>
                         <View style={{flex: 1}}>
-                            <Picker {...userTheme.components.Picker} selectedValue={grade} onValueChange={setGrade}>
+                            <UnPicker selectedValue={grade} onValueChange={setGrade}>
                                 {[["", "全部"], ...Array(25).fill(0)].map((v, index, ori) => {
                                     if (v === 0) {
                                         const optionV = 2003 + (ori.length - index);
@@ -184,17 +185,17 @@ export function ClassCourseSchedule() {
                                         return <Picker.Item value={v[0]} label={v[1]} key={v[0]} />;
                                     }
                                 })}
-                            </Picker>
+                            </UnPicker>
                         </View>
                     </Flex>
                     <Flex gap={10}>
                         <Text>班级</Text>
                         <View style={{flex: 1}}>
-                            <Picker {...userTheme.components.Picker} selectedValue={classId} onValueChange={setClassId}>
+                            <UnPicker selectedValue={classId} onValueChange={setClassId}>
                                 {classList.map(value => {
                                     return <Picker.Item value={value[0]} label={value[1]} key={value[0]} />;
                                 })}
-                            </Picker>
+                            </UnPicker>
                         </View>
                     </Flex>
                     <View style={{width: "100%"}}>
@@ -206,14 +207,11 @@ export function ClassCourseSchedule() {
                 <Flex gap={10} direction="column" alignItems="flex-start">
                     <Flex>
                         <View style={{flex: 1}}>
-                            <Picker
-                                {...userTheme.components.Picker}
-                                selectedValue={classScheduleIndex}
-                                onValueChange={setClassScheduleIndex}>
+                            <UnPicker selectedValue={classScheduleIndex} onValueChange={setClassScheduleIndex}>
                                 {classScheduleList.map((value, index) => {
                                     return <Picker.Item value={index} label={value.tjkbmc} key={value.id} />;
                                 })}
-                            </Picker>
+                            </UnPicker>
                         </View>
                     </Flex>
                     <View style={{width: "100%"}}>

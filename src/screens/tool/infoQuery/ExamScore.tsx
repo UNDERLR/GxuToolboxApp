@@ -12,9 +12,10 @@ import {useUserTheme} from "@/js/theme.ts";
 import {ExamInfoQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
 import {store} from "@/js/store.ts";
 import {Color} from "@/js/color.ts";
+import {UnPicker} from "@/components/un-ui/UnPicker.tsx";
 
 export function ExamScore() {
-    const {theme, userTheme} = useUserTheme();
+    const {theme} = useUserTheme();
     const [apiRes, setApiRes] = useState<ExamInfoQueryRes>({});
     const [year, setYear] = useState(moment().isBefore(moment("8", "M"), "M") ? moment().year() - 1 : moment().year());
     const [term, setTerm] = useState<string>(
@@ -111,24 +112,22 @@ export function ExamScore() {
                     <Flex gap={10}>
                         <Text>学期</Text>
                         <View style={{flex: 1}}>
-                            <Picker
-                                {...userTheme.components.Picker}
+                            <UnPicker
                                 selectedValue={year}
                                 onValueChange={setYear}>
                                 {data.schoolYear.map(value => {
                                     return <Picker.Item value={+value[0]} label={value[1]} key={value[0]} />;
                                 })}
-                            </Picker>
+                            </UnPicker>
                         </View>
                         <View style={{flex: 1}}>
-                            <Picker
-                                {...userTheme.components.Picker}
+                            <UnPicker
                                 selectedValue={term}
                                 onValueChange={setTerm}>
                                 {data.schoolTerm.map(value => {
                                     return <Picker.Item value={value[0]} label={value[1]} key={value[0]} />;
                                 })}
-                            </Picker>
+                            </UnPicker>
                         </View>
                     </Flex>
                     <View style={{width: "100%"}}>

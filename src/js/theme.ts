@@ -54,6 +54,18 @@ export function useUserTheme() {
                 update({
                     ...savedTheme,
                     uiTheme: newUiTheme,
+                    components: {
+                        ...savedTheme.components,
+                        Picker: {
+                            ...savedTheme.components.Picker,
+                            style: {
+                                color:
+                                    colorScheme === "light"
+                                        ? "black"
+                                        : "white",
+                            },
+                        },
+                    },
                 });
             }
         });
