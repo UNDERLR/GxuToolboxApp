@@ -16,7 +16,7 @@ import {PracticalCourseList} from "@/components/tool/infoQuery/courseSchedule/Pr
 import {UnSlider} from "@/components/un-ui/UnSlider.tsx";
 
 export function ClassCourseSchedule() {
-    const {userTheme} = useUserTheme();
+    const {theme, userTheme} = useUserTheme();
     const [userInfo, setUserInfo] = useState<UserInfo>();
     const [subjectList, setSubjectList] = useState<string[][]>([]);
     const [classList, setClassList] = useState<string[][]>([]);
@@ -45,8 +45,8 @@ export function ClassCourseSchedule() {
         },
     });
 
-    const queryClassCourseScheduleList = async () => {
-        ToastAndroid.show("正在获取班级课表列表", ToastAndroid.SHORT);
+    const queryClassCourseScheduleList = async (tip = false) => {
+        if (tip) ToastAndroid.show("正在获取班级课表列表", ToastAndroid.SHORT);
         const res = await infoQuery.getClassCourseScheduleList(year, term, school, subject, grade, classId);
         setClassScheduleList(res.items);
         setClassScheduleIndex(0);
@@ -57,8 +57,8 @@ export function ClassCourseSchedule() {
         queryClassCourseScheduleList();
     }, [classId, school, subject, grade, term, year]);
 
-    const queryClassCourseSchedule = async (item = {}) => {
-        ToastAndroid.show("正在获取班级课表", ToastAndroid.SHORT);
+    const queryClassCourseSchedule = async (item = {}, tip = false) => {
+        if (tip) ToastAndroid.show("正在获取班级课表", ToastAndroid.SHORT);
         const {xnm, xqm, njdm_id, jgdm, zyh_id, bh_id} = {...classScheduleList[classScheduleIndex ?? 0], ...item};
         const res = await infoQuery.getClassCourseSchedule(+xnm, xqm, jgdm, zyh_id, +njdm_id, bh_id);
         setClassScheduleApiRes(res);
@@ -133,6 +133,7 @@ export function ClassCourseSchedule() {
         <ScrollView>
             <View style={style.container}>
                 <Text h4>查询参数</Text>
+                <Text style={{color: theme.colors.grey2}}>请从上往下依次修改参数</Text>
                 <Flex gap={10} direction="column" alignItems="flex-start">
                     <Flex gap={10}>
                         <Text>学期</Text>
@@ -161,78 +162,65 @@ export function ClassCourseSchedule() {
                             </Picker>
                         </View>
                     </Flex>
-                    {subjectList.length > 0 && (
-                        <Flex gap={10}>
-                            <Text>专业</Text>
-                            <View style={{flex: 1}}>
-                                <Picker
-                                    {...userTheme.components.Picker}
-                                    selectedValue={subject}
-                                    onValueChange={setSubject}>
-                                    {subjectList.map(value => {
-                                        return <Picker.Item value={value[0]} label={value[1]} key={value[0]} />;
-                                    })}
-                                </Picker>
-                            </View>
-                        </Flex>
-                    )}
-                    {subject && (
-                        <Flex gap={10}>
-                            <Text>年级</Text>
-                            <View style={{flex: 1}}>
-                                <Picker {...userTheme.components.Picker} selectedValue={grade} onValueChange={setGrade}>
-                                    {[["", "全部"], ...Array(25).fill(0)].map((v, index, ori) => {
-                                        if (v === 0) {
-                                            const optionV = 2003 + (ori.length - index);
-                                            return <Picker.Item value={optionV} label={optionV + ""} key={optionV} />;
-                                        } else {
-                                            return <Picker.Item value={v[0]} label={v[1]} key={v[0]} />;
-                                        }
-                                    })}
-                                </Picker>
-                            </View>
-                        </Flex>
-                    )}
-                    {classList.length > 0 && (
-                        <Flex gap={10}>
-                            <Text>班级</Text>
-                            <View style={{flex: 1}}>
-                                <Picker
-                                    {...userTheme.components.Picker}
-                                    selectedValue={classId}
-                                    onValueChange={setClassId}>
-                                    {classList.map(value => {
-                                        return <Picker.Item value={value[0]} label={value[1]} key={value[0]} />;
-                                    })}
-                                </Picker>
-                            </View>
-                        </Flex>
-                    )}
+                    <Flex gap={10}>
+                        <Text>专业</Text>
+                        <View style={{flex: 1}}>
+                            <Picker {...userTheme.components.Picker} selectedValue={subject} onValueChange={setSubject}>
+                                {subjectList.map(value => {
+                                    return <Picker.Item value={value[0]} label={value[1]} key={value[0]} />;
+                                })}
+                            </Picker>
+                        </View>
+                    </Flex>
+                    <Flex gap={10}>
+                        <Text>年级</Text>
+                        <View style={{flex: 1}}>
+                            <Picker {...userTheme.components.Picker} selectedValue={grade} onValueChange={setGrade}>
+                                {[["", "全部"], ...Array(25).fill(0)].map((v, index, ori) => {
+                                    if (v === 0) {
+                                        const optionV = 2003 + (ori.length - index);
+                                        return <Picker.Item value={optionV} label={optionV + ""} key={optionV} />;
+                                    } else {
+                                        return <Picker.Item value={v[0]} label={v[1]} key={v[0]} />;
+                                    }
+                                })}
+                            </Picker>
+                        </View>
+                    </Flex>
+                    <Flex gap={10}>
+                        <Text>班级</Text>
+                        <View style={{flex: 1}}>
+                            <Picker {...userTheme.components.Picker} selectedValue={classId} onValueChange={setClassId}>
+                                {classList.map(value => {
+                                    return <Picker.Item value={value[0]} label={value[1]} key={value[0]} />;
+                                })}
+                            </Picker>
+                        </View>
+                    </Flex>
+                    <View style={{width: "100%"}}>
+                        <Button onPress={() => queryClassCourseScheduleList(true)}>查询课表</Button>
+                    </View>
                 </Flex>
                 <Divider />
-                {classScheduleList.length > 0 && (
-                    <>
-                        <Text h4>课表查询结果</Text>
-                        <Flex gap={10} direction="column" alignItems="flex-start">
-                            <Flex>
-                                <View style={{flex: 1}}>
-                                    <Picker
-                                        {...userTheme.components.Picker}
-                                        selectedValue={classScheduleIndex}
-                                        onValueChange={setClassScheduleIndex}>
-                                        {classScheduleList.map((value, index) => {
-                                            return <Picker.Item value={index} label={value.tjkbmc} key={value.id} />;
-                                        })}
-                                    </Picker>
-                                </View>
-                            </Flex>
-                            <View style={{width: "100%"}}>
-                                <Button onPress={() => queryClassCourseSchedule()}>查看课表</Button>
-                            </View>
-                        </Flex>
-                        <Divider />
-                    </>
-                )}{" "}
+                <Text h4>课表查询结果</Text>
+                <Flex gap={10} direction="column" alignItems="flex-start">
+                    <Flex>
+                        <View style={{flex: 1}}>
+                            <Picker
+                                {...userTheme.components.Picker}
+                                selectedValue={classScheduleIndex}
+                                onValueChange={setClassScheduleIndex}>
+                                {classScheduleList.map((value, index) => {
+                                    return <Picker.Item value={index} label={value.tjkbmc} key={value.id} />;
+                                })}
+                            </Picker>
+                        </View>
+                    </Flex>
+                    <View style={{width: "100%"}}>
+                        <Button onPress={() => queryClassCourseSchedule({}, true)}>查看课表</Button>
+                    </View>
+                </Flex>
+                <Divider />
                 {classScheduleApiRes && (
                     <>
                         <Text h4>课表预览</Text>
