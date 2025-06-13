@@ -42,7 +42,6 @@ export function CourseScheduleView(props: Props) {
     });
 
     function showCourseDetail(course: Course) {
-        console.log(course);
         setActiveCourse(course);
         setCourseDetailVisible(true);
         props.onCoursePress?.(course);

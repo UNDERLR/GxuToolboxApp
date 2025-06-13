@@ -58,7 +58,6 @@ export function CourseItem(props: Props) {
         <Pressable
             onPress={e => {
                 props.onCoursePress?.(course);
-                console.log(course);
             }}
             android_ripple={userTheme.ripple}
             style={[itemStyle.course, courseScheduleStyle.courseItem]}>

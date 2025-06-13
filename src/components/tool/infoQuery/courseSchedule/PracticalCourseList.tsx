@@ -77,7 +77,7 @@ export function PracticalCourseList(props: Props) {
                 });
                 return (
                     <View
-                        key={`${course.kcmc}-${Math.random()}`}
+                        key={`${course.kcmc}`}
                         style={[
                             itemStyle.course,
                             courseScheduleStyle.courseItem,
