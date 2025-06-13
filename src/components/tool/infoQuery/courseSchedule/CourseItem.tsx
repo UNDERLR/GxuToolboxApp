@@ -51,8 +51,6 @@ export function CourseItem(props: Props) {
         theme.mode,
         y,
     ]);
-    useEffect(() => {
-    }, [courseScheduleData]);
     return (
         // 课程元素
         <Pressable

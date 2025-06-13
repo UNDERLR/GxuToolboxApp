@@ -109,6 +109,19 @@ export function CourseScheduleTable(props: Props) {
             10,
     };
 
+    const shortTimeSpanList: [number | string, string][] = Array(Math.ceil(courseScheduleData.timeSpanList.length / 2))
+        .fill(0)
+        .map((_, index) =>
+            courseScheduleData.timeSpanList[index * 2 + 1] !== undefined
+                ? [
+                      `${index * 2 + 1} - ${index * 2 + 2}`,
+                      courseScheduleData.timeSpanList[index * 2].split("\n")[0] +
+                          "\n" +
+                          courseScheduleData.timeSpanList[index * 2 + 1].split("\n")[1],
+                  ]
+                : [index * 2 + 1, courseScheduleData.timeSpanList[index * 2]],
+        );
+
     return (
         <View style={courseScheduleStyle.courseSchedule}>
             {/*时间段高亮*/}
@@ -122,17 +135,28 @@ export function CourseScheduleTable(props: Props) {
                         {moment(courseScheduleData.startDay).add(currentWeek, "w").month() + 1 + "月"}
                     </Text>
                 </View>
-                {courseScheduleData.timeSpanList.map((time, index) => {
-                    return (
-                        <Flex
-                            inline
-                            key={`timespan-${index}`}
-                            style={courseScheduleStyle.timeSpanItem}
-                            justifyContent="center">
-                            <Text style={courseScheduleStyle.timeSpanText}>{`${index + 1}\n${time}`}</Text>
-                        </Flex>
-                    );
-                })}
+                {courseScheduleData.style.timeSpanHeight > 40
+                    ? courseScheduleData.timeSpanList.map((time, index) => (
+                          <Flex
+                              inline
+                              key={`timespan-${index}`}
+                              style={courseScheduleStyle.timeSpanItem}
+                              justifyContent="center">
+                              <Text style={courseScheduleStyle.timeSpanText}>{`${index + 1}\n${time}`}</Text>
+                          </Flex>
+                      ))
+                    : shortTimeSpanList.map((value, index) => (
+                          <Flex
+                              inline
+                              key={`timespan-${index}`}
+                              style={[
+                                  courseScheduleStyle.timeSpanItem,
+                                  {height: courseScheduleData.style.timeSpanHeight * 2},
+                              ]}
+                              justifyContent="center">
+                              <Text style={courseScheduleStyle.timeSpanText}>{`${value[0]}\n${value[1]}`}</Text>
+                          </Flex>
+                      ))}
             </View>
             {/*课表*/}
             {courseScheduleData.weekdayList.map((weekday, index) => {
