@@ -8,6 +8,8 @@ import Flex from "@/components/un-ui/Flex.tsx";
 import {useUserTheme} from "@/js/theme.ts";
 import {CourseItem} from "@/components/tool/infoQuery/courseSchedule/CourseItem.tsx";
 import {CourseScheduleContext} from "@/js/jw/course.ts";
+import {ExamInfo} from "@/type/infoQuery/exam/examInfo.ts";
+import {CourseScheduleExamItem} from "@/components/tool/infoQuery/examInfo/CourseScheduleExamItem.tsx";
 
 interface Props {
     courseList: Course[];
@@ -15,6 +17,8 @@ interface Props {
     onCoursePress?: (course: Course) => void;
     startDay: moment.MomentInput;
     showDate?: boolean;
+    // 非课程类型
+    examList?: ExamInfo[];
 }
 
 interface CourseItem extends Course {
@@ -202,6 +206,19 @@ export function CourseScheduleTable(props: Props) {
                                 index={i}
                             />
                         ))}
+
+                        {/*课表其他元素*/}
+                        {props.examList?.length &&
+                            props.examList
+                                .filter(examInfo =>
+                                    moment(examInfo.kssj.replace(/\(.*?\)/, "")).isSame(currentDay, "d"),
+                                )
+                                .map(examInfo => (
+                                    <CourseScheduleExamItem
+                                        key={`day${index}-${examInfo.ksmc}-${examInfo.kcmc}`}
+                                        examInfo={examInfo}
+                                    />
+                                ))}
                     </View>
                 );
             })}

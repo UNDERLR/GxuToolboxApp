@@ -15,8 +15,9 @@ import {usePagerView} from "react-native-pager-view";
 import {CourseCardSetting} from "@/components/tool/infoQuery/courseSchedule/CourseCardSetting.tsx";
 import {CourseScheduleContext} from "@/js/jw/course.ts";
 import {CourseScheduleView} from "@/components/tool/infoQuery/courseSchedule/CourseScheduleView.tsx";
+import {ExamInfo} from "@/type/infoQuery/exam/examInfo.ts";
 
-export function CourseScheduleCard() {
+export function ScheduleCard() {
     const {theme, userTheme} = useUserTheme();
     const pagerView = usePagerView({pagesAmount: 20});
     const {...rest} = pagerView;
@@ -42,8 +43,8 @@ export function CourseScheduleCard() {
             borderRadius: 5,
             paddingHorizontal: 0,
             marginHorizontal: 5,
-            elevation: 0,           // Android 去除阴影
-            shadowOpacity: 0,       // iOS 去除阴影
+            elevation: 0, // Android 去除阴影
+            shadowOpacity: 0, // iOS 去除阴影
         },
         cardTitle: {
             paddingHorizontal: 15,
@@ -58,30 +59,36 @@ export function CourseScheduleCard() {
         },
     });
 
-    function getCourseSchedule() {
-        ToastAndroid.show("刷新课表中...", ToastAndroid.SHORT);
-        infoQuery.getCourseSchedule(year, term).then(data => {
-            ToastAndroid.show("获取课表成功", ToastAndroid.SHORT);
-            setApiRes(data);
-            store.save({key: "courseRes", data});
-        });
+    const [examList, setExamList] = useState<ExamInfo[]>([]);
+
+    async function getExamList() {
+        const res = await infoQuery.getExamInfo(year, term);
+        setExamList(res.items);
     }
 
-    function init() {
-        store.load({key: "courseRes"}).then((data: CourseScheduleQueryRes) => {
-            setApiRes(data);
-        });
+    async function getCourseSchedule() {
+        ToastAndroid.show("刷新课表中...", ToastAndroid.SHORT);
+        const data = await infoQuery.getCourseSchedule(year, term);
+        ToastAndroid.show("获取课表成功", ToastAndroid.SHORT);
+        setApiRes(data);
+        await store.save({key: "courseRes", data});
+    }
+
+    async function init() {
+        const courseData: CourseScheduleQueryRes = await store.load({key: "courseRes"});
+        setApiRes(courseData);
+        const examData: ExamInfo[] = await store.load({key: "examInfo"});
+        setExamList(examData);
     }
 
     useEffect(() => {
-        init();
-        getCourseSchedule();
+        init().then(() => Promise.all([getCourseSchedule(), getExamList()]));
     }, [year, term]);
     return (
         <Card containerStyle={style.card}>
             <Card.Title style={style.cardTitle}>
                 <Flex justifyContent="space-between">
-                    <Text h4>课表</Text>
+                    <Text h4>日程表</Text>
                     <Flex gap={15} justifyContent="flex-end">
                         {rest.activePage + 1 !== realCurrentWeek && (
                             <Pressable
@@ -104,7 +111,13 @@ export function CourseScheduleCard() {
                 </Flex>
             </Card.Title>
             <Card.Divider />
-            <CourseScheduleView showDate startDay={startDay} courseApiRes={apiRes} pageView={pagerView} />
+            <CourseScheduleView
+                showDate
+                startDay={startDay}
+                courseApiRes={apiRes}
+                pageView={pagerView}
+                examList={examList}
+            />
             {apiRes?.sjkList && (
                 <>
                     <Card.Divider />

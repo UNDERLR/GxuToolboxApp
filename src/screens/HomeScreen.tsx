@@ -1,5 +1,5 @@
 import {GestureResponderEvent, PanResponder, PanResponderGestureState, ScrollView, View} from "react-native";
-import {CourseScheduleCard} from "@/components/tool/infoQuery/courseSchedule/CourseScheduleCard.tsx";
+import {ScheduleCard} from "@/components/tool/infoQuery/courseSchedule/ScheduleCard.tsx";
 import {useRef, useState} from "react";
 
 export function HomeScreen() {
@@ -80,7 +80,7 @@ export function HomeScreen() {
                     paddingVertical: 10,
                 }}>
                 {/*<ComingExamCard />*/}
-                <CourseScheduleCard />
+                <ScheduleCard />
             </ScrollView>
         </View>
     );

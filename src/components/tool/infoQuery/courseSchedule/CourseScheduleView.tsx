@@ -10,6 +10,7 @@ import moment from "moment/moment";
 import {Course} from "@/type/infoQuery/course/course.ts";
 import {CourseDetail} from "@/components/tool/infoQuery/courseSchedule/CourseDetail.tsx";
 import {CourseScheduleQueryRes} from "@/type/api/infoQuery/classScheduleAPI.ts";
+import {ExamInfo} from "@/type/infoQuery/exam/examInfo.ts";
 
 interface Props {
     startDay: moment.MomentInput;
@@ -17,6 +18,7 @@ interface Props {
     pageView: ReturnType<typeof usePagerView>;
     courseApiRes?: CourseScheduleQueryRes;
     showDate?: boolean;
+    examList?: ExamInfo[];
 }
 
 export function CourseScheduleView(props: Props) {
@@ -85,6 +87,7 @@ export function CourseScheduleView(props: Props) {
                                     onCoursePress={showCourseDetail}
                                     courseList={props.courseApiRes?.kbList ?? []}
                                     currentWeek={index + 1}
+                                    examList={props.examList}
                                 />
                             </View>
                         )),
