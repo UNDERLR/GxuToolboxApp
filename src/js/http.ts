@@ -1,7 +1,6 @@
 import axios from "axios";
 import {userMgr} from "./mgr/user.ts";
 import {ToastAndroid} from "react-native";
-import Clipboard from "@react-native-clipboard/clipboard";
 
 // 默认导出实例
 export const http = axios.create({
@@ -31,7 +30,8 @@ http.interceptors.response.use(
         return response;
     },
     error => {
-        return Promise.reject(error);
+        console.log(error);
+        return error;
     },
 );
 

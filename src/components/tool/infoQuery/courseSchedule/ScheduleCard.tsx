@@ -16,6 +16,7 @@ import {CourseCardSetting} from "@/components/tool/infoQuery/courseSchedule/Cour
 import {CourseScheduleContext} from "@/js/jw/course.ts";
 import {CourseScheduleView} from "@/components/tool/infoQuery/courseSchedule/CourseScheduleView.tsx";
 import {ExamInfo} from "@/type/infoQuery/exam/examInfo.ts";
+import {ExamInfoQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
 
 export function ScheduleCard() {
     const {theme, userTheme} = useUserTheme();
@@ -62,27 +63,42 @@ export function ScheduleCard() {
     const [examList, setExamList] = useState<ExamInfo[]>([]);
 
     async function getExamList() {
-        const res = await infoQuery.getExamInfo(year, term);
-        setExamList(res.items);
+        const data = await infoQuery.getExamInfo(year, term);
+        if (data?.items) {
+            ToastAndroid.show("获取考试信息成功", ToastAndroid.SHORT);
+            setExamList(data.items);
+            await store.save({key: "examInfo", data});
+        }else {
+            ToastAndroid.show("获取考试信息失败", ToastAndroid.SHORT);
+        }
     }
 
     async function getCourseSchedule() {
-        ToastAndroid.show("刷新课表中...", ToastAndroid.SHORT);
         const data = await infoQuery.getCourseSchedule(year, term);
-        ToastAndroid.show("获取课表成功", ToastAndroid.SHORT);
-        setApiRes(data);
-        await store.save({key: "courseRes", data});
+        if (data?.kbList) {
+            ToastAndroid.show("获取课表成功", ToastAndroid.SHORT);
+            setApiRes(data);
+            await store.save({key: "courseRes", data});
+        }else {
+            ToastAndroid.show("获取课表失败", ToastAndroid.SHORT);
+        }
     }
 
     async function init() {
         const courseData: CourseScheduleQueryRes = await store.load({key: "courseRes"});
         setApiRes(courseData);
-        const examData: ExamInfo[] = await store.load({key: "examInfo"});
-        setExamList(examData);
+        const examData: ExamInfoQueryRes = await store.load({key: "examInfo"});
+        setExamList(examData.items);
+    }
+
+    function loadData() {
+        getCourseSchedule();
+        getExamList();
     }
 
     useEffect(() => {
-        init().then(() => Promise.all([getCourseSchedule(), getExamList()]));
+        init();
+        loadData();
     }, [year, term]);
     return (
         <Card containerStyle={style.card}>
@@ -104,7 +120,7 @@ export function ScheduleCard() {
                             onPress={() => setCourseScheduleSettingVisible(true)}>
                             <Icon name="setting" size={24} />
                         </Pressable>
-                        <Pressable android_ripple={userTheme.ripple} onPress={getCourseSchedule}>
+                        <Pressable android_ripple={userTheme.ripple} onPress={loadData}>
                             <Icon name="sync" size={24} />
                         </Pressable>
                     </Flex>
