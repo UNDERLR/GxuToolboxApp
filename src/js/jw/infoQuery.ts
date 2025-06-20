@@ -1,5 +1,9 @@
 import {http, objectToFormUrlEncoded, urlWithParams} from "@/js/http.ts";
-import {CourseScheduleQueryRes, GetCourseScheduleListRes} from "@/type/api/infoQuery/classScheduleAPI.ts";
+import {
+    ClassScheduleQueryRes,
+    CourseScheduleQueryRes,
+    GetCourseScheduleListRes,
+} from "@/type/api/infoQuery/classScheduleAPI.ts";
 import {SchoolTerms, SchoolTermValue, SchoolValue, SchoolYears} from "@/type/global.ts";
 import moment from "moment/moment";
 import {ExamInfoQueryRes, ExamScoreQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
@@ -84,7 +88,7 @@ export const infoQuery = {
         subjectId: string,
         grade: number,
         classId: string,
-    ): Promise<CourseScheduleQueryRes> => {
+    ): Promise<ClassScheduleQueryRes> => {
         const reqBody = objectToFormUrlEncoded({
             xnm: year,
             xqm: term,

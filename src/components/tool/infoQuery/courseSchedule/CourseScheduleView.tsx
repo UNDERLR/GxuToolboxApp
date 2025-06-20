@@ -12,20 +12,19 @@ import {CourseDetail} from "@/components/tool/infoQuery/courseSchedule/CourseDet
 import {CourseScheduleQueryRes} from "@/type/api/infoQuery/classScheduleAPI.ts";
 
 interface Props {
-    startDay?: moment.MomentInput;
+    startDay: moment.MomentInput;
     onCoursePress?: (course: Course) => void;
     pageView: ReturnType<typeof usePagerView>;
     courseApiRes?: CourseScheduleQueryRes;
+    showDate?: boolean;
 }
 
 export function CourseScheduleView(props: Props) {
     const {theme} = useUserTheme();
     const {courseScheduleData} = useContext(CourseScheduleContext)!;
     const {AnimatedPagerView, ref, ...rest} = props.pageView;
-    const [startDay, setStartDay] = useState(props.startDay ?? props.courseApiRes?.weekNum[0].rq.split("/")[0]);
-    const realCurrentWeek = Math.ceil(
-        moment.duration(moment().diff(startDay)).asWeeks(),
-    );
+    const [startDay, setStartDay] = useState(props.startDay);
+    const realCurrentWeek = Math.ceil(moment.duration(moment().diff(startDay)).asWeeks());
 
     const [courseDetailVisible, setCourseDetailVisible] = useState(false);
     const [activeCourse, setActiveCourse] = useState<Course>({} as Course);
@@ -33,7 +32,10 @@ export function CourseScheduleView(props: Props) {
     const style = StyleSheet.create({
         pagerView: {
             width: "100%",
-            height: courseScheduleData.style.timeSpanHeight * 13 + courseScheduleData.style.weekdayHeight + 50,
+            height:
+                courseScheduleData.style.timeSpanHeight * (courseScheduleData.style.timeSpanHeight <= 40 ? 14 : 13) +
+                courseScheduleData.style.weekdayHeight +
+                50,
         },
         bottomSheetContainer: {
             backgroundColor: theme.colors.background,
@@ -67,17 +69,18 @@ export function CourseScheduleView(props: Props) {
                     () =>
                         rest.pages.map((_, index) => (
                             <View testID="pager-view-content" key={index} collapsable={false}>
-                                <Flex inline>
-                                    {index + 1 === realCurrentWeek ? (
-                                        <Text>（第{index + 1}周）</Text>
-                                    ) : (
+                                {props.showDate && (
+                                    <Flex inline>
                                         <Text>
-                                            （第{index + 1}周，目前为第{realCurrentWeek}周）
+                                            {index + 1 === realCurrentWeek
+                                                ? `（第${index + 1}周）`
+                                                : `（第${index + 1}周，目前为第${realCurrentWeek}周）`}
                                         </Text>
-                                    )}
-                                    <Text>点击课程查看详情</Text>
-                                </Flex>
+                                        <Text>点击课程查看详情</Text>
+                                    </Flex>
+                                )}
                                 <CourseScheduleTable
+                                    showDate={props.showDate}
                                     startDay={startDay}
                                     onCoursePress={showCourseDetail}
                                     courseList={props.courseApiRes?.kbList ?? []}

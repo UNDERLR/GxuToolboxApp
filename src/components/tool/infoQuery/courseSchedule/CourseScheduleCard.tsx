@@ -104,7 +104,7 @@ export function CourseScheduleCard() {
                 </Flex>
             </Card.Title>
             <Card.Divider />
-            <CourseScheduleView startDay={startDay} courseApiRes={apiRes} pageView={pagerView} />
+            <CourseScheduleView showDate startDay={startDay} courseApiRes={apiRes} pageView={pagerView} />
             {apiRes?.sjkList && (
                 <>
                     <Card.Divider />

@@ -14,6 +14,7 @@ interface Props {
     currentWeek?: number;
     onCoursePress?: (course: Course) => void;
     startDay: moment.MomentInput;
+    showDate?: boolean;
 }
 
 interface CourseItem extends Course {
@@ -132,9 +133,12 @@ export function CourseScheduleTable(props: Props) {
             <View style={[courseScheduleStyle.timeSpanContainer, courseScheduleStyle.weekdayContainer]}>
                 <View style={courseScheduleStyle.weekdayItem}>
                     <Text style={courseScheduleStyle.weekdayText}>
-                        {moment(courseScheduleData.startDay).add(currentWeek, "w").month() + 1 + "月"}
+                        {props.showDate
+                            ? moment(courseScheduleData.startDay).add(currentWeek, "w").month() + 1 + "月"
+                            : `第${props.currentWeek}周`}
                     </Text>
                 </View>
+                {/*时间段*/}
                 {courseScheduleData.style.timeSpanHeight > 40
                     ? courseScheduleData.timeSpanList.map((time, index) => (
                           <Flex
@@ -185,7 +189,9 @@ export function CourseScheduleTable(props: Props) {
                     <View style={weekdayContainerStyle} key={`day${index}`}>
                         <View style={courseScheduleStyle.weekdayItem}>
                             <Text style={weekdayTextStyle}>
-                                {`${weekday}\n${currentDay.month() + 1}-${currentDay.date()}`}
+                                {props.showDate
+                                    ? `${weekday}\n${currentDay.month() + 1}-${currentDay.date()}`
+                                    : `${weekday}`}
                             </Text>
                         </View>
                         {courseSchedule[index].map((course, i) => (

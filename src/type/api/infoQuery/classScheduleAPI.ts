@@ -10,6 +10,9 @@ export interface CourseScheduleQueryRes {
     sjkList: PracticalCourse[];
     /** 课表上的所有课程 */
     kbList: Course[];
+}
+
+export interface ClassScheduleQueryRes extends CourseScheduleQueryRes {
     /** 每周的信息 */
     weekNum: Week[];
 }

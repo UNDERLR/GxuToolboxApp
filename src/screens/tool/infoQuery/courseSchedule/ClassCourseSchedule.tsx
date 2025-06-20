@@ -8,13 +8,13 @@ import moment from "moment/moment";
 import {infoQuery} from "@/js/jw/infoQuery.ts";
 import {Class, UserInfo} from "@/type/infoQuery/base.ts";
 import {CourseSchedule} from "@/type/infoQuery/course/course.ts";
-import {CourseScheduleQueryRes} from "@/type/api/infoQuery/classScheduleAPI.ts";
+import {ClassScheduleQueryRes} from "@/type/api/infoQuery/classScheduleAPI.ts";
 import {CourseScheduleView} from "@/components/tool/infoQuery/courseSchedule/CourseScheduleView.tsx";
 import {usePagerView} from "react-native-pager-view";
 import {PracticalCourseList} from "@/components/tool/infoQuery/courseSchedule/PracticalCourseList.tsx";
 import {UnSlider} from "@/components/un-ui/UnSlider.tsx";
 import {UnPicker} from "@/components/un-ui/UnPicker";
-import { Picker } from "@react-native-picker/picker";
+import {Picker} from "@react-native-picker/picker";
 
 export function ClassCourseSchedule() {
     const {theme} = useUserTheme();
@@ -38,7 +38,7 @@ export function ClassCourseSchedule() {
     // scheduleList
     const [classScheduleList, setClassScheduleList] = useState<Array<CourseSchedule & Class & PageModel>>([]);
     const [classScheduleIndex, setClassScheduleIndex] = useState<number>();
-    const [classScheduleApiRes, setClassScheduleApiRes] = useState<CourseScheduleQueryRes>();
+    const [classScheduleApiRes, setClassScheduleApiRes] = useState<ClassScheduleQueryRes>();
 
     const style = StyleSheet.create({
         container: {
@@ -234,7 +234,11 @@ export function ClassCourseSchedule() {
                                 onValueChange={v => pageView.setPage(v - 1)}
                             />
                         </Flex>
-                        <CourseScheduleView pageView={pageView} courseApiRes={classScheduleApiRes} />
+                        <CourseScheduleView
+                            startDay={classScheduleApiRes.weekNum[0].rq.split("/")[0]}
+                            pageView={pageView}
+                            courseApiRes={classScheduleApiRes}
+                        />
                         {classScheduleApiRes?.sjkList && (
                             <>
                                 <Card.Divider />
