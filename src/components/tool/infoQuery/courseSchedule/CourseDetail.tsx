@@ -88,6 +88,23 @@ export function CourseDetail(props: Props) {
                     </Flex>
                 </ListItem>
             ))}
+            <ListItem>
+                <Flex justifyContent="space-between" gap={30}>
+                    <Flex gap={10} inline>
+                        <Flex inline justifyContent="center" style={style.infoIcon}>
+                            <Icon type="fontawesome" name="code" size={20}/>
+                        </Flex>
+                        <Text style={style.infoLabel}>复制课程信息JSON</Text>
+                    </Flex>
+                    <Flex justifyContent="flex-end">
+                        <Pressable
+                            android_ripple={userTheme.ripple}
+                            onPress={() => copy(JSON.stringify(props.course, null, 4) + "" ?? "", "复制课程信息JSON成功")}>
+                            <Text style={style.infoData}>&#123; ... &#125;</Text>
+                        </Pressable>
+                    </Flex>
+                </Flex>
+            </ListItem>
         </View>
     );
 }
