@@ -19,6 +19,7 @@ interface Props {
     showDate?: boolean;
     // 非课程类型
     examList?: ExamInfo[];
+    onExamPress?: (examInfo: ExamInfo) => void;
 }
 
 interface CourseItem extends Course {
@@ -217,6 +218,7 @@ export function CourseScheduleTable(props: Props) {
                                     <CourseScheduleExamItem
                                         key={`day${index}-${examInfo.ksmc}-${examInfo.kcmc}`}
                                         examInfo={examInfo}
+                                        onPress={props.onExamPress}
                                     />
                                 ))}
                     </View>

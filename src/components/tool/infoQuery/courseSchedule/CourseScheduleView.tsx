@@ -11,6 +11,7 @@ import {Course} from "@/type/infoQuery/course/course.ts";
 import {CourseDetail} from "@/components/tool/infoQuery/courseSchedule/CourseDetail.tsx";
 import {CourseScheduleQueryRes} from "@/type/api/infoQuery/classScheduleAPI.ts";
 import {ExamInfo} from "@/type/infoQuery/exam/examInfo.ts";
+import {ExamDetail} from "@/components/tool/infoQuery/examInfo/ExamDetail.tsx";
 
 interface Props {
     startDay: moment.MomentInput;
@@ -18,7 +19,9 @@ interface Props {
     pageView: ReturnType<typeof usePagerView>;
     courseApiRes?: CourseScheduleQueryRes;
     showDate?: boolean;
+
     examList?: ExamInfo[];
+    onExamPress?: (examInfo: ExamInfo) => void;
 }
 
 export function CourseScheduleView(props: Props) {
@@ -51,6 +54,14 @@ export function CourseScheduleView(props: Props) {
         props.onCoursePress?.(course);
     }
 
+    const [examDetailVisible, setExamDetailVisible] = useState(false);
+    const [activeExam, setActiveExam] = useState<ExamInfo>({} as ExamInfo);
+
+    function showExamDetail(examInfo: ExamInfo) {
+        setActiveExam(examInfo);
+        setExamDetailVisible(true);
+        props.onExamPress?.(examInfo);
+    }
     return (
         <View>
             <AnimatedPagerView
@@ -88,6 +99,7 @@ export function CourseScheduleView(props: Props) {
                                     courseList={props.courseApiRes?.kbList ?? []}
                                     currentWeek={index + 1}
                                     examList={props.examList}
+                                    onExamPress={showExamDetail}
                                 />
                             </View>
                         )),
@@ -98,6 +110,12 @@ export function CourseScheduleView(props: Props) {
             <BottomSheet isVisible={courseDetailVisible} onBackdropPress={() => setCourseDetailVisible(false)}>
                 <View style={style.bottomSheetContainer}>
                     <CourseDetail course={activeCourse} />
+                </View>
+            </BottomSheet>
+            {/* 考试信息 */}
+            <BottomSheet isVisible={examDetailVisible} onBackdropPress={() => setExamDetailVisible(false)}>
+                <View style={style.bottomSheetContainer}>
+                    <ExamDetail examInfo={activeExam} />
                 </View>
             </BottomSheet>
         </View>

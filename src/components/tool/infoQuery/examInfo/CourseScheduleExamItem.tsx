@@ -86,6 +86,7 @@ export function CourseScheduleExamItem(props: Props) {
                     <Icon type="fontawesome" name="map-marker" />
                     {"\n" + examInfo.cdmc.replace("-", "\n")}
                 </Text>
+                <Text style={itemStyle.text}>{`<${examInfo.zwh}>`}</Text>
             </Flex>
         </Pressable>
     );
