@@ -60,11 +60,15 @@ function App(): React.JSX.Element {
         console.log("可以管理文件:", canManageFiles);
     };
 
+    async function init() {
+        await handleRequestPermission();
+        await handleFileOperations();
+        await jwxt.testToken();
+    }
+
     // 应用初始化
     useEffect(() => {
-        // handleRequestPermission();
-        // handleFileOperations();
-        jwxt.refreshToken().then(() => appRef.current?.forceUpdate());
+        init();
     }, []);
 
     return (

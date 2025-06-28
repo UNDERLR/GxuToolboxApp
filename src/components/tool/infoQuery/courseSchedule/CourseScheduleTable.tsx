@@ -189,6 +189,9 @@ export function CourseScheduleTable(props: Props) {
                     weekdayContainerStyle[0] = itemStyle.activeContainer;
                     weekdayTextStyle[0] = itemStyle.activeText;
                 }
+                const currentDayExamList = (props.examList ?? []).filter(examInfo =>
+                    moment(examInfo.kssj.replace(/\(.*?\)/, "")).isSame(currentDay, "d"),
+                );
                 return (
                     // 当日课程渲染
                     <View style={weekdayContainerStyle} key={`day${index}`}>
@@ -209,18 +212,13 @@ export function CourseScheduleTable(props: Props) {
                         ))}
 
                         {/*课表其他元素*/}
-                        {props.examList?.length &&
-                            props.examList
-                                .filter(examInfo =>
-                                    moment(examInfo.kssj.replace(/\(.*?\)/, "")).isSame(currentDay, "d"),
-                                )
-                                .map(examInfo => (
-                                    <CourseScheduleExamItem
-                                        key={`day${index}-${examInfo.ksmc}-${examInfo.kcmc}`}
-                                        examInfo={examInfo}
-                                        onPress={props.onExamPress}
-                                    />
-                                ))}
+                        {currentDayExamList.map(examInfo => (
+                            <CourseScheduleExamItem
+                                key={`day${index}-${examInfo.ksmc}-${examInfo.kcmc}`}
+                                examInfo={examInfo}
+                                onPress={props.onExamPress}
+                            />
+                        ))}
                     </View>
                 );
             })}

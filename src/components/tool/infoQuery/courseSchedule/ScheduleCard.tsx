@@ -68,7 +68,7 @@ export function ScheduleCard() {
             ToastAndroid.show("获取考试信息成功", ToastAndroid.SHORT);
             setExamList(data.items);
             await store.save({key: "examInfo", data});
-        }else {
+        } else {
             ToastAndroid.show("获取考试信息失败", ToastAndroid.SHORT);
         }
     }
@@ -79,7 +79,7 @@ export function ScheduleCard() {
             ToastAndroid.show("获取课表成功", ToastAndroid.SHORT);
             setApiRes(data);
             await store.save({key: "courseRes", data});
-        }else {
+        } else {
             ToastAndroid.show("获取课表失败", ToastAndroid.SHORT);
         }
     }
@@ -89,16 +89,16 @@ export function ScheduleCard() {
         setApiRes(courseData);
         const examData: ExamInfoQueryRes = await store.load({key: "examInfo"});
         setExamList(examData.items);
+        await loadData();
     }
 
-    function loadData() {
-        getCourseSchedule();
-        getExamList();
+    async function loadData() {
+        await getCourseSchedule();
+        await getExamList();
     }
 
     useEffect(() => {
         init();
-        loadData();
     }, [year, term]);
     return (
         <Card containerStyle={style.card}>

@@ -40,6 +40,11 @@ export function CourseDetail(props: Props) {
             key: "xm",
         },
         {
+            label: "学分",
+            icon: <Icon name="infocirlceo" size={20} />,
+            key: "xf",
+        },
+        {
             label: "QQ群",
             icon: <Icon name="QQ" size={20} />,
             key: "qqqh",
