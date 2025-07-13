@@ -1,7 +1,6 @@
 import axios from "axios";
 import {userMgr} from "./mgr/user.ts";
 import {ToastAndroid} from "react-native";
-import Clipboard from "@react-native-clipboard/clipboard";
 
 // 默认导出实例
 export const http = axios.create({
@@ -31,7 +30,8 @@ http.interceptors.response.use(
         return response;
     },
     error => {
-        return Promise.reject(error);
+        console.log(error);
+        return error;
     },
 );
 
@@ -53,6 +53,9 @@ export function urlWithParams(url: string, params: Record<string, any> = {}): st
 export function objectToFormUrlEncoded(obj: any, prefix = ""): string {
     let res = "";
     for (const key in obj) {
+        if (obj[key] === undefined) {
+            break;
+        }
         if (typeof obj[key] === "object") {
             res += objectToFormUrlEncoded(obj[key], prefix + key + ".");
         } else res += prefix + key + "=" + encodeURIComponent(obj[key]) + "&";

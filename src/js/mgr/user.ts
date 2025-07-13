@@ -1,4 +1,4 @@
-import {store} from "../store.ts";
+import {store} from "@/js/store.ts";
 
 export const userMgr = {
     storeAccount: (username: string, password: string) => {

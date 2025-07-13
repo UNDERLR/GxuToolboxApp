@@ -1,12 +1,12 @@
 import {Card, Text} from "@rneui/themed";
-import Flex from "../../../un-ui/Flex.tsx";
+import Flex from "@/components/un-ui/Flex.tsx";
 import {ScrollView, StyleSheet} from "react-native";
-import {color, Color} from "../../../../js/color.ts";
-import {useUserTheme} from "../../../../js/theme.ts";
+import {Color} from "@/js/color.ts";
+import {useUserTheme} from "@/js/theme.ts";
 import {useEffect, useState} from "react";
-import {ExamInfo} from "../../../../type/infoQuery/exam/examInfo.ts";
-import {store} from "../../../../js/store.ts";
-import {ExamInfoQueryRes} from "../../../../type/api/examInfoAPI.ts";
+import {ExamInfo} from "@/type/infoQuery/exam/examInfo.ts";
+import {store} from "@/js/store.ts";
+import {ExamInfoQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
 import moment from "moment/moment";
 import {Row, Rows, Table} from "react-native-reanimated-table";
 
@@ -42,7 +42,7 @@ export function ComingExamCard() {
 
     const style = StyleSheet.create({
         card: {
-            backgroundColor: new Color(theme.colors.background).setAlpha(theme.mode === "dark" ? 0.7 : 0.8).rgbaString,
+            backgroundColor: Color(theme.colors.background).setAlpha(theme.mode === "dark" ? 0.7 : 0.8).rgbaString,
             borderRadius: 5,
         },
         bottomSheetContainer: {
@@ -58,13 +58,13 @@ export function ComingExamCard() {
         },
         tableBorder: {
             borderWidth: 2,
-            borderColor: color.mix(new Color(theme.colors.primary), new Color(theme.colors.grey4), 0.4).rgbaString,
+            borderColor: Color.mix(Color(theme.colors.primary), Color(theme.colors.grey4), 0.4).rgbaString,
         },
         tableHeader: {
             backgroundColor: color
                 .mix(
-                    new Color(theme.colors.primary),
-                    new Color(theme.colors.background),
+                    Color(theme.colors.primary),
+                    Color(theme.colors.background),
                     theme.mode === "dark" ? 0.7 : 0.2,
                 )
                 .setAlpha(theme.mode === "dark" ? 0.3 : 0.6).rgbaString,

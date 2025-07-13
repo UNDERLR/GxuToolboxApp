@@ -16,10 +16,6 @@ export const theme = createTheme({
             style: {
                 flex: 1,
             },
-            trackStyle: {
-                height: 5,
-                marginTop: undefined,
-            },
             thumbStyle: {
                 height: 20,
                 width: 20,
@@ -58,6 +54,18 @@ export function useUserTheme() {
                 update({
                     ...savedTheme,
                     uiTheme: newUiTheme,
+                    components: {
+                        ...savedTheme.components,
+                        Picker: {
+                            ...savedTheme.components.Picker,
+                            style: {
+                                color:
+                                    colorScheme === "light"
+                                        ? "black"
+                                        : "white",
+                            },
+                        },
+                    },
                 });
             }
         });

@@ -1,9 +1,9 @@
 import {StyleSheet, ToastAndroid, View} from "react-native";
 import {Button, Input, Text} from "@rneui/themed";
 import {useEffect, useState} from "react";
-import {jwxt} from "../../../js/jw/jwxt.ts";
-import {userMgr} from "../../../js/mgr/user.ts";
-import {Icon} from "../../../components/un-ui/Icon.tsx";
+import {jwxt} from "@/js/jw/jwxt.ts";
+import {userMgr} from "@/js/mgr/user.ts";
+import {Icon} from "@/components/un-ui/Icon.tsx";
 
 async function getToken(username: string, password: string) {
     userMgr.storeAccount(username, password);
@@ -14,7 +14,12 @@ async function getToken(username: string, password: string) {
         await jwxt.login(username, password, data.modulus, data.exponent);
         // 检验Token
         if (await jwxt.testToken(false)) {
-            ToastAndroid.show("获取成功", ToastAndroid.SHORT);
+            ToastAndroid.show("获取成功，尝试获取用户基础信息", ToastAndroid.SHORT);
+            if ((await jwxt.getInfo()) !== undefined) {
+                ToastAndroid.show("获取基础信息成功", ToastAndroid.SHORT);
+            } else {
+                ToastAndroid.show("获取基础信息失败", ToastAndroid.SHORT);
+            }
         } else {
             ToastAndroid.show("获取失败，请检查帐密是否正确", ToastAndroid.SHORT);
         }

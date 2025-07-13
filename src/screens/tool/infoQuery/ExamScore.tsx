@@ -1,31 +1,32 @@
 import {ScrollView, StyleSheet, ToastAndroid, View} from "react-native";
-import {Button, Divider, ListItem, Text} from "@rneui/themed";
+import {Button, Divider, Text} from "@rneui/themed";
 import {useEffect, useState} from "react";
 import moment from "moment/moment";
-import Flex from "../../../components/un-ui/Flex.tsx";
+import Flex from "@/components/un-ui/Flex.tsx";
 import {Picker} from "@react-native-picker/picker";
-import {SchoolTerms, SchoolYears} from "../../../type/global.ts";
-import {infoQuery} from "../../../js/jw/infoQuery.ts";
-import {NumberInput} from "../../../components/un-ui/NumberInput.tsx";
+import {SchoolTerms, SchoolTermValue, SchoolYears} from "@/type/global.ts";
+import {infoQuery} from "@/js/jw/infoQuery.ts";
+import {NumberInput} from "@/components/un-ui/NumberInput.tsx";
 import {Row, Rows, Table} from "react-native-reanimated-table";
-import {useUserTheme} from "../../../js/theme.ts";
-import {ExamInfoQueryRes} from "../../../type/api/examInfoAPI.ts";
-import {store} from "../../../js/store.ts";
-import {color, Color} from "../../../js/color.ts";
+import {useUserTheme} from "@/js/theme.ts";
+import {ExamScoreQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
+import {store} from "@/js/store.ts";
+import {Color} from "@/js/color.ts";
+import {UnPicker} from "@/components/un-ui/UnPicker.tsx";
 
 export function ExamScore() {
-    const {theme, userTheme} = useUserTheme();
-    const [apiRes, setApiRes] = useState<ExamInfoQueryRes>({});
+    const {theme} = useUserTheme();
+    const [apiRes, setApiRes] = useState<ExamScoreQueryRes>({});
     const [year, setYear] = useState(moment().isBefore(moment("8", "M"), "M") ? moment().year() - 1 : moment().year());
-    const [term, setTerm] = useState<string>(
+    const [term, setTerm] = useState<SchoolTermValue>(
         moment().isBetween(moment("02", "MM"), moment("08", "MM"), "month", "[]")
             ? SchoolTerms[1][0]
-            : SchoolYears[0][0],
+            : SchoolTerms[0][0],
     );
     const [page, setPage] = useState(1);
     const [tableData, setTableData] = useState({
-        header: ["学年", "课程名称", "成绩", "学分", "绩点", "教学班", "教师"],
-        width: [120, 200, 80, 100, 80, 200, 140],
+        header: ["学年", "课程名称", "成绩", "发布时间", "学分", "绩点", "教学班", "教师"],
+        width: [120, 200, 80, 150, 100, 80, 200, 140],
         body: [] as string[][],
     });
 
@@ -47,19 +48,18 @@ export function ExamScore() {
         },
         tableBorder: {
             borderWidth: 2,
-            borderColor: color.mix(new Color(theme.colors.primary), new Color(theme.colors.grey4), 0.4).rgbaString,
+            borderColor: Color.mix(Color(theme.colors.primary), Color(theme.colors.grey4), 0.4).rgbaString,
         },
         tableHeader: {
-            backgroundColor: color
-                .mix(
-                    new Color(theme.colors.primary),
-                    new Color(theme.colors.background),
-                    theme.mode === "dark" ? 0.7 : 0.2,
-                )
-                .setAlpha(theme.mode === "dark" ? 0.3 : 0.6).rgbaString,
+            backgroundColor: Color.mix(
+                Color(theme.colors.primary),
+                Color(theme.colors.background),
+                theme.mode === "dark" ? 0.7 : 0.2,
+            ).setAlpha(theme.mode === "dark" ? 0.3 : 0.6).rgbaString,
         },
         tableHeaderText: {},
     });
+
     function init() {
         store.load({key: "examScore"}).then(data => {
             setApiRes(data);
@@ -69,6 +69,7 @@ export function ExamScore() {
                     item.xnmmc,
                     item.kcmc,
                     item.cj,
+                    item.cjbdsj,
                     item.xf,
                     item.jd,
                     item.jxbmc,
@@ -80,16 +81,18 @@ export function ExamScore() {
 
     function query() {
         infoQuery.getExamScore(year, term, page).then(res => {
-            const tableBody = res.items.map((item, index) => [
+            const tableBody = res.items.map(item => [
                 item.xnmmc,
                 item.kcmc,
                 item.cj,
+                item.cjbdsj,
                 item.xf,
                 item.jd,
                 item.jxbmc,
                 item.jsxm,
             ]);
-            ToastAndroid.show("获取考试信息成功", ToastAndroid.SHORT);
+            console.log(res);
+            ToastAndroid.show("获取考试成绩成功", ToastAndroid.SHORT);
             setTableData({
                 ...tableData,
                 body: tableBody,
@@ -107,34 +110,26 @@ export function ExamScore() {
     return (
         <ScrollView>
             <View style={style.container}>
-                <Text h3>考试成绩查询</Text>
-                <Divider />
                 <Text h4>查询参数</Text>
                 <Flex gap={10} direction="column" alignItems="flex-start">
                     <Flex gap={10}>
                         <Text>学期</Text>
                         <View style={{flex: 1}}>
-                            <Picker
-                                {...userTheme.components.Picker}
-                                selectedValue={year}
-                                onValueChange={(v, index) => setYear(v)}>
+                            <UnPicker selectedValue={year} onValueChange={setYear}>
                                 {data.schoolYear.map(value => {
                                     return <Picker.Item value={+value[0]} label={value[1]} key={value[0]} />;
                                 })}
-                            </Picker>
+                            </UnPicker>
                         </View>
                         <View style={{flex: 1}}>
-                            <Picker
-                                {...userTheme.components.Picker}
-                                selectedValue={term}
-                                onValueChange={(v, index) => setTerm(v)}>
+                            <UnPicker selectedValue={term} onValueChange={setTerm}>
                                 {data.schoolTerm.map(value => {
                                     return <Picker.Item value={value[0]} label={value[1]} key={value[0]} />;
                                 })}
-                            </Picker>
+                            </UnPicker>
                         </View>
                     </Flex>
-                    <View style={{width:"100%"}}>
+                    <View style={{width: "100%"}}>
                         <Button onPress={query}>查询</Button>
                     </View>
                 </Flex>
@@ -142,12 +137,14 @@ export function ExamScore() {
                 <Flex direction="column" gap={15} alignItems="flex-start">
                     <Flex alignItems="flex-end" gap={5}>
                         <Text h4>查询结果</Text>
-                        <Text>{`第${apiRes.currentPage}/${apiRes.totalPage}页，共有${apiRes.totalCount}条结果`}</Text>
+                        <Text>{`第${apiRes.currentPage ?? 1}/${apiRes.totalPage ?? 1}页，共有${
+                            apiRes.totalCount ?? 0
+                        }条结果`}</Text>
                     </Flex>
                     <Flex gap={10}>
                         <Text>页数</Text>
                         <Flex inline>
-                            <NumberInput value={page} onChange={setPage} min={1} max={apiRes.totalPage} />
+                            <NumberInput value={page} onChange={setPage} min={1} max={apiRes.totalPage ?? 1} />
                         </Flex>
                         <Text>每页15条记录</Text>
                     </Flex>
@@ -171,7 +168,7 @@ export function ExamScore() {
                     <Flex gap={10}>
                         <Text>页数</Text>
                         <Flex inline>
-                            <NumberInput value={page} onChange={setPage} min={1} max={apiRes.totalPage} />
+                            <NumberInput value={page} onChange={setPage} min={1} max={apiRes.totalPage ?? 1} />
                         </Flex>
                         <Text>每页15条记录</Text>
                     </Flex>

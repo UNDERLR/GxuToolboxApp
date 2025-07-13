@@ -1,10 +1,11 @@
-import {PracticalCourse, useCourseScheduleStyle} from "../../../../type/infoQuery/course/course.ts";
+import {PracticalCourse} from "@/type/infoQuery/course/course.ts";
 import {StyleSheet, View} from "react-native";
-import {BaseColor, color, Color} from "../../../../js/color.ts";
-import Flex from "../../../un-ui/Flex.tsx";
-import {Icon} from "../../../un-ui/Icon.tsx";
+import {BaseColor, Color} from "@/js/color.ts";
+import Flex from "@/components/un-ui/Flex.tsx";
+import {Icon} from "@/components/un-ui/Icon.tsx";
 import {Text, useTheme} from "@rneui/themed";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
+import {CourseScheduleContext} from "@/js/jw/course.ts";
 
 interface Props {
     courseList: PracticalCourse[];
@@ -47,7 +48,7 @@ export function PracticalCourseList(props: Props) {
         setCourseList(props.courseList as PracticalCourseItem[]);
     }, [props.courseList]);
 
-    const {courseScheduleStyle} = useCourseScheduleStyle();
+    const {courseScheduleStyle} = useContext(CourseScheduleContext)!;
 
     function randomCourseColor(courseList: PracticalCourseItem[]) {
         //使得相同课程的颜色相同
@@ -64,19 +65,19 @@ export function PracticalCourseList(props: Props) {
 
     return (
         <View>
-            <Text style={{textAlign: "center"}}>其他课程</Text>
+            <Text style={{textAlign: "center"}}>实践课</Text>
             {courseList.map((course: PracticalCourseItem) => {
                 const itemStyle = StyleSheet.create({
                     course: {
-                        backgroundColor: new Color(course.backgroundColor).setAlpha(theme.mode === "light" ? 0.3 : 0.1)
+                        backgroundColor: Color(course.backgroundColor).setAlpha(theme.mode === "light" ? 0.3 : 0.1)
                             .rgbaString,
-                        borderColor: color.mix(new Color(course.backgroundColor), new Color(theme.colors.grey4), 0.8)
+                        borderColor: Color.mix(Color(course.backgroundColor), Color(theme.colors.grey4), 0.8)
                             .rgbaString,
                     },
                 });
                 return (
                     <View
-                        key={course.kcmc}
+                        key={`${course.kcmc}`}
                         style={[
                             itemStyle.course,
                             courseScheduleStyle.courseItem,

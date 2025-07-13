@@ -1,17 +1,25 @@
-import {Course, useCourseScheduleData, useCourseScheduleStyle} from "../../../../type/infoQuery/course/course.ts";
-import {Pressable, StyleProp, StyleSheet, TextStyle, View, ViewStyle} from "react-native";
+import {Course} from "@/type/infoQuery/course/course.ts";
+import {StyleProp, StyleSheet, TextStyle, View, ViewStyle} from "react-native";
 import moment from "moment/moment";
-import {color, Color} from "../../../../js/color.ts";
-import {Icon} from "../../../un-ui/Icon.tsx";
+import {Color} from "@/js/color.ts";
 import {Text} from "@rneui/themed";
-import {useEffect, useState} from "react";
-import Flex from "../../../un-ui/Flex.tsx";
-import {useUserTheme} from "../../../../js/theme.ts";
+import {useContext, useEffect, useState} from "react";
+import Flex from "@/components/un-ui/Flex.tsx";
+import {useUserTheme} from "@/js/theme.ts";
+import {CourseItem} from "@/components/tool/infoQuery/courseSchedule/CourseItem.tsx";
+import {CourseScheduleContext} from "@/js/jw/course.ts";
+import {ExamInfo} from "@/type/infoQuery/exam/examInfo.ts";
+import {CourseScheduleExamItem} from "@/components/tool/infoQuery/examInfo/CourseScheduleExamItem.tsx";
 
 interface Props {
     courseList: Course[];
     currentWeek?: number;
     onCoursePress?: (course: Course) => void;
+    startDay: moment.MomentInput;
+    showDate?: boolean;
+    // 非课程类型
+    examList?: ExamInfo[];
+    onExamPress?: (examInfo: ExamInfo) => void;
 }
 
 interface CourseItem extends Course {
@@ -20,11 +28,10 @@ interface CourseItem extends Course {
 }
 
 export function CourseScheduleTable(props: Props) {
+    const {courseScheduleData, courseScheduleStyle} = useContext(CourseScheduleContext)!;
     const {theme} = useUserTheme();
     const [courseSchedule, setCourseSchedule] = useState<CourseItem[][]>([[], [], [], [], [], [], []]);
-    const {courseScheduleData} = useCourseScheduleData();
-    const {courseScheduleStyle} = useCourseScheduleStyle();
-    const startDay = moment(courseScheduleData.startDay);
+    const startDay = moment(props.startDay);
     const [currentTime, setCurrentTime] = useState(moment().format());
     const currentWeek = props.currentWeek ?? Math.ceil(moment.duration(moment().diff(startDay)).asWeeks());
     const currentTimeSpan = getCurrentTimeSpan();
@@ -108,6 +115,19 @@ export function CourseScheduleTable(props: Props) {
             10,
     };
 
+    const shortTimeSpanList: [number | string, string][] = Array(Math.ceil(courseScheduleData.timeSpanList.length / 2))
+        .fill(0)
+        .map((_, index) =>
+            courseScheduleData.timeSpanList[index * 2 + 1] !== undefined
+                ? [
+                      `${index * 2 + 1} - ${index * 2 + 2}`,
+                      courseScheduleData.timeSpanList[index * 2].split("\n")[0] +
+                          "\n" +
+                          courseScheduleData.timeSpanList[index * 2 + 1].split("\n")[1],
+                  ]
+                : [index * 2 + 1, courseScheduleData.timeSpanList[index * 2]],
+        );
+
     return (
         <View style={courseScheduleStyle.courseSchedule}>
             {/*时间段高亮*/}
@@ -115,23 +135,37 @@ export function CourseScheduleTable(props: Props) {
                 <View style={[timeSpanHighLightTop, courseScheduleStyle.timeSpanHighLight]} />
             )}
             {/*时间表渲染*/}
-            <View style={[courseScheduleStyle.timeSpanContainer,courseScheduleStyle.weekdayContainer]}>
+            <View style={[courseScheduleStyle.timeSpanContainer, courseScheduleStyle.weekdayContainer]}>
                 <View style={courseScheduleStyle.weekdayItem}>
                     <Text style={courseScheduleStyle.weekdayText}>
-                        {moment(courseScheduleData.startDay).add(currentWeek, "w").month() + 1 + "月"}
+                        {props.showDate
+                            ? moment(courseScheduleData.startDay).add(currentWeek, "w").month() + 1 + "月"
+                            : `第${props.currentWeek}周`}
                     </Text>
                 </View>
-                {courseScheduleData.timeSpanList.map((time, index) => {
-                    return (
-                        <Flex
-                            inline
-                            key={`timespan-${index}`}
-                            style={courseScheduleStyle.timeSpanItem}
-                            justifyContent="center">
-                            <Text style={courseScheduleStyle.timeSpanText}>{`${index + 1}\n${time}`}</Text>
-                        </Flex>
-                    );
-                })}
+                {/*时间段*/}
+                {courseScheduleData.style.timeSpanHeight > 40
+                    ? courseScheduleData.timeSpanList.map((time, index) => (
+                          <Flex
+                              inline
+                              key={`timespan-${index}`}
+                              style={courseScheduleStyle.timeSpanItem}
+                              justifyContent="center">
+                              <Text style={courseScheduleStyle.timeSpanText}>{`${index + 1}\n${time}`}</Text>
+                          </Flex>
+                      ))
+                    : shortTimeSpanList.map((value, index) => (
+                          <Flex
+                              inline
+                              key={`timespan-${index}`}
+                              style={[
+                                  courseScheduleStyle.timeSpanItem,
+                                  {height: courseScheduleData.style.timeSpanHeight * 2},
+                              ]}
+                              justifyContent="center">
+                              <Text style={courseScheduleStyle.timeSpanText}>{`${value[0]}\n${value[1]}`}</Text>
+                          </Flex>
+                      ))}
             </View>
             {/*课表*/}
             {courseScheduleData.weekdayList.map((weekday, index) => {
@@ -143,7 +177,7 @@ export function CourseScheduleTable(props: Props) {
                 const itemStyle = StyleSheet.create({
                     activeContainer: {
                         ...courseScheduleStyle.weekdayContainer,
-                        backgroundColor: new Color(theme.colors.primary).setAlpha(0.2).rgbaString,
+                        backgroundColor: Color(theme.colors.primary).setAlpha(0.2).rgbaString,
                     },
                     activeText: {
                         ...courseScheduleStyle.weekdayText,
@@ -155,61 +189,36 @@ export function CourseScheduleTable(props: Props) {
                     weekdayContainerStyle[0] = itemStyle.activeContainer;
                     weekdayTextStyle[0] = itemStyle.activeText;
                 }
+                const currentDayExamList = (props.examList ?? []).filter(examInfo =>
+                    moment(examInfo.kssj.replace(/\(.*?\)/, "")).isSame(currentDay, "d"),
+                );
                 return (
                     // 当日课程渲染
                     <View style={weekdayContainerStyle} key={`day${index}`}>
                         <View style={courseScheduleStyle.weekdayItem}>
                             <Text style={weekdayTextStyle}>
-                                {`${weekday}\n${currentDay.month() + 1}-${currentDay.date()}`}
+                                {props.showDate
+                                    ? `${weekday}\n${currentDay.month() + 1}-${currentDay.date()}`
+                                    : `${weekday}`}
                             </Text>
                         </View>
-                        {courseSchedule[index].map(course => {
-                            const span =
-                                parseInt(course.jcs.split("-")[1], 10) - parseInt(course.jcs.split("-")[0], 10) + 1;
-                            const y = +course.jcs.split("-")[0] - 1;
-                            const itemStyle = StyleSheet.create({
-                                course: {
-                                    height:
-                                        span * courseScheduleData.style.timeSpanHeight -
-                                        courseScheduleData.style.courseItemMargin * 2,
-                                    position: "absolute",
-                                    backgroundColor: new Color(course.backgroundColor).setAlpha(
-                                        theme.mode === "light" ? 0.3 : 0.1,
-                                    ).rgbaString,
-                                    borderColor: color.mix(
-                                        new Color(course.backgroundColor),
-                                        new Color(theme.colors.grey4),
-                                        0.7,
-                                    ).rgbaString,
-                                    top:
-                                        courseScheduleData.style.weekdayHeight +
-                                        y * courseScheduleData.style.timeSpanHeight +
-                                        courseScheduleData.style.courseItemMargin,
-                                },
-                                text: {
-                                    textAlign: "center",
-                                },
-                            });
-                            return (
-                                // 课程元素
-                                <Pressable
-                                    onPress={e => props.onCoursePress?.(course)}
-                                    style={[itemStyle.course, courseScheduleStyle.courseItem]}
-                                    key={`day${index}-${course.kcmc}-${course.jc}`}>
-                                    <Flex direction="column" gap={5}>
-                                        <Text style={itemStyle.text}>{course.kcmc}</Text>
-                                        <Text style={itemStyle.text}>
-                                            <Icon type="fontawesome" name="map-marker" />
-                                            {"\n" + course.cdmc.replace("-", "\n")}
-                                        </Text>
-                                        <Text style={itemStyle.text} ellipsizeMode="tail" numberOfLines={5}>
-                                            <Icon name="user" />
-                                            {"\n" + course.xm}
-                                        </Text>
-                                    </Flex>
-                                </Pressable>
-                            );
-                        })}
+                        {courseSchedule[index].map((course, i) => (
+                            <CourseItem
+                                onCoursePress={props.onCoursePress}
+                                key={`day${index}-${course.kcmc}-${course.jc}-${course.jxb_id}`}
+                                course={course}
+                                index={i}
+                            />
+                        ))}
+
+                        {/*课表其他元素*/}
+                        {currentDayExamList.map(examInfo => (
+                            <CourseScheduleExamItem
+                                key={`day${index}-${examInfo.ksmc}-${examInfo.kcmc}`}
+                                examInfo={examInfo}
+                                onPress={props.onExamPress}
+                            />
+                        ))}
                     </View>
                 );
             })}

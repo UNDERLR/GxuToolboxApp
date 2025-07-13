@@ -1,6 +1,6 @@
 import {FlexAlignType, StyleSheet, View, ViewProps} from "react-native";
 
-interface Props extends ViewProps {
+interface Props {
     gap: number;
     inline: boolean;
     direction: "row" | "column";
@@ -8,7 +8,7 @@ interface Props extends ViewProps {
     justifyContent: "center" | "flex-start" | "flex-end" | "space-between" | "space-around" | "space-evenly";
 }
 
-export default function Flex(props: Partial<Props>) {
+export default function Flex(props: Partial<Props & ViewProps>) {
     const style = StyleSheet.create({
         unUiFlex: {
             flex: !props.inline ? 1 : undefined,

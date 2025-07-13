@@ -1,0 +1,93 @@
+import React, {useContext, useMemo} from "react";
+import {Pressable, StyleSheet} from "react-native";
+import {Color} from "@/js/color.ts";
+import Flex from "@/components/un-ui/Flex.tsx";
+import {Text} from "@rneui/themed";
+import {Icon} from "@/components/un-ui/Icon.tsx";
+import {useUserTheme} from "@/js/theme.ts";
+import {CourseScheduleContext} from "@/js/jw/course.ts";
+import {ExamInfo} from "@/type/infoQuery/exam/examInfo.ts";
+import moment from "moment/moment";
+
+interface Props {
+    examInfo: ExamInfo;
+    onPress?: (examInfo: ExamInfo) => void;
+}
+
+export function CourseScheduleExamItem(props: Props) {
+    const {courseScheduleData, courseScheduleStyle} = useContext(CourseScheduleContext)!;
+    const {theme, userTheme} = useUserTheme();
+    const {examInfo} = props;
+
+    function timeToTimeSpan(time: string, endTime: boolean = false): number {
+        let res = -1;
+        if (endTime) {
+            for (let i = courseScheduleData.timeSpanList.length - 1; i >= 0; i--) {
+                const timeSpanStartTime = courseScheduleData.timeSpanList[i].split("\n")[0];
+                if (moment(timeSpanStartTime, "hh:mm").isBefore(moment(time, "hh:mm"))) {
+                    res = i;
+                    break;
+                }
+            }
+        } else {
+            for (let i = 0; i < courseScheduleData.timeSpanList.length; i++) {
+                const timeSpanEndTime = courseScheduleData.timeSpanList[i].split("\n")[1];
+                if (moment(timeSpanEndTime, "hh:mm").isAfter(moment(time, "hh:mm"))) {
+                    res = i;
+                    break;
+                }
+            }
+        }
+        return res;
+    }
+
+    const examTime = examInfo.kssj.match(/(?<=\().*?(?=\))/g)?.[0].split("-") as [string, string];
+    const y = timeToTimeSpan(examTime[0]);
+    const span = timeToTimeSpan(examTime[1], true) - y +1;
+    const color = courseScheduleData.randomColor[Math.floor(Math.random() * courseScheduleData.randomColor.length)];
+    const itemStyle = useMemo(() => {
+        return StyleSheet.create({
+            course: {
+                height: span * courseScheduleData.style.timeSpanHeight - courseScheduleData.style.courseItemMargin * 2,
+                position: "absolute",
+                backgroundColor: Color(color).setAlpha(theme.mode === "light" ? 0.3 : 0.1).rgbaString,
+                borderColor: Color.mix(Color(color), Color(theme.colors.grey4), 0.7).rgbaString,
+                top:
+                    courseScheduleData.style.weekdayHeight +
+                    y * courseScheduleData.style.timeSpanHeight +
+                    courseScheduleData.style.courseItemMargin,
+            },
+            text: {
+                textAlign: "center",
+            },
+        });
+    }, [
+        courseScheduleData.style.courseItemMargin,
+        courseScheduleData.style.timeSpanHeight,
+        courseScheduleData.style.weekdayHeight,
+        span,
+        theme.colors.grey4,
+        theme.mode,
+        y,
+    ]);
+
+    return (
+        // 课程元素
+        <Pressable
+            onPress={e => {
+                props.onPress?.(examInfo);
+            }}
+            android_ripple={userTheme.ripple}
+            style={[itemStyle.course, courseScheduleStyle.courseItem]}>
+            <Flex direction="column" gap={5}>
+                <Text style={itemStyle.text}>考试</Text>
+                <Text style={itemStyle.text}>{examInfo.kcmc}</Text>
+                <Text style={itemStyle.text}>
+                    <Icon type="fontawesome" name="map-marker" />
+                    {"\n" + examInfo.cdmc.replace("-", "\n")}
+                </Text>
+                <Text style={itemStyle.text}>{`<${examInfo.zwh}>`}</Text>
+            </Flex>
+        </Pressable>
+    );
+}

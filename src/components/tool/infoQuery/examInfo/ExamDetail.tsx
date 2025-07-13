@@ -1,22 +1,22 @@
-import {Course} from "@/type/infoQuery/course/course.ts";
 import {Pressable, StyleSheet, ToastAndroid, View, ViewProps} from "react-native";
 import {ListItem, Text} from "@rneui/themed";
 import {Icon} from "@/components/un-ui/Icon.tsx";
 import Flex from "@/components/un-ui/Flex.tsx";
 import Clipboard from "@react-native-clipboard/clipboard";
 import {useUserTheme} from "@/js/theme.ts";
+import {ExamInfo} from "@/type/infoQuery/exam/examInfo.ts";
 
 interface Props extends ViewProps {
-    course: Course;
+    examInfo: ExamInfo;
 }
 
 interface Info {
     label: string;
     icon: React.JSX.Element;
-    key: keyof Course;
+    key: keyof ExamInfo;
 }
 
-export function CourseDetail(props: Props) {
+export function ExamDetail(props: Props) {
     const {userTheme} = useUserTheme();
     const infoList = [
         {
@@ -25,29 +25,24 @@ export function CourseDetail(props: Props) {
             key: "kcmc",
         },
         {
+            label: "考试时间",
+            icon: <Icon name="clockcircleo" size={20} />,
+            key: "kssj",
+        },
+        {
             label: "地点",
             icon: <Icon type="fontawesome" name="map-marker" size={20} />,
             key: "cdmc",
         },
         {
-            label: "考核方式",
-            icon: <Icon type="fontawesome" name="pen" size={20} />,
-            key: "khfsmc",
+            label: "座位号",
+            icon: <Icon type="fontawesome" name="map-marker" size={20} />,
+            key: "zwh",
         },
         {
-            label: "上课教师",
-            icon: <Icon name="user" size={20} />,
-            key: "xm",
-        },
-        {
-            label: "学分",
+            label: "考试名称",
             icon: <Icon name="infocirlceo" size={20} />,
-            key: "xf",
-        },
-        {
-            label: "QQ群",
-            icon: <Icon name="QQ" size={20} />,
-            key: "qqqh",
+            key: "ksmc",
         },
     ] as Info[];
 
@@ -64,7 +59,7 @@ export function CourseDetail(props: Props) {
         },
     });
 
-    function copy(value, tip) {
+    function copy(value: string, tip: string) {
         Clipboard.setString(value);
         ToastAndroid.show(tip, ToastAndroid.SHORT);
     }
@@ -86,8 +81,8 @@ export function CourseDetail(props: Props) {
                         <Flex justifyContent="flex-end">
                             <Pressable
                                 android_ripple={userTheme.ripple}
-                                onPress={() => copy(props.course[item.key] ?? "", `复制${item.label}成功`)}>
-                                <Text style={style.infoData}>{props.course[item.key] ?? ""}</Text>
+                                onPress={() => copy(props.examInfo[item.key] + "" ?? "", `复制${item.label}成功`)}>
+                                <Text style={style.infoData}>{props.examInfo[item.key] ?? ""}</Text>
                             </Pressable>
                         </Flex>
                     </Flex>
@@ -99,12 +94,12 @@ export function CourseDetail(props: Props) {
                         <Flex inline justifyContent="center" style={style.infoIcon}>
                             <Icon type="fontawesome" name="code" size={20}/>
                         </Flex>
-                        <Text style={style.infoLabel}>复制课程信息JSON</Text>
+                        <Text style={style.infoLabel}>复制考试信息JSON</Text>
                     </Flex>
                     <Flex justifyContent="flex-end">
                         <Pressable
                             android_ripple={userTheme.ripple}
-                            onPress={() => copy(JSON.stringify(props.course, null, 4) + "" ?? "", "复制课程信息JSON成功")}>
+                            onPress={() => copy(JSON.stringify(props.examInfo, null, 4) + "" ?? "", "复制考试信息JSON成功")}>
                             <Text style={style.infoData}>&#123; ... &#125;</Text>
                         </Pressable>
                     </Flex>

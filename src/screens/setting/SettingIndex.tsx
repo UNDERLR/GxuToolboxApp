@@ -7,17 +7,18 @@ import {
     ToastAndroid,
     View,
 } from "react-native";
-import {Button, Slider, Text} from "@rneui/themed";
-import {Color} from "../../js/color.ts";
+import {Button, Text} from "@rneui/themed";
+import {Color} from "@/js/color.ts";
 import {useNavigation} from "@react-navigation/native";
-import {Icon} from "../../components/un-ui/Icon.tsx";
-import Flex from "../../components/un-ui/Flex.tsx";
+import {Icon} from "@/components/un-ui/Icon.tsx";
+import Flex from "@/components/un-ui/Flex.tsx";
 import packageJson from "../../../package.json";
 import Clipboard from "@react-native-clipboard/clipboard";
 import moment from "moment/moment";
-import {ColorPicker} from "../../components/un-ui/ColorPicker.tsx";
-import {useUserTheme} from "../../js/theme.ts";
+import {ColorPicker} from "@/components/un-ui/ColorPicker.tsx";
+import {useUserTheme} from "@/js/theme.ts";
 import {launchImageLibrary} from "react-native-image-picker";
+import {UnSlider} from "@/components/un-ui/UnSlider.tsx";
 
 interface settingSection {
     title: string;
@@ -26,7 +27,7 @@ interface settingSection {
 
 interface SettingItem {
     label: string;
-    type: "navigation" | "text" | "link" | "any";
+    type: "navigation" | "text" | "link" | "any" | "blockAny";
     navigation?: string;
     value?: any;
     url?: string;
@@ -95,20 +96,17 @@ export function SettingIndex() {
                 },
                 {
                     label: "背景蒙版相对透明度（需重启）",
-                    type: "any",
+                    type: "blockAny",
                     value: (
-                        <Flex gap={10} inline style={{width: "45%"}}>
-                            <Text>{userTheme.bgOpacity}</Text>
-                            <Slider
-                                step={1}
-                                minimumValue={0}
-                                maximumValue={130}
-                                value={userTheme.bgOpacity}
-                                onValueChange={v => {
-                                    updateUserTheme({...userTheme, bgOpacity: v});
-                                }}
-                            />
-                        </Flex>
+                        <UnSlider
+                            step={1}
+                            minimumValue={0}
+                            maximumValue={130}
+                            value={userTheme.bgOpacity}
+                            onValueChange={v => {
+                                updateUserTheme({...userTheme, bgOpacity: v});
+                            }}
+                        />
                     ),
                 },
             ],
@@ -138,7 +136,7 @@ export function SettingIndex() {
 
     const data = {
         style: {
-            cardBg: new Color(theme.colors.background).setAlpha(
+            cardBg: Color(theme.colors.background).setAlpha(
                 0.1 + ((theme.mode === "light" ? 0.7 : 0.4) * userTheme.bgOpacity) / 100,
             ).rgbaString,
             settingItemRipple: {
@@ -235,6 +233,15 @@ export function SettingIndex() {
                             return (
                                 <Flex style={style.settingItem} justifyContent="space-between">
                                     <Text>{item.label}</Text>
+                                    {item.value}
+                                </Flex>
+                            );
+                        case "blockAny":
+                            return (
+                                <Flex direction="column" alignItems="flex-start" gap={10} style={style.settingItem}>
+                                    <View>
+                                        <Text>{item.label}</Text>
+                                    </View>
                                     {item.value}
                                 </Flex>
                             );
