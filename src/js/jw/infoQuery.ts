@@ -6,7 +6,12 @@ import {
 } from "@/type/api/infoQuery/classScheduleAPI.ts";
 import {SchoolTerms, SchoolTermValue, SchoolValue, SchoolYears} from "@/type/global.ts";
 import moment from "moment/moment";
-import {ExamInfoQueryRes, ExamScoreQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
+import {
+    ExamInfoQueryRes,
+    ExamScoreQueryRes,
+    UsualInfoQueryRes,
+    UsualScoreQueryRes,
+} from "@/type/api/infoQuery/examInfoAPI.ts";
 import {jwxt} from "./jwxt.ts";
 import {ToastAndroid} from "react-native";
 import {UserInfo} from "@/type/infoQuery/base.ts";
@@ -145,6 +150,29 @@ export const infoQuery = {
                 resolve(res.data);
             } else {
                 ToastAndroid.show("获取考试成绩信息失败", ToastAndroid.SHORT);
+                reject(res);
+            }
+        });
+    },
+    // 获得平时分
+    getUsualScore: (year: number, term: SchoolTermValue, id: string): Promise<UsualScoreQueryRes> => {
+        const yearIndex = SchoolYears.findIndex(v => +v[0] === year);
+        return new Promise(async (resolve, reject) => {
+            if (!(await jwxt.testToken())) {
+                reject();
+                return;
+            }
+            const reqBody = objectToFormUrlEncoded({
+                xnm: SchoolYears[yearIndex ?? SchoolYears.findIndex(v => +v[0] === defaultYear)][0],
+                xqm: term ?? SchoolTerms[0][0],
+                jxb_id: id,
+            });
+            const res = await http.post("/cjcx/cjcx_cxXsXmcjList.html?doType=query", reqBody);
+            if (typeof res.data === "object") {
+                console.log(reqBody);
+                resolve(res.data);
+            } else {
+                ToastAndroid.show("获取平时成绩信息失败", ToastAndroid.SHORT);
                 reject(res);
             }
         });
