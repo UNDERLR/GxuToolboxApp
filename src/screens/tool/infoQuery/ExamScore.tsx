@@ -13,6 +13,7 @@ import {ExamScoreQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
 import {store} from "@/js/store.ts";
 import {Color} from "@/js/color.ts";
 import {UnPicker} from "@/components/un-ui/UnPicker.tsx";
+import ExpandTable from "@/screens/tool/infoQuery/ExpandTable.tsx";
 
 export function ExamScore() {
     const {theme} = useUserTheme();
@@ -25,10 +26,12 @@ export function ExamScore() {
     );
     const [page, setPage] = useState(1);
     const [tableData, setTableData] = useState({
-        header: ["学年", "课程名称", "成绩", "发布时间", "学分", "绩点", "教学班", "教师"],
-        width: [120, 200, 80, 150, 100, 80, 200, 140],
+        header: ["学年", "课程名称", "成绩", "发布时间", "学分", "绩点", "教学班", "教师", "教学班ID"],
+        width: [120, 200, 80, 150, 100, 80, 200, 140, 300],
         body: [] as string[][],
     });
+    const [expandedId, setExpandedId] = useState<string | null>(null);
+    const [usualScore, setUsualScore] = useState<{[key: string]: any}>({});
 
     const data = {
         schoolYear: [["", "全部"], ...SchoolYears],
@@ -74,10 +77,19 @@ export function ExamScore() {
                     item.jd,
                     item.jxbmc,
                     item.jsxm,
+                    item.jxb_id,
                 ]),
             });
         });
     }
+    const handleExpandToggle = (id: string | null) => {
+        setExpandedId(id);
+    };
+
+    const handleRowPress = (id: string) => {
+        console.log('点击了教学班ID:', id);
+        usual(id);
+    };
 
     function query() {
         infoQuery.getExamScore(year, term, page).then(res => {
@@ -90,15 +102,25 @@ export function ExamScore() {
                 item.jd,
                 item.jxbmc,
                 item.jsxm,
+                item.jxb_id,
             ]);
-            console.log(res);
             ToastAndroid.show("获取考试成绩成功", ToastAndroid.SHORT);
             setTableData({
                 ...tableData,
                 body: tableBody,
             });
+            console.log(tableBody);
             setApiRes(res);
+            console.log(apiRes.items,1);
             store.save({key: "examScore", data: res});
+        });
+    }
+    function usual(id: string) {
+        infoQuery.getUsualScore(year, term, id).then(res => {
+            setUsualScore(prev => ({
+                ...prev,
+                [id]: res
+            }));
         });
     }
 
@@ -148,31 +170,38 @@ export function ExamScore() {
                         </Flex>
                         <Text>每页15条记录</Text>
                     </Flex>
-                    <ScrollView horizontal>
-                        <Table style={style.table} borderStyle={style.tableBorder}>
-                            <Row
-                                data={tableData.header}
-                                widthArr={tableData.width}
-                                textStyle={style.tableText}
-                                style={style.tableHeader}
-                                height={50}
-                            />
-                            <Rows
-                                heightArr={new Array(tableData.body.length).map(() => 50)}
-                                data={tableData.body}
-                                widthArr={tableData.width}
-                                textStyle={style.tableText}
-                            />
-                        </Table>
-                    </ScrollView>
-                    <Flex gap={10}>
-                        <Text>页数</Text>
-                        <Flex inline>
-                            <NumberInput value={page} onChange={setPage} min={1} max={apiRes.totalPage ?? 1} />
-                        </Flex>
-                        <Text>每页15条记录</Text>
-                    </Flex>
+                    {/*<ScrollView horizontal>*/}
+                    {/*    <Table style={style.table} borderStyle={style.tableBorder}>*/}
+                    {/*        <Row*/}
+                    {/*            data={tableData.header}*/}
+                    {/*            widthArr={tableData.width}*/}
+                    {/*            textStyle={style.tableText}*/}
+                    {/*            style={style.tableHeader}*/}
+                    {/*            height={50}*/}
+                    {/*        />*/}
+                    {/*        <Rows*/}
+                    {/*            heightArr={new Array(tableData.body.length).map(() => 50)}*/}
+                    {/*            data={tableData.body}*/}
+                    {/*            widthArr={tableData.width}*/}
+                    {/*            textStyle={style.tableText}*/}
+                    {/*        />*/}
+                    {/*    </Table>*/}
+                    {/*</ScrollView>*/}
+                    {/*<Flex gap={10}>*/}
+                    {/*    <Text>页数</Text>*/}
+                    {/*    <Flex inline>*/}
+                    {/*        <NumberInput value={page} onChange={setPage} min={1} max={apiRes.totalPage ?? 1} />*/}
+                    {/*    </Flex>*/}
+                    {/*    <Text>每页15条记录</Text>*/}
+                    {/*</Flex>*/}
                 </Flex>
+                <ExpandTable
+                    data={apiRes.items ?? []}
+                    expandedId={expandedId}
+                    onRowPress={handleRowPress}
+                    onExpandToggle={handleExpandToggle}
+                    usualScore={usualScore}
+                />
             </View>
         </ScrollView>
     );
