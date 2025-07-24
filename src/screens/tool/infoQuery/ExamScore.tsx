@@ -7,7 +7,6 @@ import {Picker} from "@react-native-picker/picker";
 import {SchoolTerms, SchoolTermValue, SchoolYears} from "@/type/global.ts";
 import {infoQuery} from "@/js/jw/infoQuery.ts";
 import {NumberInput} from "@/components/un-ui/NumberInput.tsx";
-import {Row, Rows, Table} from "react-native-reanimated-table";
 import {useUserTheme} from "@/js/theme.ts";
 import {ExamScoreQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
 import {store} from "@/js/store.ts";
@@ -30,8 +29,6 @@ export function ExamScore() {
         width: [120, 200, 80, 150, 100, 80, 200, 140, 300],
         body: [] as string[][],
     });
-    const [expandedId, setExpandedId] = useState<string | null>(null);
-    const [usualScore, setUsualScore] = useState<{[key: string]: any}>({});
 
     const data = {
         schoolYear: [["", "全部"], ...SchoolYears],
@@ -82,14 +79,6 @@ export function ExamScore() {
             });
         });
     }
-    const handleExpandToggle = (id: string | null) => {
-        setExpandedId(id);
-    };
-
-    const handleRowPress = (id: string) => {
-        console.log('点击了教学班ID:', id);
-        usual(id);
-    };
 
     function query() {
         infoQuery.getExamScore(year, term, page).then(res => {
@@ -111,18 +100,12 @@ export function ExamScore() {
             });
             console.log(tableBody);
             setApiRes(res);
-            console.log(apiRes.items,1);
+            console.log(apiRes.items, 1);
             store.save({key: "examScore", data: res});
         });
     }
-    function usual(id: string) {
-        infoQuery.getUsualScore(year, term, id).then(res => {
-            setUsualScore(prev => ({
-                ...prev,
-                [id]: res
-            }));
-        });
-    }
+
+    function usual(id: string) {}
 
     useEffect(() => {
         init();
@@ -187,21 +170,17 @@ export function ExamScore() {
                     {/*        />*/}
                     {/*    </Table>*/}
                     {/*</ScrollView>*/}
-                    {/*<Flex gap={10}>*/}
-                    {/*    <Text>页数</Text>*/}
-                    {/*    <Flex inline>*/}
-                    {/*        <NumberInput value={page} onChange={setPage} min={1} max={apiRes.totalPage ?? 1} />*/}
-                    {/*    </Flex>*/}
-                    {/*    <Text>每页15条记录</Text>*/}
-                    {/*</Flex>*/}
+                    <Flex>
+                        <ExamScoreTable data={apiRes.items ?? []} year={year} term={term} />
+                    </Flex>
+                    <Flex gap={10}>
+                        <Text>页数</Text>
+                        <Flex inline>
+                            <NumberInput value={page} onChange={setPage} min={1} max={apiRes.totalPage ?? 1} />
+                        </Flex>
+                        <Text>每页15条记录</Text>
+                    </Flex>
                 </Flex>
-                <ExpandTable
-                    data={apiRes.items ?? []}
-                    expandedId={expandedId}
-                    onRowPress={handleRowPress}
-                    onExpandToggle={handleExpandToggle}
-                    usualScore={usualScore}
-                />
             </View>
         </ScrollView>
     );
