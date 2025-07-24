@@ -141,8 +141,8 @@ export const infoQuery = {
                 queryModel: {
                     showCount: 15,
                     currentPage: page > 0 ? page : 1,
-                    sortName: "",
-                    sortOrder: "asc",
+                    sortName: "cjbdsj",
+                    sortOrder: "desc",
                 },
             });
             const res = await http.post("/cjcx/cjcx_cxXsgrcj.html?doType=query", reqBody);
