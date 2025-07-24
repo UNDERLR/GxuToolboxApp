@@ -13,7 +13,7 @@ import {ExamScoreQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
 import {store} from "@/js/store.ts";
 import {Color} from "@/js/color.ts";
 import {UnPicker} from "@/components/un-ui/UnPicker.tsx";
-import ExpandTable from "@/screens/tool/infoQuery/ExpandTable.tsx";
+import {ExamScoreTable} from "@/screens/tool/infoQuery/ExamScoreTable.tsx";
 
 export function ExamScore() {
     const {theme} = useUserTheme();
