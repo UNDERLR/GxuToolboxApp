@@ -5,6 +5,7 @@ import {Icon} from "@/components/un-ui/Icon.tsx";
 import Flex from "@/components/un-ui/Flex.tsx";
 import Clipboard from "@react-native-clipboard/clipboard";
 import {useUserTheme} from "@/js/theme.ts";
+import React from "react";
 
 interface Props extends ViewProps {
     course: Course;

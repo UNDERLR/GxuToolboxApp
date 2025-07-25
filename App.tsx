@@ -12,6 +12,7 @@ import {
     requestStoragePermission,
 } from "@/js/permission.ts";
 import {jwxt} from "@/js/jw/jwxt.ts";
+import {AppProvider} from "@/components/AppProvider.tsx";
 
 function App(): React.JSX.Element {
     const colorScheme = useColorScheme();
@@ -72,11 +73,13 @@ function App(): React.JSX.Element {
     }, []);
 
     return (
-        <ThemeProvider theme={currentTheme}>
-            <SafeAreaProvider>
-                <Root ref={appRef} />
-            </SafeAreaProvider>
-        </ThemeProvider>
+        <AppProvider>
+            <ThemeProvider theme={currentTheme}>
+                <SafeAreaProvider>
+                    <Root ref={appRef} />
+                </SafeAreaProvider>
+            </ThemeProvider>
+        </AppProvider>
     );
 }
 
