@@ -1,15 +1,11 @@
 import {BaseColor, Color} from "@/js/color.ts";
-import {createContext, useCallback, useEffect, useState} from "react";
+import {createContext, useCallback, useContext, useEffect, useState} from "react";
 import {StyleSheet} from "react-native";
 import {store} from "@/js/store.ts";
+import {UserConfigContext} from "@/components/AppProvider.tsx";
+import {IUserConfig} from "@/type/IUserConfig.ts";
 
 const CourseScheduleData = {
-    style: {
-        timeSpanHeight: 80,
-        weekdayHeight: 60,
-        courseItemMargin: 2,
-        courseItemBorderWidth: 2,
-    },
     courseInfoVisible: {
         name: true,
         position: true,
@@ -55,11 +51,11 @@ const CourseScheduleData = {
     ],
 };
 
-export function generateCourseScheduleStyle(data: typeof CourseScheduleData, theme: any) {
+export function generateCourseScheduleStyle(config: IUserConfig["theme"]["course"], theme: any) {
     return StyleSheet.create({
         timeSpanHighLight: {
             position: "absolute",
-            height: data.style.timeSpanHeight,
+            height: config.timeSpanHeight,
             flex: 1,
             width: "100%",
             left: 0,
@@ -83,7 +79,7 @@ export function generateCourseScheduleStyle(data: typeof CourseScheduleData, the
         weekdayItem: {
             alignItems: "center",
             justifyContent: "center",
-            height: data.style.weekdayHeight,
+            height: config.weekdayHeight,
         },
         weekdayText: {
             fontSize: 14,
@@ -91,7 +87,7 @@ export function generateCourseScheduleStyle(data: typeof CourseScheduleData, the
             color: theme.colors.grey2,
         },
         timeSpanItem: {
-            height: data.style.timeSpanHeight,
+            height: config.timeSpanHeight,
         },
         timeSpanText: {
             textAlign: "center",
@@ -103,7 +99,7 @@ export function generateCourseScheduleStyle(data: typeof CourseScheduleData, the
             width: "96%",
             marginHorizontal: "2%",
             borderRadius: 5,
-            borderWidth: data.style.courseItemBorderWidth,
+            borderWidth: config.courseItemBorderWidth,
             borderStyle: "solid",
             padding: 5,
         },

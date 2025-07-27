@@ -70,7 +70,6 @@ export function ToolboxIndex() {
     const navigation = useNavigation();
     const {theme, userTheme} = useUserTheme();
 
-
     const data = {
         style: {
             cardBg: Color(theme.colors.background).setAlpha(

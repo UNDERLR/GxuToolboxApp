@@ -17,8 +17,10 @@ import {CourseScheduleContext} from "@/js/jw/course.ts";
 import {CourseScheduleView} from "@/components/tool/infoQuery/courseSchedule/CourseScheduleView.tsx";
 import {ExamInfo} from "@/type/infoQuery/exam/examInfo.ts";
 import {ExamInfoQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
+import {UserConfigContext} from "@/components/AppProvider.tsx";
 
 export function ScheduleCard() {
+    const {userConfig} = useContext(UserConfigContext);
     const {theme, userTheme} = useUserTheme();
     const pagerView = usePagerView({pagesAmount: 20});
     const {...rest} = pagerView;
@@ -52,7 +54,7 @@ export function ScheduleCard() {
         },
         pagerView: {
             width: "100%",
-            height: courseScheduleData.style.timeSpanHeight * 13 + courseScheduleData.style.weekdayHeight + 50,
+            height: userConfig.theme.course.timeSpanHeight * 13 + userConfig.theme.course.weekdayHeight + 50,
         },
         bottomSheetContainer: {
             backgroundColor: theme.colors.background,

@@ -1,19 +1,21 @@
 import {ImageBackground, StatusBar, StyleSheet, useColorScheme, View, ViewProps} from "react-native";
 import {NavigationContainer} from "@react-navigation/native";
 import {RootStack} from "@/route/RootStack.tsx";
-import React, {useCallback, useEffect, useMemo, useState} from "react";
+import React, {useCallback, useContext, useEffect, useMemo, useState} from "react";
 import {useUserTheme} from "@/js/theme.ts";
 import {CheckUpdate} from "@/components/CheckUpdate.tsx";
 import {CourseScheduleContext, generateCourseScheduleStyle, useCourseScheduleData} from "@/js/jw/course.ts";
+import {UserConfigContext} from "@/components/AppProvider.tsx";
 
 export function Root(props: ViewProps) {
+    const {userConfig} = useContext(UserConfigContext);
     const {theme, navigationTheme, userTheme} = useUserTheme();
     const colorScheme = useColorScheme();
     const {courseScheduleData, updateCourseScheduleData} = useCourseScheduleData();
     const memoizedUpdateFunction = useCallback(updateCourseScheduleData, []);
     const memoizedStyle = useMemo(() =>
-            generateCourseScheduleStyle(courseScheduleData, theme),
-        [courseScheduleData, theme]
+            generateCourseScheduleStyle(userConfig.theme.course, theme),
+        [courseScheduleData, theme, userConfig]
     );
 
     // 使用 useMemo 包装 Context value 以避免不必要的重渲染

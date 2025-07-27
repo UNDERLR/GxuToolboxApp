@@ -10,6 +10,7 @@ import {CourseItem} from "@/components/tool/infoQuery/courseSchedule/CourseItem.
 import {CourseScheduleContext} from "@/js/jw/course.ts";
 import {ExamInfo} from "@/type/infoQuery/exam/examInfo.ts";
 import {CourseScheduleExamItem} from "@/components/tool/infoQuery/examInfo/CourseScheduleExamItem.tsx";
+import {UserConfigContext} from "@/components/AppProvider.tsx";
 
 interface Props {
     courseList: Course[];
@@ -28,6 +29,7 @@ interface CourseItem extends Course {
 }
 
 export function CourseScheduleTable(props: Props) {
+    const {userConfig} = useContext(UserConfigContext);
     const {courseScheduleData, courseScheduleStyle} = useContext(CourseScheduleContext)!;
     const {theme} = useUserTheme();
     const [courseSchedule, setCourseSchedule] = useState<CourseItem[][]>([[], [], [], [], [], [], []]);
@@ -110,8 +112,8 @@ export function CourseScheduleTable(props: Props) {
 
     const timeSpanHighLightTop = {
         top:
-            courseScheduleData.style.weekdayHeight +
-            (currentTimeSpan ?? 1) * courseScheduleData.style.timeSpanHeight +
+            userConfig.theme.course.weekdayHeight +
+            (currentTimeSpan ?? 1) * userConfig.theme.course.timeSpanHeight +
             10,
     };
 
@@ -144,7 +146,7 @@ export function CourseScheduleTable(props: Props) {
                     </Text>
                 </View>
                 {/*时间段*/}
-                {courseScheduleData.style.timeSpanHeight > 40
+                {userConfig.theme.course.timeSpanHeight > 40
                     ? courseScheduleData.timeSpanList.map((time, index) => (
                           <Flex
                               inline
@@ -160,7 +162,7 @@ export function CourseScheduleTable(props: Props) {
                               key={`timespan-${index}`}
                               style={[
                                   courseScheduleStyle.timeSpanItem,
-                                  {height: courseScheduleData.style.timeSpanHeight * 2},
+                                  {height: userConfig.theme.course.timeSpanHeight * 2},
                               ]}
                               justifyContent="center">
                               <Text style={courseScheduleStyle.timeSpanText}>{`${value[0]}\n${value[1]}`}</Text>
