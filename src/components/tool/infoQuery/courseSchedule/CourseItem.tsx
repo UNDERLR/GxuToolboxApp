@@ -7,6 +7,7 @@ import {Icon} from "@/components/un-ui/Icon.tsx";
 import {Course} from "@/type/infoQuery/course/course.ts";
 import {useUserTheme} from "@/js/theme.ts";
 import {CourseScheduleContext} from "@/js/jw/course.ts";
+import {UserConfigContext} from "@/components/AppProvider.tsx";
 
 interface CourseItem extends Course {
     // 在课程表中显示的背景颜色
@@ -20,6 +21,7 @@ interface Props {
 }
 
 export function CourseItem(props: Props) {
+    const {userConfig} = useContext(UserConfigContext);
     const {courseScheduleData, courseScheduleStyle} = useContext(CourseScheduleContext)!;
     const {theme, userTheme} = useUserTheme();
     const {course, index} = props;
@@ -28,14 +30,14 @@ export function CourseItem(props: Props) {
     const itemStyle = useMemo(() => {
         return StyleSheet.create({
             course: {
-                height: span * courseScheduleData.style.timeSpanHeight - courseScheduleData.style.courseItemMargin * 2,
+                height: span * userConfig.theme.course.timeSpanHeight - userConfig.theme.course.courseItemMargin * 2,
                 position: "absolute",
                 backgroundColor: Color(course.backgroundColor).setAlpha(theme.mode === "light" ? 0.3 : 0.1).rgbaString,
                 borderColor: Color.mix(Color(course.backgroundColor), Color(theme.colors.grey4), 0.7).rgbaString,
                 top:
-                    courseScheduleData.style.weekdayHeight +
-                    y * courseScheduleData.style.timeSpanHeight +
-                    courseScheduleData.style.courseItemMargin,
+                    userConfig.theme.course.weekdayHeight +
+                    y * userConfig.theme.course.timeSpanHeight +
+                    userConfig.theme.course.courseItemMargin,
             },
             text: {
                 textAlign: "center",
@@ -43,9 +45,9 @@ export function CourseItem(props: Props) {
         });
     }, [
         course.backgroundColor,
-        courseScheduleData.style.courseItemMargin,
-        courseScheduleData.style.timeSpanHeight,
-        courseScheduleData.style.weekdayHeight,
+        userConfig.theme.course.courseItemMargin,
+        userConfig.theme.course.timeSpanHeight,
+        userConfig.theme.course.weekdayHeight,
         span,
         theme.colors.grey4,
         theme.mode,

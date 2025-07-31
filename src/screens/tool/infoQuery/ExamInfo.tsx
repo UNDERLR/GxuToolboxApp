@@ -145,7 +145,7 @@ export function ExamInfo() {
                                 height={50}
                             />
                             <Rows
-                                heightArr={new Array(tableData.body.length).map(() => 50)}
+                                heightArr={new Array(tableData.body.length).fill(50)}
                                 data={tableData.body}
                                 widthArr={tableData.width}
                                 textStyle={style.tableText}

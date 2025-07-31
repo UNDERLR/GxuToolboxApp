@@ -8,6 +8,7 @@ import {useUserTheme} from "@/js/theme.ts";
 import {CourseScheduleContext} from "@/js/jw/course.ts";
 import {ExamInfo} from "@/type/infoQuery/exam/examInfo.ts";
 import moment from "moment/moment";
+import {UserConfigContext} from "@/components/AppProvider.tsx";
 
 interface Props {
     examInfo: ExamInfo;
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export function CourseScheduleExamItem(props: Props) {
+    const {userConfig} = useContext(UserConfigContext);
     const {courseScheduleData, courseScheduleStyle} = useContext(CourseScheduleContext)!;
     const {theme, userTheme} = useUserTheme();
     const {examInfo} = props;
@@ -48,23 +50,23 @@ export function CourseScheduleExamItem(props: Props) {
     const itemStyle = useMemo(() => {
         return StyleSheet.create({
             course: {
-                height: span * courseScheduleData.style.timeSpanHeight - courseScheduleData.style.courseItemMargin * 2,
+                height: span * userConfig.theme.course.timeSpanHeight - userConfig.theme.course.courseItemMargin * 2,
                 position: "absolute",
                 backgroundColor: Color(color).setAlpha(theme.mode === "light" ? 0.3 : 0.1).rgbaString,
                 borderColor: Color.mix(Color(color), Color(theme.colors.grey4), 0.7).rgbaString,
                 top:
-                    courseScheduleData.style.weekdayHeight +
-                    y * courseScheduleData.style.timeSpanHeight +
-                    courseScheduleData.style.courseItemMargin,
+                    userConfig.theme.course.weekdayHeight +
+                    y * userConfig.theme.course.timeSpanHeight +
+                    userConfig.theme.course.courseItemMargin,
             },
             text: {
                 textAlign: "center",
             },
         });
     }, [
-        courseScheduleData.style.courseItemMargin,
-        courseScheduleData.style.timeSpanHeight,
-        courseScheduleData.style.weekdayHeight,
+        userConfig.theme.course.courseItemMargin,
+        userConfig.theme.course.timeSpanHeight,
+        userConfig.theme.course.weekdayHeight,
         span,
         theme.colors.grey4,
         theme.mode,

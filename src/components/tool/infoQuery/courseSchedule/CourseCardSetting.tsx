@@ -10,6 +10,7 @@ import {UnDateTimePicker} from "@/components/un-ui/UnDateTimePicker.tsx";
 import moment from "moment/moment";
 import {CourseScheduleContext} from "@/js/jw/course.ts";
 import {UnPicker} from "@/components/un-ui/UnPicker.tsx";
+import {UserConfigContext} from "@/components/AppProvider.tsx";
 
 interface Props {
     containerStyle?: StyleProp<ViewStyle>;
@@ -22,6 +23,7 @@ interface Props {
 }
 
 export function CourseCardSetting(props: Props) {
+    const {userConfig, updateUserConfig} = useContext(UserConfigContext);
     const {courseScheduleData, updateCourseScheduleData} = useContext(CourseScheduleContext)!;
 
     const infoVisibleOptions: Record<keyof typeof courseScheduleData.courseInfoVisible, string> = {
@@ -55,6 +57,7 @@ export function CourseCardSetting(props: Props) {
                                 const value = courseScheduleData.courseInfoVisible[key];
                                 return (
                                     <CheckBox
+                                        key={`infoVisibleOption-${index}`}
                                         containerStyle={{padding: 0}}
                                         title={infoVisibleOptions[key]}
                                         checked={value}
@@ -79,13 +82,11 @@ export function CourseCardSetting(props: Props) {
                         minimumValue={5}
                         maximumValue={100}
                         allowTouchTrack
-                        value={courseScheduleData.style.timeSpanHeight}
-                        onValueChange={v =>
-                            updateCourseScheduleData({
-                                ...courseScheduleData,
-                                style: {...courseScheduleData.style, timeSpanHeight: v},
-                            })
-                        }
+                        value={userConfig.theme.course.timeSpanHeight}
+                        onValueChange={v => {
+                            userConfig.theme.course.timeSpanHeight = v;
+                            updateUserConfig(userConfig);
+                        }}
                     />
                 </Flex>
             </ListItem>

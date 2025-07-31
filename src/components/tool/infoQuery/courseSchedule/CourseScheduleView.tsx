@@ -12,6 +12,7 @@ import {CourseDetail} from "@/components/tool/infoQuery/courseSchedule/CourseDet
 import {CourseScheduleQueryRes} from "@/type/api/infoQuery/classScheduleAPI.ts";
 import {ExamInfo} from "@/type/infoQuery/exam/examInfo.ts";
 import {ExamDetail} from "@/components/tool/infoQuery/examInfo/ExamDetail.tsx";
+import {UserConfigContext} from "@/components/AppProvider.tsx";
 
 interface Props {
     startDay: moment.MomentInput;
@@ -25,8 +26,8 @@ interface Props {
 }
 
 export function CourseScheduleView(props: Props) {
+    const {userConfig} = useContext(UserConfigContext);
     const {theme} = useUserTheme();
-    const {courseScheduleData} = useContext(CourseScheduleContext)!;
     const {AnimatedPagerView, ref, ...rest} = props.pageView;
     const [startDay, setStartDay] = useState(props.startDay);
     const realCurrentWeek = Math.ceil(moment.duration(moment().diff(startDay)).asWeeks());
@@ -38,8 +39,8 @@ export function CourseScheduleView(props: Props) {
         pagerView: {
             width: "100%",
             height:
-                courseScheduleData.style.timeSpanHeight * (courseScheduleData.style.timeSpanHeight <= 40 ? 14 : 13) +
-                courseScheduleData.style.weekdayHeight +
+                userConfig.theme.course.timeSpanHeight * (userConfig.theme.course.timeSpanHeight <= 40 ? 14 : 13) +
+                userConfig.theme.course.weekdayHeight +
                 50,
         },
         bottomSheetContainer: {

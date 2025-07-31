@@ -2,15 +2,32 @@ import {createContext, ProviderProps, useEffect, useMemo, useState} from "react"
 import {store} from "@/js/store.ts";
 import {IUserConfig} from "@/type/IUserConfig.ts";
 
-const defaultUserConfig: IUserConfig = {};
-export const UserConfigContext = createContext<IUserConfig>(defaultUserConfig);
+const defaultUserConfig: IUserConfig = {
+    theme: {
+        bgUrl: "",
+        course: {
+            timeSpanHeight: 80,
+            weekdayHeight: 60,
+            courseItemMargin: 2,
+            courseItemBorderWidth: 2,
+        },
+        primaryColor: "",
+    },
+};
+export const UserConfigContext = createContext<{
+    userConfig: IUserConfig;
+    updateUserConfig: (config: Partial<IUserConfig>) => void;
+}>({
+    userConfig: defaultUserConfig,
+    updateUserConfig: config => {},
+});
 
 export function AppProvider(props: Omit<ProviderProps<IUserConfig>, "value">) {
     const [userContext, setUserContext] = useState(defaultUserConfig);
     const contextValue = useMemo<IUserConfig>(
         () => ({
-            ...userContext,
             ...defaultUserConfig,
+            ...userContext,
         }),
         [userContext],
     );
@@ -18,8 +35,16 @@ export function AppProvider(props: Omit<ProviderProps<IUserConfig>, "value">) {
     async function init() {
         const data = (await store.load({key: "userConfig"})) ?? defaultUserConfig;
         setUserContext({
-            ...data,
             ...defaultUserConfig,
+            ...data,
+        });
+    }
+
+    function updateUserConfig(config: Partial<IUserConfig>) {
+        setUserContext({
+            ...defaultUserConfig,
+            ...userContext,
+            ...config,
         });
     }
 
@@ -27,5 +52,13 @@ export function AppProvider(props: Omit<ProviderProps<IUserConfig>, "value">) {
         init();
     }, []);
 
-    return <UserConfigContext.Provider value={contextValue}>{props.children}</UserConfigContext.Provider>;
+    return (
+        <UserConfigContext.Provider
+            value={{
+                userConfig: contextValue,
+                updateUserConfig,
+            }}>
+            {props.children}
+        </UserConfigContext.Provider>
+    );
 }
