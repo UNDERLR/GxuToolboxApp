@@ -1,3 +1,5 @@
+import {PressableAndroidRippleConfig} from "react-native";
+
 export interface IUserConfig {
     /** 主题相关配置 */
     theme: IUserTheme;
@@ -8,6 +10,9 @@ export interface IUserTheme {
     primaryColor: string;
     /** 背景图链接 */
     bgUrl: string;
+    /** 背景透明度 */
+    bgOpacity: number;
+    ripple: PressableAndroidRippleConfig,
     /** 课程表主题相关属性 */
     course: {
         /** 课表时间段高度（两节课） */

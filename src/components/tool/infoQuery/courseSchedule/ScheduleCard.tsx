@@ -1,4 +1,4 @@
-import {BottomSheet, Card, Text} from "@rneui/themed";
+import {BottomSheet, Card, Text, useTheme} from "@rneui/themed";
 import {infoQuery} from "@/js/jw/infoQuery.ts";
 import {Pressable, StyleSheet, ToastAndroid} from "react-native";
 import {store} from "@/js/store.ts";
@@ -21,7 +21,7 @@ import {UserConfigContext} from "@/components/AppProvider.tsx";
 
 export function ScheduleCard() {
     const {userConfig} = useContext(UserConfigContext);
-    const {theme, userTheme} = useUserTheme();
+    const {theme} = useTheme();
     const pagerView = usePagerView({pagesAmount: 20});
     const {...rest} = pagerView;
 
@@ -41,9 +41,9 @@ export function ScheduleCard() {
     const style = StyleSheet.create({
         card: {
             backgroundColor: Color(theme.colors.background).setAlpha(
-                0.05 + ((theme.mode === "dark" ? 0.6 : 0.7) * userTheme.bgOpacity) / 100,
+                0.05 + ((theme.mode === "dark" ? 0.6 : 0.7) * userConfig.theme.bgOpacity) / 100,
             ).rgbaString,
-            borderColor: Color.mix(userConfig.theme.primaryColor, theme.colors.background, 0.7).rgbaString,
+            borderColor: Color.mix(theme.colors.primary, theme.colors.background, 0.7).rgbaString,
             borderRadius: 5,
             paddingHorizontal: 0,
             marginHorizontal: 5,
@@ -61,7 +61,7 @@ export function ScheduleCard() {
             backgroundColor: theme.colors.background,
             padding: "5%",
             borderRadius: 8,
-            borderColor: Color.mix(userConfig.theme.primaryColor, theme.colors.background, 0.8).rgbaString,
+            borderColor: Color.mix(theme.colors.primary, theme.colors.background, 0.8).rgbaString,
             borderWidth: 1,
             marginHorizontal: "4%",
             marginBottom: "5%",
@@ -116,7 +116,7 @@ export function ScheduleCard() {
                     <Flex gap={15} justifyContent="flex-end">
                         {rest.activePage + 1 !== realCurrentWeek && (
                             <Pressable
-                                android_ripple={userTheme.ripple}
+                                android_ripple={userConfig.theme.ripple}
                                 onPress={() => {
                                     rest.setPage(realCurrentWeek - 1);
                                 }}>
@@ -124,11 +124,11 @@ export function ScheduleCard() {
                             </Pressable>
                         )}
                         <Pressable
-                            android_ripple={userTheme.ripple}
+                            android_ripple={userConfig.theme.ripple}
                             onPress={() => setCourseScheduleSettingVisible(true)}>
                             <Icon name="setting" size={24} />
                         </Pressable>
-                        <Pressable android_ripple={userTheme.ripple} onPress={loadData}>
+                        <Pressable android_ripple={userConfig.theme.ripple} onPress={loadData}>
                             <Icon name="sync" size={24} />
                         </Pressable>
                     </Flex>

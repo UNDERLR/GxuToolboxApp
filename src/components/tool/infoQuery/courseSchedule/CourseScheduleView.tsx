@@ -1,7 +1,7 @@
 import React, {useContext, useMemo, useState} from "react";
 import {StyleSheet, View} from "react-native";
 import Flex from "@/components/un-ui/Flex.tsx";
-import {BottomSheet, Text} from "@rneui/themed";
+import {BottomSheet, Text, useTheme} from "@rneui/themed";
 import {CourseScheduleTable} from "@/components/tool/infoQuery/courseSchedule/CourseScheduleTable.tsx";
 import {usePagerView} from "react-native-pager-view";
 import {CourseScheduleContext} from "@/js/jw/course.ts";
@@ -28,7 +28,7 @@ interface Props {
 
 export function CourseScheduleView(props: Props) {
     const {userConfig} = useContext(UserConfigContext);
-    const {theme} = useUserTheme();
+    const {theme} = useTheme();
     const {AnimatedPagerView, ref, ...rest} = props.pageView;
     const [startDay, setStartDay] = useState(props.startDay);
     const realCurrentWeek = Math.ceil(moment.duration(moment().diff(startDay)).asWeeks());
@@ -47,7 +47,7 @@ export function CourseScheduleView(props: Props) {
         bottomSheetContainer: {
             backgroundColor: theme.colors.background,
             borderRadius: 8,
-            borderColor: Color.mix(userConfig.theme.primaryColor, theme.colors.background, 0.8).rgbaString,
+            borderColor: Color.mix(theme.colors.primary, theme.colors.background, 0.8).rgbaString,
             borderWidth: 1,
             marginHorizontal: "4%",
             marginBottom: "5%",

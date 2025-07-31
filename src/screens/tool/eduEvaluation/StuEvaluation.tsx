@@ -9,11 +9,7 @@ export function StuEvaluation() {
     const [evaList, setEvaList] = useState<Evaluation[]>([]);
     const navigation = useNavigation<any>();
     const screenWidth = Dimensions.get("window").width;
-    const colWidths = [
-        screenWidth * 0.45,
-        screenWidth * 0.30,
-        screenWidth * 0.25,
-    ];
+    const colWidths = [screenWidth * 0.45, screenWidth * 0.3, screenWidth * 0.25];
     const handleRowPress = (item: Evaluation) => {
         navigation.navigate("EvaDetail", {evaluationItem: item});
     };
@@ -41,16 +37,10 @@ export function StuEvaluation() {
         <ScrollView style={{flex: 1}}>
             <View style={{width: "100%"}}>
                 <Table>
-                    <Row
-                        data={["课程", "教师", "评价"]}
-                        style={styles.list}
-                        widthArr={colWidths}/>
+                    <Row data={["课程", "教师", "评价"]} style={styles.list} widthArr={colWidths} />
                     {evaList.map((item, index) => (
                         <TouchableOpacity key={index} onPress={() => handleRowPress(item)}>
-                            <Row
-                                data={[item.kcmc, item.jzgmc, item.tjztmc]}
-                                style={styles.list}
-                                widthArr={colWidths}/>
+                            <Row data={[item.kcmc, item.jzgmc, item.tjztmc]} style={styles.list} widthArr={colWidths} />
                         </TouchableOpacity>
                     ))}
                 </Table>
