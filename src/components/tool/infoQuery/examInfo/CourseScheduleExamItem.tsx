@@ -2,9 +2,8 @@ import React, {useContext, useMemo} from "react";
 import {Pressable, StyleSheet} from "react-native";
 import {Color} from "@/js/color.ts";
 import Flex from "@/components/un-ui/Flex.tsx";
-import {Text} from "@rneui/themed";
+import {Text, useTheme} from "@rneui/themed";
 import {Icon} from "@/components/un-ui/Icon.tsx";
-import {useUserTheme} from "@/js/theme.ts";
 import {CourseScheduleContext} from "@/js/jw/course.ts";
 import {ExamInfo} from "@/type/infoQuery/exam/examInfo.ts";
 import moment from "moment/moment";
@@ -18,7 +17,7 @@ interface Props {
 export function CourseScheduleExamItem(props: Props) {
     const {userConfig} = useContext(UserConfigContext);
     const {courseScheduleData, courseScheduleStyle} = useContext(CourseScheduleContext)!;
-    const {theme, userTheme} = useUserTheme();
+    const {theme} = useTheme();
     const {examInfo} = props;
 
     function timeToTimeSpan(time: string, endTime: boolean = false): number {
@@ -53,7 +52,7 @@ export function CourseScheduleExamItem(props: Props) {
                 height: span * userConfig.theme.course.timeSpanHeight - userConfig.theme.course.courseItemMargin * 2,
                 position: "absolute",
                 backgroundColor: Color(color).setAlpha(theme.mode === "light" ? 0.3 : 0.1).rgbaString,
-                borderColor: Color.mix(Color(color), Color(theme.colors.grey4), 0.7).rgbaString,
+                borderColor: Color.mix(color, theme.colors.grey4, 0.7).rgbaString,
                 top:
                     userConfig.theme.course.weekdayHeight +
                     y * userConfig.theme.course.timeSpanHeight +
@@ -61,7 +60,7 @@ export function CourseScheduleExamItem(props: Props) {
             },
             text: {
                 textAlign: "center",
-                color: Color.mix(Color(color), Color(theme.colors.black), 0.5).rgbaString,
+                color: Color.mix(color, theme.colors.black, 0.5).rgbaString,
             },
         });
     }, [
@@ -80,7 +79,7 @@ export function CourseScheduleExamItem(props: Props) {
             onPress={e => {
                 props.onPress?.(examInfo);
             }}
-            android_ripple={userTheme.ripple}
+            android_ripple={userConfig.theme.ripple}
             style={[itemStyle.course, courseScheduleStyle.courseItem]}>
             <Flex direction="column" gap={5}>
                 <Text style={itemStyle.text}>考试</Text>

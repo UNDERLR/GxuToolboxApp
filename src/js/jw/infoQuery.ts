@@ -12,7 +12,7 @@ import {ToastAndroid} from "react-native";
 import {UserInfo} from "@/type/infoQuery/base.ts";
 import {store} from "@/js/store.ts";
 import {GetClassListRes, GetSubjectListRes} from "@/type/api/base.ts";
-import {EvaHTMLQueryRes, EvaListQueryRes} from "@/type/api/eduEvaluataion/studentEvaluationAPI.ts";
+import {EvaListQueryRes} from "@/type/api/eduEvaluataion/studentEvaluationAPI.ts";
 
 export const defaultYear = moment().isBefore(moment("8", "M"), "M") ? moment().year() - 1 : moment().year();
 
@@ -124,31 +124,28 @@ export const infoQuery = {
             return null;
         }
     },
-    getExamScore: (year: number, term: SchoolTermValue, page: number = 1): Promise<ExamScoreQueryRes> => {
+    getExamScore: async (year: number, term: SchoolTermValue, page: number = 1): Promise<ExamScoreQueryRes | null> => {
         const yearIndex = SchoolYears.findIndex(v => +v[0] === year);
-        return new Promise(async (resolve, reject) => {
-            if (!(await jwxt.testToken())) {
-                reject();
-                return;
-            }
-            const reqBody = objectToFormUrlEncoded({
-                xnm: SchoolYears[yearIndex ?? SchoolYears.findIndex(v => +v[0] === defaultYear)][0],
-                xqm: term ?? SchoolTerms[0][0],
-                queryModel: {
-                    showCount: 15,
-                    currentPage: page > 0 ? page : 1,
-                    sortName: "cjbdsj",
-                    sortOrder: "desc",
-                },
-            });
-            const res = await http.post("/cjcx/cjcx_cxXsgrcj.html?doType=query", reqBody);
-            if (typeof res.data === "object") {
-                resolve(res.data);
-            } else {
-                ToastAndroid.show("获取考试成绩信息失败", ToastAndroid.SHORT);
-                reject(res);
-            }
+        if (!(await jwxt.testToken())) {
+            return null;
+        }
+        const reqBody = objectToFormUrlEncoded({
+            xnm: SchoolYears[yearIndex ?? SchoolYears.findIndex(v => +v[0] === defaultYear)][0],
+            xqm: term ?? SchoolTerms[0][0],
+            queryModel: {
+                showCount: 15,
+                currentPage: page > 0 ? page : 1,
+                sortName: "cjbdsj",
+                sortOrder: "desc",
+            },
         });
+        const res = await http.post("/cjcx/cjcx_cxXsgrcj.html?doType=query", reqBody);
+        if (typeof res.data === "object") {
+            return res.data;
+        } else {
+            ToastAndroid.show("获取考试成绩信息失败", ToastAndroid.SHORT);
+            return null;
+        }
     },
     // 获得平时分
     getUsualScore: (year: number, term: SchoolTermValue, id: string): Promise<UsualScoreQueryRes> => {
@@ -194,7 +191,13 @@ export const infoQuery = {
             }
         });
     },
-    getEvaluateDetail: (shaWord: string, classId: string,courseId: string, xsdm: string, pjmbmcb_id:string): Promise<string> => {
+    getEvaluateDetail: (
+        shaWord: string,
+        classId: string,
+        courseId: string,
+        xsdm: string,
+        pjmbmcb_id: string,
+    ): Promise<string> => {
         return new Promise(async (resolve, reject) => {
             if (!(await jwxt.testToken())) {
                 reject();
@@ -205,7 +208,7 @@ export const infoQuery = {
                 jxb_id: classId,
                 kch_id: courseId,
                 xsdm,
-                pjmbmcb_id
+                pjmbmcb_id,
             });
             const res = await http.post("/xspjgl/xspj_cxXspjDisplay.html?gnmkdm=N401605", reqBody);
             if (typeof res.data === "string") {
@@ -216,7 +219,7 @@ export const infoQuery = {
             }
         });
     },
-    handleEvaResult:(Params1:object,Params2:object): Promise<string> =>{
+    handleEvaResult: (Params1: object, Params2: object): Promise<string> => {
         return new Promise(async (resolve, reject) => {
             if (!(await jwxt.testToken())) {
                 reject();

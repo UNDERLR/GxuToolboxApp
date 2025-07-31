@@ -3,8 +3,9 @@ import {store} from "@/js/store.ts";
 import {IUserConfig} from "@/type/IUserConfig.ts";
 import {createTheme, useTheme} from "@rneui/themed";
 import {theme} from "@/js/theme.ts";
-import {PressableAndroidRippleConfig, useColorScheme} from "react-native";
+import {useColorScheme} from "react-native";
 import {deepMerge} from "@/utils/objectUtils.ts";
+import {cowsay} from "@/js/cowsay.ts";
 
 const defaultUserConfig: IUserConfig = {
     theme: {
@@ -72,6 +73,10 @@ export function AppProvider(props: Omit<ProviderProps<IUserConfig>, "value">) {
 
     useEffect(() => {
         init();
+        cowsay({
+            text: "恭喜你，成功启动了开发服",
+            f: "dragon",
+        });
     }, []);
 
     return (
