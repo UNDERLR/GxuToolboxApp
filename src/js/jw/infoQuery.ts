@@ -6,17 +6,13 @@ import {
 } from "@/type/api/infoQuery/classScheduleAPI.ts";
 import {SchoolTerms, SchoolTermValue, SchoolValue, SchoolYears} from "@/type/global.ts";
 import moment from "moment/moment";
-import {
-    ExamInfoQueryRes,
-    ExamScoreQueryRes,
-    UsualInfoQueryRes,
-    UsualScoreQueryRes,
-} from "@/type/api/infoQuery/examInfoAPI.ts";
+import {ExamInfoQueryRes, ExamScoreQueryRes, UsualScoreQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
 import {jwxt} from "./jwxt.ts";
 import {ToastAndroid} from "react-native";
 import {UserInfo} from "@/type/infoQuery/base.ts";
 import {store} from "@/js/store.ts";
 import {GetClassListRes, GetSubjectListRes} from "@/type/api/base.ts";
+import {EvaHTMLQueryRes, EvaListQueryRes} from "@/type/api/eduEvaluataion/studentEvaluationAPI.ts";
 
 export const defaultYear = moment().isBefore(moment("8", "M"), "M") ? moment().year() - 1 : moment().year();
 
@@ -173,6 +169,67 @@ export const infoQuery = {
                 resolve(res.data);
             } else {
                 ToastAndroid.show("获取平时成绩信息失败", ToastAndroid.SHORT);
+                reject(res);
+            }
+        });
+    },
+    // 获得评价列表
+    getEvaluateList: (): Promise<EvaListQueryRes> => {
+        return new Promise(async (resolve, reject) => {
+            if (!(await jwxt.testToken())) {
+                reject();
+                return;
+            }
+            const reqBody = objectToFormUrlEncoded({
+                queryModel: {
+                    showCount: 150,
+                },
+            });
+            const res = await http.post("/xspjgl/xspj_cxXspjIndex.html?doType=query&gnmkdm=N401605", reqBody);
+            if (typeof res.data === "object") {
+                resolve(res.data);
+            } else {
+                ToastAndroid.show("获取评价信息失败", ToastAndroid.SHORT);
+                reject(res);
+            }
+        });
+    },
+    getEvaluateDetail: (shaWord: string, classId: string,courseId: string, xsdm: string, pjmbmcb_id:string): Promise<string> => {
+        return new Promise(async (resolve, reject) => {
+            if (!(await jwxt.testToken())) {
+                reject();
+                return;
+            }
+            const reqBody = objectToFormUrlEncoded({
+                jgh_id: shaWord,
+                jxb_id: classId,
+                kch_id: courseId,
+                xsdm,
+                pjmbmcb_id
+            });
+            const res = await http.post("/xspjgl/xspj_cxXspjDisplay.html?gnmkdm=N401605", reqBody);
+            if (typeof res.data === "string") {
+                resolve(res.data);
+            } else {
+                ToastAndroid.show("获取具体评价信息失败", ToastAndroid.SHORT);
+                reject(res);
+            }
+        });
+    },
+    handleEvaResult:(Params1:object,Params2:object): Promise<string> =>{
+        return new Promise(async (resolve, reject) => {
+            if (!(await jwxt.testToken())) {
+                reject();
+                return;
+            }
+            const reqBody = objectToFormUrlEncoded(Params1) + "&" + objectToFormUrlEncoded(Params2);
+            console.log(reqBody);
+            const res = await http.post("/xspjgl/xspj_bcXspj.html?gnmkdm=N401605", reqBody);
+            if (typeof res.data === "string") {
+                ToastAndroid.show(res.data, ToastAndroid.SHORT);
+                resolve(res.data);
+            } else {
+                ToastAndroid.show("保存失败", ToastAndroid.SHORT);
                 reject(res);
             }
         });
