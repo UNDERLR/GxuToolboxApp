@@ -28,6 +28,7 @@
         "react": "19.0.0",
         "react-native": "0.79.1",
         "react-native-blob-util": "^0.21.2",
+        "react-native-cheerio": "^1.0.0-rc.4",
         "react-native-html-parser": "^0.1.0",
         "react-native-image-picker": "^8.2.1",
         "react-native-pager-view": "^6.7.1",
