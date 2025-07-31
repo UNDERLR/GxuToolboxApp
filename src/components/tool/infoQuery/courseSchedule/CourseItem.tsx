@@ -2,10 +2,9 @@ import React, {useContext, useMemo} from "react";
 import {Pressable, StyleSheet} from "react-native";
 import {Color} from "@/js/color.ts";
 import Flex from "@/components/un-ui/Flex.tsx";
-import {Text} from "@rneui/themed";
+import {Text, useTheme} from "@rneui/themed";
 import {Icon} from "@/components/un-ui/Icon.tsx";
 import {Course} from "@/type/infoQuery/course/course.ts";
-import {useUserTheme} from "@/js/theme.ts";
 import {CourseScheduleContext} from "@/js/jw/course.ts";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 
@@ -23,7 +22,7 @@ interface Props {
 export function CourseItem(props: Props) {
     const {userConfig} = useContext(UserConfigContext);
     const {courseScheduleData, courseScheduleStyle} = useContext(CourseScheduleContext)!;
-    const {theme, userTheme} = useUserTheme();
+    const {theme} = useTheme();
     const {course, index} = props;
     const span = parseInt(course.jcs.split("-")[1], 10) - parseInt(course.jcs.split("-")[0], 10) + 1;
     const y = +course.jcs.split("-")[0] - 1;
@@ -40,7 +39,7 @@ export function CourseItem(props: Props) {
             },
             text: {
                 textAlign: "center",
-                color: Color.mix(Color(course.backgroundColor), Color(theme.colors.black), 0.5).rgbaString,
+                color: Color.mix(course.backgroundColor, theme.colors.black, 0.5).rgbaString,
             },
         });
     }, [
@@ -59,22 +58,24 @@ export function CourseItem(props: Props) {
             onPress={e => {
                 props.onCoursePress?.(course);
             }}
-            android_ripple={userTheme.ripple}
+            android_ripple={userConfig.theme.ripple}
             style={[itemStyle.course, courseScheduleStyle.courseItem]}>
             <Flex direction="column" gap={5}>
                 {courseScheduleData.courseInfoVisible.name && course.jxbsftkbj === "1" && (
                     <Text style={itemStyle.text}>调</Text>
                 )}
-                {courseScheduleData.courseInfoVisible.name && <Text style={[itemStyle.text, {fontWeight: 700}]}>{course.kcmc}</Text>}
+                {courseScheduleData.courseInfoVisible.name && (
+                    <Text style={[itemStyle.text, {fontWeight: 700}]}>{course.kcmc}</Text>
+                )}
                 {courseScheduleData.courseInfoVisible.position && (
                     <Text style={itemStyle.text}>
-                        <Icon type="fontawesome" name="map-marker" style={itemStyle.text}/>
+                        <Icon type="fontawesome" name="map-marker" style={itemStyle.text} />
                         {"\n" + course.cdmc.replace("-", "\n")}
                     </Text>
                 )}
                 {courseScheduleData.courseInfoVisible.teacher && (
                     <Text style={itemStyle.text} ellipsizeMode="tail" numberOfLines={5}>
-                        <Icon name="user"  style={itemStyle.text}/>
+                        <Icon name="user" style={itemStyle.text} />
                         {"\n" + course.xm}
                     </Text>
                 )}

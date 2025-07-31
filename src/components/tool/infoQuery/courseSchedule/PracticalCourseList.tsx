@@ -71,11 +71,10 @@ export function PracticalCourseList(props: Props) {
                     course: {
                         backgroundColor: Color(course.backgroundColor).setAlpha(theme.mode === "light" ? 0.3 : 0.1)
                             .rgbaString,
-                        borderColor: Color.mix(Color(course.backgroundColor), Color(theme.colors.grey4), 0.8)
-                            .rgbaString,
+                        borderColor: Color.mix(course.backgroundColor, theme.colors.grey4, 0.8).rgbaString,
                     },
                     text: {
-                        color: Color.mix(Color(course.backgroundColor), Color(theme.colors.black), 0.5).rgbaString,
+                        color: Color.mix(course.backgroundColor, theme.colors.black, 0.5).rgbaString,
                     },
                 });
                 return (

@@ -1,24 +1,23 @@
 import {ScrollView, StyleSheet, ToastAndroid, View} from "react-native";
-import {Button, Divider, Text} from "@rneui/themed";
+import {Button, Divider, Text, useTheme} from "@rneui/themed";
 import {useEffect, useState} from "react";
 import moment from "moment/moment";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {Picker} from "@react-native-picker/picker";
-import {SchoolTerms, SchoolYears} from "@/type/global.ts";
+import {SchoolTerms, SchoolTermValue, SchoolYears} from "@/type/global.ts";
 import {infoQuery} from "@/js/jw/infoQuery.ts";
 import {NumberInput} from "@/components/un-ui/NumberInput.tsx";
 import {Row, Rows, Table} from "react-native-reanimated-table";
-import {useUserTheme} from "@/js/theme.ts";
 import {ExamInfoQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
 import {store} from "@/js/store.ts";
 import {Color} from "@/js/color.ts";
 import {UnPicker} from "@/components/un-ui/UnPicker.tsx";
 
 export function ExamInfo() {
-    const {theme} = useUserTheme();
+    const {theme} = useTheme();
     const [apiRes, setApiRes] = useState<ExamInfoQueryRes>({} as ExamInfoQueryRes);
     const [year, setYear] = useState(moment().isBefore(moment("8", "M"), "M") ? moment().year() - 1 : moment().year());
-    const [term, setTerm] = useState<string>(
+    const [term, setTerm] = useState<SchoolTermValue>(
         moment().isBetween(moment("02", "MM"), moment("08", "MM"), "month", "[]")
             ? SchoolTerms[1][0]
             : SchoolTerms[0][0],
@@ -48,7 +47,7 @@ export function ExamInfo() {
         },
         tableBorder: {
             borderWidth: 2,
-            borderColor: Color.mix(Color(theme.colors.primary), Color(theme.colors.grey4), 0.4).rgbaString,
+            borderColor: Color.mix(theme.colors.primary, theme.colors.grey4, 0.4).rgbaString,
         },
         tableHeader: {
             backgroundColor: Color.mix(
@@ -66,8 +65,9 @@ export function ExamInfo() {
         });
     }
 
-    function query() {
-        infoQuery.getExamInfo(year, term, page).then(res => {
+    async function query() {
+        const res = await infoQuery.getExamInfo(year, term, page);
+        if (res) {
             const tableBody = res.items.map(item => [
                 item.kcmc,
                 item.kssj,
@@ -85,8 +85,8 @@ export function ExamInfo() {
                 body: tableBody,
             });
             setApiRes(res);
-            store.save({key: "examInfo", data: res});
-        });
+            await store.save({key: "examInfo", data: res});
+        }
     }
 
     useEffect(() => {

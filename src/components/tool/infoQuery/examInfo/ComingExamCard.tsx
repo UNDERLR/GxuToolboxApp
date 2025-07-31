@@ -58,10 +58,10 @@ export function ComingExamCard() {
         },
         tableBorder: {
             borderWidth: 2,
-            borderColor: Color.mix(Color(theme.colors.primary), Color(theme.colors.grey4), 0.4).rgbaString,
+            borderColor: Color.mix(theme.colors.primary, theme.colors.grey4, 0.4).rgbaString,
         },
         tableHeader: {
-            backgroundColor: color
+            backgroundColor: Color
                 .mix(
                     Color(theme.colors.primary),
                     Color(theme.colors.background),

@@ -1,5 +1,5 @@
 import {ScrollView, StyleSheet, ToastAndroid, View} from "react-native";
-import {Button, Divider, Text} from "@rneui/themed";
+import {Button, Divider, Text, useTheme} from "@rneui/themed";
 import {useEffect, useState} from "react";
 import moment from "moment/moment";
 import Flex from "@/components/un-ui/Flex.tsx";
@@ -7,7 +7,6 @@ import {Picker} from "@react-native-picker/picker";
 import {SchoolTerms, SchoolTermValue, SchoolYears} from "@/type/global.ts";
 import {infoQuery} from "@/js/jw/infoQuery.ts";
 import {NumberInput} from "@/components/un-ui/NumberInput.tsx";
-import {useUserTheme} from "@/js/theme.ts";
 import {ExamScoreQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
 import {store} from "@/js/store.ts";
 import {Color} from "@/js/color.ts";
@@ -15,8 +14,8 @@ import {UnPicker} from "@/components/un-ui/UnPicker.tsx";
 import {ExamScoreTable} from "@/screens/tool/infoQuery/ExamScoreTable.tsx";
 
 export function ExamScore() {
-    const {theme} = useUserTheme();
-    const [apiRes, setApiRes] = useState<ExamScoreQueryRes>({});
+    const {theme} = useTheme();
+    const [apiRes, setApiRes] = useState<ExamScoreQueryRes>({} as ExamScoreQueryRes);
     const [year, setYear] = useState(moment().isBefore(moment("8", "M"), "M") ? moment().year() - 1 : moment().year());
     const [term, setTerm] = useState<SchoolTermValue>(
         moment().isBetween(moment("02", "MM"), moment("08", "MM"), "month", "[]")
@@ -48,7 +47,7 @@ export function ExamScore() {
         },
         tableBorder: {
             borderWidth: 2,
-            borderColor: Color.mix(Color(theme.colors.primary), Color(theme.colors.grey4), 0.4).rgbaString,
+            borderColor: Color.mix(theme.colors.primary, theme.colors.grey4, 0.4).rgbaString,
         },
         tableHeader: {
             backgroundColor: Color.mix(
@@ -60,8 +59,9 @@ export function ExamScore() {
         tableHeaderText: {},
     });
 
-    function init() {
-        store.load({key: "examScore"}).then(data => {
+    async function init() {
+        const data = await store.load<ExamScoreQueryRes>({key: "examScore"});
+        if (data) {
             setApiRes(data);
             setTableData({
                 ...tableData,
@@ -77,11 +77,12 @@ export function ExamScore() {
                     item.jxb_id,
                 ]),
             });
-        });
+        }
     }
 
-    function query() {
-        infoQuery.getExamScore(year, term, page).then(res => {
+    async function query() {
+        const res = await infoQuery.getExamScore(year, term, page);
+        if (res) {
             const tableBody = res.items.map(item => [
                 item.xnmmc,
                 item.kcmc,
@@ -98,11 +99,9 @@ export function ExamScore() {
                 ...tableData,
                 body: tableBody,
             });
-            console.log(tableBody);
             setApiRes(res);
-            console.log(apiRes.items, 1);
-            store.save({key: "examScore", data: res});
-        });
+            await store.save({key: "examScore", data: res});
+        }
     }
 
     function usual(id: string) {}
