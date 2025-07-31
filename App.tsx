@@ -73,13 +73,13 @@ function App(): React.JSX.Element {
     }, []);
 
     return (
-        <AppProvider>
-            <ThemeProvider theme={currentTheme}>
+        <ThemeProvider theme={currentTheme}>
+            <AppProvider>
                 <SafeAreaProvider>
                     <Root ref={appRef} />
                 </SafeAreaProvider>
-            </ThemeProvider>
-        </AppProvider>
+            </AppProvider>
+        </ThemeProvider>
     );
 }
 

@@ -19,6 +19,8 @@ import {ColorPicker} from "@/components/un-ui/ColorPicker.tsx";
 import {useUserTheme} from "@/js/theme.ts";
 import {launchImageLibrary} from "react-native-image-picker";
 import {UnSlider} from "@/components/un-ui/UnSlider.tsx";
+import {useContext} from "react";
+import {UserConfigContext} from "@/components/AppProvider.tsx";
 
 interface settingSection {
     title: string;
@@ -34,6 +36,7 @@ interface SettingItem {
 }
 
 export function SettingIndex() {
+    const {userConfig, updateUserConfig} = useContext(UserConfigContext);
     const navigation = useNavigation();
     const {theme, userTheme, updateUserTheme, updateTheme} = useUserTheme();
 
@@ -42,10 +45,8 @@ export function SettingIndex() {
             mediaType: "photo",
         }).then(res => {
             if (!res.didCancel && res.assets && res.assets.length > 0) {
-                updateUserTheme({
-                    ...userTheme,
-                    bgUri: res.assets[0].uri,
-                });
+                userConfig.theme.bgUrl = res.assets[0].uri ?? "";
+                updateUserConfig(userConfig);
             }
         });
     }
@@ -71,13 +72,14 @@ export function SettingIndex() {
                         <ColorPicker
                             color={theme.colors.primary}
                             onColorChange={v => {
-                                updateUserTheme({...userTheme, colors: {primary: v}});
+                                userConfig.theme.primaryColor = v;
+                                updateUserConfig(userConfig);
                             }}
                         />
                     ),
                 },
                 {
-                    label: "背景图（需要重启）",
+                    label: "背景图",
                     type: "any",
                     value: (
                         <Flex gap={10} inline>

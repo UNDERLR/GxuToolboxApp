@@ -25,14 +25,6 @@ export function Root(props: ViewProps) {
         updateCourseScheduleData: memoizedUpdateFunction,
     }), [courseScheduleData, memoizedStyle, memoizedUpdateFunction]);
 
-    // 添加背景图URI的状态
-    const [bgUri, setBgUri] = useState(userTheme.bgUri);
-
-    // 监听 userTheme 变化，更新背景图
-    useEffect(() => {
-        setBgUri(userTheme.bgUri);
-    }, [userTheme.bgUri]);
-
     const style = StyleSheet.create({
         backgroundStyle: {
             flex: 1,
@@ -48,8 +40,8 @@ export function Root(props: ViewProps) {
             <View {...props} style={[style.backgroundStyle, props.style]}>
                 <ImageBackground
                     style={style.bg}
-                    source={{uri: bgUri}}
-                    loadingIndicatorSource={{uri: bgUri}}
+                    source={{uri: userConfig.theme.bgUrl}}
+                    loadingIndicatorSource={{uri: userConfig.theme.bgUrl}}
                     resizeMode="cover">
                     <StatusBar barStyle={colorScheme === "light" ? "dark-content" : "light-content"} />
                     <CheckUpdate />
