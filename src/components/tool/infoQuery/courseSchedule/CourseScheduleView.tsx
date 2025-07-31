@@ -13,6 +13,7 @@ import {CourseScheduleQueryRes} from "@/type/api/infoQuery/classScheduleAPI.ts";
 import {ExamInfo} from "@/type/infoQuery/exam/examInfo.ts";
 import {ExamDetail} from "@/components/tool/infoQuery/examInfo/ExamDetail.tsx";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
+import {Color} from "@/js/color.ts";
 
 interface Props {
     startDay: moment.MomentInput;
@@ -45,6 +46,11 @@ export function CourseScheduleView(props: Props) {
         },
         bottomSheetContainer: {
             backgroundColor: theme.colors.background,
+            borderRadius: 8,
+            borderColor: Color.mix(userConfig.theme.primaryColor, theme.colors.background, 0.8).rgbaString,
+            borderWidth: 1,
+            marginHorizontal: "4%",
+            marginBottom: "5%",
             padding: "5%",
         },
     });

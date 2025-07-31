@@ -9,9 +9,9 @@ const defaultUserConfig: IUserConfig = {
             timeSpanHeight: 80,
             weekdayHeight: 60,
             courseItemMargin: 2,
-            courseItemBorderWidth: 2,
+            courseItemBorderWidth: 0,
         },
-        primaryColor: "",
+        primaryColor: "#459EE2",
     },
 };
 export const UserConfigContext = createContext<{

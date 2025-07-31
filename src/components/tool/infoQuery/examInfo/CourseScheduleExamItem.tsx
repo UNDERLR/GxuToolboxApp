@@ -45,7 +45,7 @@ export function CourseScheduleExamItem(props: Props) {
 
     const examTime = examInfo.kssj.match(/(?<=\().*?(?=\))/g)?.[0].split("-") as [string, string];
     const y = timeToTimeSpan(examTime[0]);
-    const span = timeToTimeSpan(examTime[1], true) - y +1;
+    const span = timeToTimeSpan(examTime[1], true) - y + 1;
     const color = courseScheduleData.randomColor[Math.floor(Math.random() * courseScheduleData.randomColor.length)];
     const itemStyle = useMemo(() => {
         return StyleSheet.create({
@@ -61,6 +61,7 @@ export function CourseScheduleExamItem(props: Props) {
             },
             text: {
                 textAlign: "center",
+                color: Color.mix(Color(color), Color(theme.colors.black), 0.5).rgbaString,
             },
         });
     }, [
@@ -85,7 +86,7 @@ export function CourseScheduleExamItem(props: Props) {
                 <Text style={itemStyle.text}>考试</Text>
                 <Text style={itemStyle.text}>{examInfo.kcmc}</Text>
                 <Text style={itemStyle.text}>
-                    <Icon type="fontawesome" name="map-marker" />
+                    <Icon type="fontawesome" name="map-marker" style={itemStyle.text} />
                     {"\n" + examInfo.cdmc.replace("-", "\n")}
                 </Text>
                 <Text style={itemStyle.text}>{`<${examInfo.zwh}>`}</Text>

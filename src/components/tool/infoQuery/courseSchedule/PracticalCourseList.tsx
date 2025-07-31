@@ -74,6 +74,9 @@ export function PracticalCourseList(props: Props) {
                         borderColor: Color.mix(Color(course.backgroundColor), Color(theme.colors.grey4), 0.8)
                             .rgbaString,
                     },
+                    text: {
+                        color: Color.mix(Color(course.backgroundColor), Color(theme.colors.black), 0.5).rgbaString,
+                    },
                 });
                 return (
                     <View
@@ -83,14 +86,14 @@ export function PracticalCourseList(props: Props) {
                             courseScheduleStyle.courseItem,
                             courseScheduleStyle.practicalCourseItem,
                         ]}>
-                        <Text>{course.qtkcgs}</Text>
+                        <Text style={itemStyle.text}>{course.qtkcgs}</Text>
                         <Flex gap={5}>
-                            <Icon name="clockcircleo" />
-                            <Text>{course.qsjsz}</Text>
+                            <Icon name="clockcircleo" style={itemStyle.text} />
+                            <Text style={itemStyle.text}>{course.qsjsz}</Text>
                         </Flex>
                         <Flex gap={5}>
-                            <Icon name="user" />
-                            <Text>{course.jsxm}</Text>
+                            <Icon name="user" style={itemStyle.text} />
+                            <Text style={itemStyle.text}>{course.jsxm}</Text>
                         </Flex>
                     </View>
                 );

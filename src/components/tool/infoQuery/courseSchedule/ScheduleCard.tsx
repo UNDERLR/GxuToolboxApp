@@ -43,6 +43,7 @@ export function ScheduleCard() {
             backgroundColor: Color(theme.colors.background).setAlpha(
                 0.05 + ((theme.mode === "dark" ? 0.6 : 0.7) * userTheme.bgOpacity) / 100,
             ).rgbaString,
+            borderColor: Color.mix(userConfig.theme.primaryColor, theme.colors.background, 0.7).rgbaString,
             borderRadius: 5,
             paddingHorizontal: 0,
             marginHorizontal: 5,
@@ -59,6 +60,11 @@ export function ScheduleCard() {
         bottomSheetContainer: {
             backgroundColor: theme.colors.background,
             padding: "5%",
+            borderRadius: 8,
+            borderColor: Color.mix(userConfig.theme.primaryColor, theme.colors.background, 0.8).rgbaString,
+            borderWidth: 1,
+            marginHorizontal: "4%",
+            marginBottom: "5%",
         },
     });
 

@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useMemo} from "react";
+import React, {useContext, useMemo} from "react";
 import {Pressable, StyleSheet} from "react-native";
 import {Color} from "@/js/color.ts";
 import Flex from "@/components/un-ui/Flex.tsx";
@@ -33,7 +33,6 @@ export function CourseItem(props: Props) {
                 height: span * userConfig.theme.course.timeSpanHeight - userConfig.theme.course.courseItemMargin * 2,
                 position: "absolute",
                 backgroundColor: Color(course.backgroundColor).setAlpha(theme.mode === "light" ? 0.3 : 0.1).rgbaString,
-                borderColor: Color.mix(Color(course.backgroundColor), Color(theme.colors.grey4), 0.7).rgbaString,
                 top:
                     userConfig.theme.course.weekdayHeight +
                     y * userConfig.theme.course.timeSpanHeight +
@@ -41,6 +40,7 @@ export function CourseItem(props: Props) {
             },
             text: {
                 textAlign: "center",
+                color: Color.mix(Color(course.backgroundColor), Color(theme.colors.black), 0.5).rgbaString,
             },
         });
     }, [
@@ -65,16 +65,16 @@ export function CourseItem(props: Props) {
                 {courseScheduleData.courseInfoVisible.name && course.jxbsftkbj === "1" && (
                     <Text style={itemStyle.text}>调</Text>
                 )}
-                {courseScheduleData.courseInfoVisible.name && <Text style={itemStyle.text}>{course.kcmc}</Text>}
+                {courseScheduleData.courseInfoVisible.name && <Text style={[itemStyle.text, {fontWeight: 700}]}>{course.kcmc}</Text>}
                 {courseScheduleData.courseInfoVisible.position && (
                     <Text style={itemStyle.text}>
-                        <Icon type="fontawesome" name="map-marker" />
+                        <Icon type="fontawesome" name="map-marker" style={itemStyle.text}/>
                         {"\n" + course.cdmc.replace("-", "\n")}
                     </Text>
                 )}
                 {courseScheduleData.courseInfoVisible.teacher && (
                     <Text style={itemStyle.text} ellipsizeMode="tail" numberOfLines={5}>
-                        <Icon name="user" />
+                        <Icon name="user"  style={itemStyle.text}/>
                         {"\n" + course.xm}
                     </Text>
                 )}
