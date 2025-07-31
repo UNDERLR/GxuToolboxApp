@@ -135,7 +135,6 @@ export function useUserTheme() {
 
             // 批量更新状态
             Promise.resolve().then(() => {
-                uiTheme.replaceTheme(newUiTheme);
                 setUserTheme(newUserTheme);
                 setNavigationTheme(old => ({
                     light: {

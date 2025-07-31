@@ -3,11 +3,16 @@ import {store} from "@/js/store.ts";
 import {IUserConfig} from "@/type/IUserConfig.ts";
 import {createTheme, useTheme} from "@rneui/themed";
 import {theme} from "@/js/theme.ts";
-import {useColorScheme} from "react-native";
+import {PressableAndroidRippleConfig, useColorScheme} from "react-native";
+import {deepMerge} from "@/utils/objectUtils.ts";
 
 const defaultUserConfig: IUserConfig = {
     theme: {
         bgUrl: "",
+        bgOpacity: 100,
+        ripple: {
+            color: "gray",
+        },
         course: {
             timeSpanHeight: 80,
             weekdayHeight: 60,
@@ -39,10 +44,7 @@ export function AppProvider(props: Omit<ProviderProps<IUserConfig>, "value">) {
 
     async function init() {
         const data = (await store.load({key: "userConfig"})) ?? defaultUserConfig;
-        setUserContext({
-            ...defaultUserConfig,
-            ...data,
-        });
+        updateUserConfig(deepMerge(defaultUserConfig, data));
     }
 
     function updateUserConfig(config: Partial<IUserConfig>) {
@@ -65,7 +67,7 @@ export function AppProvider(props: Omit<ProviderProps<IUserConfig>, "value">) {
                 primary: config.theme?.primaryColor ?? "#48A6EF",
             },
         });
-        uiTheme.replaceTheme(newUiTheme);
+        uiTheme.updateTheme(newUiTheme);
     }
 
     useEffect(() => {

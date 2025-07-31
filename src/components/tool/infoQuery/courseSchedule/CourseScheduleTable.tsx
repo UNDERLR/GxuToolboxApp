@@ -2,7 +2,7 @@ import {Course} from "@/type/infoQuery/course/course.ts";
 import {StyleProp, StyleSheet, TextStyle, View, ViewStyle} from "react-native";
 import moment from "moment/moment";
 import {Color} from "@/js/color.ts";
-import {Text} from "@rneui/themed";
+import {Text, useTheme} from "@rneui/themed";
 import {useContext, useEffect, useState} from "react";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {useUserTheme} from "@/js/theme.ts";
@@ -31,7 +31,7 @@ interface CourseItem extends Course {
 export function CourseScheduleTable(props: Props) {
     const {userConfig} = useContext(UserConfigContext);
     const {courseScheduleData, courseScheduleStyle} = useContext(CourseScheduleContext)!;
-    const {theme} = useUserTheme();
+    const {theme} = useTheme();
     const [courseSchedule, setCourseSchedule] = useState<CourseItem[][]>([[], [], [], [], [], [], []]);
     const startDay = moment(props.startDay);
     const [currentTime, setCurrentTime] = useState(moment().format());

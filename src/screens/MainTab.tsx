@@ -6,11 +6,15 @@ import {SettingStack} from "@/route/screens/SettingStack.tsx";
 import {ToolboxStack} from "@/route/screens/ToolboxStack.tsx";
 import {useUserTheme} from "@/js/theme.ts";
 import {Color} from "@/js/color.ts";
+import {useTheme} from "@rneui/themed";
+import {useContext} from "react";
+import {UserConfigContext} from "@/components/AppProvider.tsx";
 
 const Tab = createBottomTabNavigator();
 
 export function MainTab() {
-    const {theme, userTheme} = useUserTheme();
+    const {theme} = useTheme();
+    const {userConfig} = useContext(UserConfigContext);
     return (
         <Tab.Navigator
             screenOptions={{
@@ -18,17 +22,17 @@ export function MainTab() {
                 tabBarActiveTintColor: theme.colors.primary,
                 headerStyle: {
                     backgroundColor: Color(theme.colors.background).setAlpha(
-                        ((theme.mode === "dark" ? 0.5 : 0.4) * userTheme.bgOpacity) / 100,
+                        ((theme.mode === "dark" ? 0.5 : 0.4) * userConfig.theme.bgOpacity) / 100,
                     ).rgbaString,
                 },
                 sceneStyle: {
                     backgroundColor: Color(theme.colors.background).setAlpha(
-                        ((theme.mode === "dark" ? 0.8 : 0.4) * userTheme.bgOpacity) / 100,
+                        ((theme.mode === "dark" ? 0.8 : 0.4) * userConfig.theme.bgOpacity) / 100,
                     ).rgbaString,
                 },
                 tabBarStyle: {
                     backgroundColor: Color(theme.colors.background).setAlpha(
-                        ((theme.mode === "dark" ? 0.9 : 0.75) * userTheme.bgOpacity) / 100,
+                        ((theme.mode === "dark" ? 0.9 : 0.75) * userConfig.theme.bgOpacity) / 100,
                     ).rgbaString,
                     elevation: 0,           // Android 去除阴影
                     shadowOpacity: 0,       // iOS 去除阴影
