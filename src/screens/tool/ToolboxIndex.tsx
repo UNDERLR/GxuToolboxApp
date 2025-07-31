@@ -64,12 +64,22 @@ const toolList = [
             },
         ],
     },
+    {
+        title: "评价",
+        data: [
+            {
+                label: "期末学生评价",
+                icon: <Icon name="infocirlceo" size={20} />,
+                type: "navigation",
+                navigation: "studentEvaluation",
+            },
+        ],
+    },
 ] as settingSection[];
 
 export function ToolboxIndex() {
     const navigation = useNavigation();
     const {theme, userTheme} = useUserTheme();
-
 
     const data = {
         style: {
