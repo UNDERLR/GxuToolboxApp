@@ -1,27 +1,14 @@
 import {createContext, ProviderProps, useEffect, useMemo, useState} from "react";
 import {store} from "@/js/store.ts";
 import {IUserConfig} from "@/type/IUserConfig.ts";
-import {createTheme, CreateThemeOptions, useTheme} from "@rneui/themed";
-import {theme} from "@/js/theme.ts";
+import {createTheme, useTheme} from "@rneui/themed";
+import {DefaultUserTheme, generateUiTheme} from "@/js/theme.ts";
 import {useColorScheme} from "react-native";
 import {deepMerge} from "@/utils/objectUtils.ts";
 import {cowsay} from "@/js/cowsay.ts";
 
 const defaultUserConfig: IUserConfig = {
-    theme: {
-        bgUrl: "",
-        bgOpacity: 100,
-        ripple: {
-            color: "gray",
-        },
-        course: {
-            timeSpanHeight: 80,
-            weekdayHeight: 60,
-            courseItemMargin: 2,
-            courseItemBorderWidth: 0,
-        },
-        primaryColor: "#48A6EF",
-    },
+    theme: DefaultUserTheme,
 };
 export const UserConfigContext = createContext<{
     userConfig: IUserConfig;
@@ -49,26 +36,13 @@ export function AppProvider(props: Omit<ProviderProps<IUserConfig>, "value">) {
     }
 
     function updateUserConfig(config: Partial<IUserConfig>) {
-        setUserContext({
-            ...defaultUserConfig,
-            ...userContext,
-            ...config,
-        });
+        const newConfig = deepMerge(deepMerge(defaultUserConfig, userContext), config);
+        setUserContext(newConfig);
         store.save({
             key: "userConfig",
-            data: config,
+            data: newConfig,
         });
-        const newUiTheme = createTheme(
-            deepMerge<CreateThemeOptions, CreateThemeOptions>(theme, {
-                mode: colorScheme ?? "light",
-                lightColors: {
-                    primary: config.theme?.primaryColor ?? "#48A6EF",
-                },
-                darkColors: {
-                    primary: config.theme?.primaryColor ?? "#48A6EF",
-                },
-            }),
-        );
+        const newUiTheme = createTheme(generateUiTheme(newConfig, colorScheme));
         uiTheme.updateTheme(newUiTheme);
     }
 
