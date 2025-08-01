@@ -9,7 +9,6 @@ import Flex from "@/components/un-ui/Flex.tsx";
 import {Icon} from "@/components/un-ui/Icon.tsx";
 import moment from "moment";
 import {SchoolTerms, SchoolTermValue} from "@/type/global.ts";
-import {useUserTheme} from "@/js/theme.ts";
 import {Color} from "@/js/color.ts";
 import {usePagerView} from "react-native-pager-view";
 import {CourseCardSetting} from "@/components/tool/infoQuery/courseSchedule/CourseCardSetting.tsx";

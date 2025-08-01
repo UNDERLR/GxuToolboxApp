@@ -3,8 +3,9 @@ import {ListItem, Text} from "@rneui/themed";
 import {Icon} from "@/components/un-ui/Icon.tsx";
 import Flex from "@/components/un-ui/Flex.tsx";
 import Clipboard from "@react-native-clipboard/clipboard";
-import {useUserTheme} from "@/js/theme.ts";
 import {ExamInfo} from "@/type/infoQuery/exam/examInfo.ts";
+import {useContext} from "react";
+import {UserConfigContext} from "@/components/AppProvider.tsx";
 
 interface Props extends ViewProps {
     examInfo: ExamInfo;
@@ -17,7 +18,7 @@ interface Info {
 }
 
 export function ExamDetail(props: Props) {
-    const {userTheme} = useUserTheme();
+    const {userConfig} = useContext(UserConfigContext);
     const infoList = [
         {
             label: "课程名称",
@@ -80,7 +81,7 @@ export function ExamDetail(props: Props) {
                         </Flex>
                         <Flex justifyContent="flex-end">
                             <Pressable
-                                android_ripple={userTheme.ripple}
+                                android_ripple={userConfig.theme.ripple}
                                 onPress={() => copy(props.examInfo[item.key] + "" ?? "", `复制${item.label}成功`)}>
                                 <Text style={style.infoData}>{props.examInfo[item.key] ?? ""}</Text>
                             </Pressable>
@@ -98,7 +99,7 @@ export function ExamDetail(props: Props) {
                     </Flex>
                     <Flex justifyContent="flex-end">
                         <Pressable
-                            android_ripple={userTheme.ripple}
+                            android_ripple={userConfig.theme.ripple}
                             onPress={() => copy(JSON.stringify(props.examInfo, null, 4) + "" ?? "", "复制考试信息JSON成功")}>
                             <Text style={style.infoData}>&#123; ... &#125;</Text>
                         </Pressable>

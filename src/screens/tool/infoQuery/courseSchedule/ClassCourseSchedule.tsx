@@ -1,9 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {ScrollView, StyleSheet, ToastAndroid, View} from "react-native";
-import {Button, Card, Divider, Text} from "@rneui/themed";
+import {Button, Card, Divider, Text, useTheme} from "@rneui/themed";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {PageModel, Schools, SchoolTerms, SchoolTermValue, SchoolValue, SchoolYears} from "@/type/global.ts";
-import {useUserTheme} from "@/js/theme.ts";
 import moment from "moment/moment";
 import {infoQuery} from "@/js/jw/infoQuery.ts";
 import {Class, UserInfo} from "@/type/infoQuery/base.ts";
@@ -17,7 +16,7 @@ import {UnPicker} from "@/components/un-ui/UnPicker";
 import {Picker} from "@react-native-picker/picker";
 
 export function ClassCourseSchedule() {
-    const {theme} = useUserTheme();
+    const {theme} = useTheme();
     const [userInfo, setUserInfo] = useState<UserInfo>();
     const [subjectList, setSubjectList] = useState<string[][]>([]);
     const [classList, setClassList] = useState<string[][]>([]);

@@ -4,7 +4,6 @@ import {HomeHeaderRight} from "@/components/header/HomeHeaderRight.tsx";
 import {Icon} from "@/components/un-ui/Icon.tsx";
 import {SettingStack} from "@/route/screens/SettingStack.tsx";
 import {ToolboxStack} from "@/route/screens/ToolboxStack.tsx";
-import {useUserTheme} from "@/js/theme.ts";
 import {Color} from "@/js/color.ts";
 import {useTheme} from "@rneui/themed";
 import {useContext} from "react";

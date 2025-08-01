@@ -1,8 +1,7 @@
 import React, {useState} from "react";
-import {SafeAreaView, ScrollView, View, TouchableOpacity, StyleSheet} from "react-native";
-import {Text} from "@rneui/themed";
+import {ScrollView, StyleSheet, TouchableOpacity, View} from "react-native";
+import {Text, useTheme} from "@rneui/themed";
 import Flex from "@/components/un-ui/Flex.tsx";
-import {useUserTheme} from "@/js/theme.ts";
 import {Color} from "@/js/color.ts";
 import {ExamScore} from "@/type/infoQuery/exam/examScore.ts";
 import {infoQuery} from "@/js/jw/infoQuery.ts";
@@ -17,7 +16,7 @@ interface Props {
 export function ExamScoreTable(props: Props) {
     const [expandedId, setExpandedId] = useState<string | null>(null);
     const [usualScore, setUsualScore] = useState<{[key: string]: any}>({});
-    const {theme} = useUserTheme();
+    const {theme} = useTheme();
     const handlePressRow = (item: ExamScore) => {
         const newExpandedId = expandedId === item.jxb_id ? null : item.jxb_id;
         setExpandedId(newExpandedId);
@@ -116,7 +115,7 @@ export function ExamScoreTable(props: Props) {
     return (
         <Flex>
             <ScrollView>
-                <Flex direction='column' gap={10}>
+                <Flex direction="column" gap={10}>
                     <View style={styles.scoreItem}>
                         <Text style={styles.schoolYearText}>{"       学年   "}</Text>
                         <Text style={styles.examCourseName}>{" 课程名称"}</Text>
@@ -128,7 +127,9 @@ export function ExamScoreTable(props: Props) {
                             {/* 可点击的行 */}
                             <TouchableOpacity activeOpacity={0.7} onPress={() => handlePressRow(item)}>
                                 <View style={styles.scoreItem}>
-                                    <Text style={[styles.schoolYearText, +item.cj < 60 && {color: "red"}]}>{item.xnmmc}</Text>
+                                    <Text style={[styles.schoolYearText, +item.cj < 60 && {color: "red"}]}>
+                                        {item.xnmmc}
+                                    </Text>
                                     <Text style={[styles.examCourseName, +item.cj < 60 && {color: "red"}]}>
                                         {item.kcmc}
                                     </Text>
@@ -163,7 +164,9 @@ export function ExamScoreTable(props: Props) {
                                             key={`${item.jxb_id}-${row.key}-${detailIndex}`}
                                             style={styles.detailItem}>
                                             <View style={{width: "45%"}}>
-                                                <Text style={[styles.detailItemLabel, styles.detailItemLabel]}>{row.label}</Text>
+                                                <Text style={[styles.detailItemLabel, styles.detailItemLabel]}>
+                                                    {row.label}
+                                                </Text>
                                             </View>
                                             <View style={{width: "55%"}}>
                                                 <Text style={[styles.detailItemLabel, styles.detailItemValue]}>

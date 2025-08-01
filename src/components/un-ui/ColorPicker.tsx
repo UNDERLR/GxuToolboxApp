@@ -1,10 +1,10 @@
-import {useUserTheme} from "@/js/theme.ts";
 import {Pressable, StyleSheet, View} from "react-native";
 import Flex from "./Flex.tsx";
-import {Button, Dialog, Slider, Text} from "@rneui/themed";
+import {Button, Dialog, Slider, Text, useTheme} from "@rneui/themed";
 import {BaseColor, Color} from "@/js/color.ts";
-import {useState} from "react";
+import {useContext, useState} from "react";
 import {UnSlider} from "@/components/un-ui/UnSlider.tsx";
+import {UserConfigContext} from "@/components/AppProvider.tsx";
 
 interface Props {
     size: number;
@@ -15,7 +15,8 @@ interface Props {
 }
 
 export function ColorPicker(props: Partial<Props>) {
-    const {theme, userTheme} = useUserTheme();
+    const {theme} = useTheme();
+    const {userConfig} = useContext(UserConfigContext);
     const [dialogVisible, setDialogVisible] = useState(false);
     const defaultColor = Color(props.color ?? BaseColor.black);
     const [r, setR] = useState(defaultColor.rgba[0]);
@@ -44,12 +45,12 @@ export function ColorPicker(props: Partial<Props>) {
             height: 50,
             width: 100,
             backgroundColor: value.rgbaString,
-            borderRadius:5,
+            borderRadius: 5,
         },
     });
 
     return (
-        <Pressable android_ripple={userTheme.ripple} onPress={() => setDialogVisible(true)}>
+        <Pressable android_ripple={userConfig.theme.ripple} onPress={() => setDialogVisible(true)}>
             <Flex style={style.labelContainer} gap={10} inline>
                 <View style={style.colorLabel} />
                 <Text>{defaultColor.hexString().toUpperCase()}</Text>
@@ -73,37 +74,19 @@ export function ColorPicker(props: Partial<Props>) {
                     <Flex gap={10}>
                         <Text>红</Text>
                         <Flex>
-                            <UnSlider
-                                step={1}
-                                minimumValue={0}
-                                maximumValue={255}
-                                value={r}
-                                onValueChange={setR}
-                            />
+                            <UnSlider step={1} minimumValue={0} maximumValue={255} value={r} onValueChange={setR} />
                         </Flex>
                     </Flex>
                     <Flex gap={10}>
                         <Text>绿</Text>
                         <Flex>
-                            <UnSlider
-                                step={1}
-                                minimumValue={0}
-                                maximumValue={255}
-                                value={g}
-                                onValueChange={setG}
-                            />
+                            <UnSlider step={1} minimumValue={0} maximumValue={255} value={g} onValueChange={setG} />
                         </Flex>
                     </Flex>
                     <Flex gap={10}>
                         <Text>蓝</Text>
                         <Flex>
-                            <UnSlider
-                                step={1}
-                                minimumValue={0}
-                                maximumValue={255}
-                                value={b}
-                                onValueChange={setB}
-                            />
+                            <UnSlider step={1} minimumValue={0} maximumValue={255} value={b} onValueChange={setB} />
                         </Flex>
                     </Flex>
                     {props.alpha && (

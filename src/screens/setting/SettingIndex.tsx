@@ -7,7 +7,7 @@ import {
     ToastAndroid,
     View,
 } from "react-native";
-import {Button, Text} from "@rneui/themed";
+import {Button, Text, useTheme} from "@rneui/themed";
 import {Color} from "@/js/color.ts";
 import {useNavigation} from "@react-navigation/native";
 import {Icon} from "@/components/un-ui/Icon.tsx";
@@ -16,7 +16,6 @@ import packageJson from "../../../package.json";
 import Clipboard from "@react-native-clipboard/clipboard";
 import moment from "moment/moment";
 import {ColorPicker} from "@/components/un-ui/ColorPicker.tsx";
-import {useUserTheme} from "@/js/theme.ts";
 import {launchImageLibrary} from "react-native-image-picker";
 import {UnSlider} from "@/components/un-ui/UnSlider.tsx";
 import {useContext} from "react";
@@ -38,7 +37,7 @@ interface SettingItem {
 export function SettingIndex() {
     const {userConfig, updateUserConfig} = useContext(UserConfigContext);
     const navigation = useNavigation();
-    const {theme, userTheme, updateUserTheme, updateTheme} = useUserTheme();
+    const {theme} = useTheme();
 
     function selectBg() {
         launchImageLibrary({
@@ -141,7 +140,7 @@ export function SettingIndex() {
     const data = {
         style: {
             cardBg: Color(theme.colors.background).setAlpha(
-                0.1 + ((theme.mode === "light" ? 0.7 : 0.4) * userTheme.bgOpacity) / 100,
+                0.1 + ((theme.mode === "light" ? 0.7 : 0.4) * userConfig.theme.bgOpacity) / 100,
             ).rgbaString,
             settingItemRipple: {
                 color: theme.colors.grey4,

@@ -4,8 +4,6 @@ import Flex from "@/components/un-ui/Flex.tsx";
 import {BottomSheet, Text, useTheme} from "@rneui/themed";
 import {CourseScheduleTable} from "@/components/tool/infoQuery/courseSchedule/CourseScheduleTable.tsx";
 import {usePagerView} from "react-native-pager-view";
-import {CourseScheduleContext} from "@/js/jw/course.ts";
-import {useUserTheme} from "@/js/theme.ts";
 import moment from "moment/moment";
 import {Course} from "@/type/infoQuery/course/course.ts";
 import {CourseDetail} from "@/components/tool/infoQuery/courseSchedule/CourseDetail.tsx";
@@ -69,6 +67,7 @@ export function CourseScheduleView(props: Props) {
         setExamDetailVisible(true);
         props.onExamPress?.(examInfo);
     }
+
     return (
         <View>
             <AnimatedPagerView

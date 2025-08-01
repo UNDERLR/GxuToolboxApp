@@ -5,10 +5,10 @@ import {Dimensions, ScrollView, StyleSheet, TouchableOpacity, View} from "react-
 import {Row, Table} from "react-native-reanimated-table";
 import {useNavigation} from "@react-navigation/native";
 import {Color} from "@/js/color.ts";
-import {useUserTheme} from "@/js/theme.ts";
+import {useTheme} from "@rneui/themed";
 
 export function StuEvaluation() {
-    const {theme} = useUserTheme();
+    const {theme} = useTheme();
     const [evaList, setEvaList] = useState<Evaluation[]>([]);
     const navigation = useNavigation<any>();
     const screenWidth = Dimensions.get("window").width;
@@ -64,10 +64,20 @@ export function StuEvaluation() {
         <ScrollView style={styles.container}>
             <View style={{width: "100%"}}>
                 <Table>
-                    <Row data={["课程", "教师", "评价"]} style={styles.header} widthArr={colWidths} textStyle={styles.headerText}/>
+                    <Row
+                        data={["课程", "教师", "评价"]}
+                        style={styles.header}
+                        widthArr={colWidths}
+                        textStyle={styles.headerText}
+                    />
                     {evaList.map((item, index) => (
                         <TouchableOpacity key={index} onPress={() => handleRowPress(item)}>
-                            <Row data={[item.kcmc, item.jzgmc, item.tjztmc]} style={styles.row} widthArr={colWidths} textStyle={styles.rowText}/>
+                            <Row
+                                data={[item.kcmc, item.jzgmc, item.tjztmc]}
+                                style={styles.row}
+                                widthArr={colWidths}
+                                textStyle={styles.rowText}
+                            />
                         </TouchableOpacity>
                     ))}
                 </Table>

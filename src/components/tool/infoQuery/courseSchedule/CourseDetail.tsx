@@ -4,8 +4,8 @@ import {ListItem, Text} from "@rneui/themed";
 import {Icon} from "@/components/un-ui/Icon.tsx";
 import Flex from "@/components/un-ui/Flex.tsx";
 import Clipboard from "@react-native-clipboard/clipboard";
-import {useUserTheme} from "@/js/theme.ts";
-import React from "react";
+import React, {useContext} from "react";
+import {UserConfigContext} from "@/components/AppProvider.tsx";
 
 interface Props extends ViewProps {
     course: Course;
@@ -18,7 +18,7 @@ interface Info {
 }
 
 export function CourseDetail(props: Props) {
-    const {userTheme} = useUserTheme();
+    const {userConfig} = useContext(UserConfigContext);
     const infoList = [
         {
             label: "课程名称",
@@ -86,7 +86,7 @@ export function CourseDetail(props: Props) {
                         </Flex>
                         <Flex justifyContent="flex-end">
                             <Pressable
-                                android_ripple={userTheme.ripple}
+                                android_ripple={userConfig.theme.ripple}
                                 onPress={() => copy(props.course[item.key] ?? "", `复制${item.label}成功`)}>
                                 <Text style={style.infoData}>{props.course[item.key] ?? ""}</Text>
                             </Pressable>
@@ -104,7 +104,7 @@ export function CourseDetail(props: Props) {
                     </Flex>
                     <Flex justifyContent="flex-end">
                         <Pressable
-                            android_ripple={userTheme.ripple}
+                            android_ripple={userConfig.theme.ripple}
                             onPress={() => copy(JSON.stringify(props.course, null, 4) + "" ?? "", "复制课程信息JSON成功")}>
                             <Text style={style.infoData}>&#123; ... &#125;</Text>
                         </Pressable>

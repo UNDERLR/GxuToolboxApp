@@ -7,13 +7,14 @@ import {
     ToastAndroid,
     View,
 } from "react-native";
-import {ListItem, Text} from "@rneui/themed";
+import {ListItem, Text, useTheme} from "@rneui/themed";
 import {Color} from "@/js/color.ts";
 import {useNavigation} from "@react-navigation/native";
 import {Icon} from "@/components/un-ui/Icon.tsx";
 import Flex from "@/components/un-ui/Flex.tsx";
 import Clipboard from "@react-native-clipboard/clipboard";
-import {useUserTheme} from "@/js/theme.ts";
+import {useContext} from "react";
+import {UserConfigContext} from "@/components/AppProvider.tsx";
 
 interface settingSection {
     title: string;
@@ -79,12 +80,13 @@ const toolList = [
 
 export function ToolboxIndex() {
     const navigation = useNavigation();
-    const {theme, userTheme} = useUserTheme();
+    const {theme} = useTheme();
+    const {userConfig} = useContext(UserConfigContext);
 
     const data = {
         style: {
             cardBg: Color(theme.colors.background).setAlpha(
-                0.1 + ((theme.mode === "light" ? 0.7 : 0.4) * userTheme.bgOpacity) / 100,
+                0.1 + ((theme.mode === "light" ? 0.7 : 0.4) * userConfig.theme.bgOpacity) / 100,
             ).rgbaString,
             settingItemRipple: {
                 color: theme.colors.grey4,

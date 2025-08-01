@@ -5,7 +5,6 @@ import {Color} from "@/js/color.ts";
 import {Text, useTheme} from "@rneui/themed";
 import {useContext, useEffect, useState} from "react";
 import Flex from "@/components/un-ui/Flex.tsx";
-import {useUserTheme} from "@/js/theme.ts";
 import {CourseItem} from "@/components/tool/infoQuery/courseSchedule/CourseItem.tsx";
 import {CourseScheduleContext} from "@/js/jw/course.ts";
 import {ExamInfo} from "@/type/infoQuery/exam/examInfo.ts";

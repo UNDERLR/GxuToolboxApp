@@ -1,8 +1,7 @@
-import {Card, Text} from "@rneui/themed";
+import {Card, Text, useTheme} from "@rneui/themed";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {ScrollView, StyleSheet} from "react-native";
 import {Color} from "@/js/color.ts";
-import {useUserTheme} from "@/js/theme.ts";
 import {useEffect, useState} from "react";
 import {ExamInfo} from "@/type/infoQuery/exam/examInfo.ts";
 import {store} from "@/js/store.ts";
@@ -11,7 +10,7 @@ import moment from "moment/moment";
 import {Row, Rows, Table} from "react-native-reanimated-table";
 
 export function ComingExamCard() {
-    const {theme} = useUserTheme();
+    const {theme} = useTheme();
     const [apiRes, setApiRes] = useState<ExamInfoQueryRes>();
     const [resList, setResList] = useState<string[]>([]);
     const tableHeaders = ["科目", "时间", "地点"];
@@ -61,13 +60,11 @@ export function ComingExamCard() {
             borderColor: Color.mix(theme.colors.primary, theme.colors.grey4, 0.4).rgbaString,
         },
         tableHeader: {
-            backgroundColor: Color
-                .mix(
-                    Color(theme.colors.primary),
-                    Color(theme.colors.background),
-                    theme.mode === "dark" ? 0.7 : 0.2,
-                )
-                .setAlpha(theme.mode === "dark" ? 0.3 : 0.6).rgbaString,
+            backgroundColor: Color.mix(
+                Color(theme.colors.primary),
+                Color(theme.colors.background),
+                theme.mode === "dark" ? 0.7 : 0.2,
+            ).setAlpha(theme.mode === "dark" ? 0.3 : 0.6).rgbaString,
         },
     });
     return (

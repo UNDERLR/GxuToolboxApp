@@ -1,13 +1,12 @@
 import {RouteProp, useRoute} from "@react-navigation/native";
 import {Evaluation} from "@/type/eduEvaluation/evaluation.ts";
 import {FlatList, StyleSheet, TouchableOpacity, View} from "react-native";
-import {Text} from "@rneui/themed";
+import {Text, useTheme} from "@rneui/themed";
 import {infoQuery} from "@/js/jw/infoQuery.ts";
 import {useEffect, useLayoutEffect, useState} from "react";
 import cheerio from "react-native-cheerio";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {Color} from "@/js/color.ts";
-import {theme, useUserTheme} from "@/js/theme.ts";
 
 type RootStackParamList = {
     EvaDetail: {evaluationItem: Evaluation};
@@ -53,7 +52,7 @@ interface Evaluation {
 }
 
 export function EvaDetail({navigation}) {
-    const {theme} = useUserTheme();
+    const {theme} = useTheme();
     const [response, setResponse] = useState<string>("");
     const [data, setData] = useState<Evaluation>();
     const [ids, setIds] = useState();
@@ -64,7 +63,8 @@ export function EvaDetail({navigation}) {
     useLayoutEffect(() => {
         navigation.setOptions({
             title: `学生评价细节 - ${evaluationItem.jzgmc}（${evaluationItem.kcmc}）`,
-    });}, [navigation, evaluationItem]);
+        });
+    }, [navigation, evaluationItem]);
 
     const defaultColor = Color.mix(
         Color(theme.colors.primary),
@@ -209,18 +209,17 @@ export function EvaDetail({navigation}) {
     /** 解析被SHA1加密的请求ID */
     const EvaIds = (html: string): any => {
         return Array.from(
-            (html.match(/data-(?:xspfb_id\s*=\s*['"]{2}|[\w_]+_id\s*=\s*['"]([0-9A-F]{32})['"])/gi) || [])
-                .map(m => {
-                    // 判断是否是 xspfb_id
-                    if (m.includes('xspfb_id')) {
-                        // 如果是，则尝试匹配ID。匹配到则返回ID，否则返回空字符串
-                        const idMatch = m.match(/[0-9a-f]{32}/i);
-                        return idMatch ? idMatch[0] : "";
-                    } else {
-                        // 如果不是 xspfb_id，则使用原有的逻辑，直接提取ID
-                        return m.match(/[0-9a-f]{32}/i)![0];
-                    }
-                })
+            (html.match(/data-(?:xspfb_id\s*=\s*['"]{2}|[\w_]+_id\s*=\s*['"]([0-9A-F]{32})['"])/gi) || []).map(m => {
+                // 判断是否是 xspfb_id
+                if (m.includes("xspfb_id")) {
+                    // 如果是，则尝试匹配ID。匹配到则返回ID，否则返回空字符串
+                    const idMatch = m.match(/[0-9a-f]{32}/i);
+                    return idMatch ? idMatch[0] : "";
+                } else {
+                    // 如果不是 xspfb_id，则使用原有的逻辑，直接提取ID
+                    return m.match(/[0-9a-f]{32}/i)![0];
+                }
+            }),
         );
     };
     /** 创造请求头 */
@@ -279,8 +278,10 @@ export function EvaDetail({navigation}) {
 
     /** 点击提交按钮触发提交 */
     const handleSubmit = () => {
-        const f = (x: number, y:number, z:number) => {
-            if (x === 0) {return 7 + 8 * y + z;}
+        const f = (x: number, y: number, z: number) => {
+            if (x === 0) {
+                return 7 + 8 * y + z;
+            }
             return 40 + 25 * (x - 1) + 8 * y + z;
         };
         let newsub = {};
@@ -295,84 +296,86 @@ export function EvaDetail({navigation}) {
             };
         });
         console.log(selected[0], newsub, ids.length);
-        infoQuery.handleEvaResult({
-            ztpjbl:100,
-            jxb_id: evaluationItem.jxb_id,
-            jgh_id: evaluationItem.jgh_id,
-            kch_id: evaluationItem.kch_id,
-            xsdm: evaluationItem.xsdm,
+        infoQuery.handleEvaResult(
+            {
+                ztpjbl: 100,
+                jxb_id: evaluationItem.jxb_id,
+                jgh_id: evaluationItem.jgh_id,
+                kch_id: evaluationItem.kch_id,
+                xsdm: evaluationItem.xsdm,
 
-            "modelList[0].pjmbmcb_id": ids[1],
-            "modelList[0].pjdxdm": "01",
-            "modelList[0].fxzgf": null,
-            "modelList[0].py": "awa!!",
-            "modelList[0].xspfb_id": ids[2],
+                "modelList[0].pjmbmcb_id": ids[1],
+                "modelList[0].pjdxdm": "01",
+                "modelList[0].fxzgf": null,
+                "modelList[0].py": "awa!!",
+                "modelList[0].xspfb_id": ids[2],
 
-            "modelList[0].xspjList[0].pjzbxm_id": ids[3],
-            "modelList[0].xspjList[0].childXspjList[0].zsmbmcb_id": ids[4],
-            "modelList[0].xspjList[0].childXspjList[0].pjzbxm_id": ids[5],
-            "modelList[0].xspjList[0].childXspjList[0].pfdjdmb_id": ids[6],
+                "modelList[0].xspjList[0].pjzbxm_id": ids[3],
+                "modelList[0].xspjList[0].childXspjList[0].zsmbmcb_id": ids[4],
+                "modelList[0].xspjList[0].childXspjList[0].pjzbxm_id": ids[5],
+                "modelList[0].xspjList[0].childXspjList[0].pfdjdmb_id": ids[6],
 
-            "modelList[0].xspjList[0].childXspjList[1].zsmbmcb_id": ids[12],
-            "modelList[0].xspjList[0].childXspjList[1].pjzbxm_id": ids[13],
-            "modelList[0].xspjList[0].childXspjList[1].pfdjdmb_id": ids[14],
+                "modelList[0].xspjList[0].childXspjList[1].zsmbmcb_id": ids[12],
+                "modelList[0].xspjList[0].childXspjList[1].pjzbxm_id": ids[13],
+                "modelList[0].xspjList[0].childXspjList[1].pfdjdmb_id": ids[14],
 
-            "modelList[0].xspjList[0].childXspjList[2].zsmbmcb_id": ids[20],
-            "modelList[0].xspjList[0].childXspjList[2].pjzbxm_id": ids[21],
-            "modelList[0].xspjList[0].childXspjList[2].pfdjdmb_id": ids[22],
+                "modelList[0].xspjList[0].childXspjList[2].zsmbmcb_id": ids[20],
+                "modelList[0].xspjList[0].childXspjList[2].pjzbxm_id": ids[21],
+                "modelList[0].xspjList[0].childXspjList[2].pfdjdmb_id": ids[22],
 
-            "modelList[0].xspjList[0].childXspjList[3].zsmbmcb_id": ids[28],
-            "modelList[0].xspjList[0].childXspjList[3].pjzbxm_id": ids[29],
-            "modelList[0].xspjList[0].childXspjList[3].pfdjdmb_id": ids[30],
+                "modelList[0].xspjList[0].childXspjList[3].zsmbmcb_id": ids[28],
+                "modelList[0].xspjList[0].childXspjList[3].pjzbxm_id": ids[29],
+                "modelList[0].xspjList[0].childXspjList[3].pfdjdmb_id": ids[30],
 
-            "modelList[0].xspjList[1].pjzbxm_id": ids[3+33],
-            "modelList[0].xspjList[1].childXspjList[0].zsmbmcb_id": ids[4+33],
-            "modelList[0].xspjList[1].childXspjList[0].pjzbxm_id": ids[5+33],
-            "modelList[0].xspjList[1].childXspjList[0].pfdjdmb_id": ids[6+33],
-            "modelList[0].xspjList[1].childXspjList[1].zsmbmcb_id": ids[12+33],
-            "modelList[0].xspjList[1].childXspjList[1].pjzbxm_id": ids[13+33],
-            "modelList[0].xspjList[1].childXspjList[1].pfdjdmb_id": ids[14+33],
-            "modelList[0].xspjList[1].childXspjList[2].zsmbmcb_id": ids[20+33],
-            "modelList[0].xspjList[1].childXspjList[2].pjzbxm_id": ids[21+33],
-            "modelList[0].xspjList[1].childXspjList[2].pfdjdmb_id": ids[22+33],
+                "modelList[0].xspjList[1].pjzbxm_id": ids[3 + 33],
+                "modelList[0].xspjList[1].childXspjList[0].zsmbmcb_id": ids[4 + 33],
+                "modelList[0].xspjList[1].childXspjList[0].pjzbxm_id": ids[5 + 33],
+                "modelList[0].xspjList[1].childXspjList[0].pfdjdmb_id": ids[6 + 33],
+                "modelList[0].xspjList[1].childXspjList[1].zsmbmcb_id": ids[12 + 33],
+                "modelList[0].xspjList[1].childXspjList[1].pjzbxm_id": ids[13 + 33],
+                "modelList[0].xspjList[1].childXspjList[1].pfdjdmb_id": ids[14 + 33],
+                "modelList[0].xspjList[1].childXspjList[2].zsmbmcb_id": ids[20 + 33],
+                "modelList[0].xspjList[1].childXspjList[2].pjzbxm_id": ids[21 + 33],
+                "modelList[0].xspjList[1].childXspjList[2].pfdjdmb_id": ids[22 + 33],
 
-            "modelList[0].xspjList[2].pjzbxm_id": ids[3+33+25],
-            "modelList[0].xspjList[2].childXspjList[0].zsmbmcb_id": ids[4+33+25],
-            "modelList[0].xspjList[2].childXspjList[0].pjzbxm_id": ids[5+33+25],
-            "modelList[0].xspjList[2].childXspjList[0].pfdjdmb_id": ids[6+33+25],
-            "modelList[0].xspjList[2].childXspjList[1].zsmbmcb_id": ids[12+33+25],
-            "modelList[0].xspjList[2].childXspjList[1].pjzbxm_id": ids[13+33+25],
-            "modelList[0].xspjList[2].childXspjList[1].pfdjdmb_id": ids[14+33+25],
-            "modelList[0].xspjList[2].childXspjList[2].zsmbmcb_id": ids[20+33+25],
-            "modelList[0].xspjList[2].childXspjList[2].pjzbxm_id": ids[21+33+25],
-            "modelList[0].xspjList[2].childXspjList[2].pfdjdmb_id": ids[22+33+25],
+                "modelList[0].xspjList[2].pjzbxm_id": ids[3 + 33 + 25],
+                "modelList[0].xspjList[2].childXspjList[0].zsmbmcb_id": ids[4 + 33 + 25],
+                "modelList[0].xspjList[2].childXspjList[0].pjzbxm_id": ids[5 + 33 + 25],
+                "modelList[0].xspjList[2].childXspjList[0].pfdjdmb_id": ids[6 + 33 + 25],
+                "modelList[0].xspjList[2].childXspjList[1].zsmbmcb_id": ids[12 + 33 + 25],
+                "modelList[0].xspjList[2].childXspjList[1].pjzbxm_id": ids[13 + 33 + 25],
+                "modelList[0].xspjList[2].childXspjList[1].pfdjdmb_id": ids[14 + 33 + 25],
+                "modelList[0].xspjList[2].childXspjList[2].zsmbmcb_id": ids[20 + 33 + 25],
+                "modelList[0].xspjList[2].childXspjList[2].pjzbxm_id": ids[21 + 33 + 25],
+                "modelList[0].xspjList[2].childXspjList[2].pfdjdmb_id": ids[22 + 33 + 25],
 
-            "modelList[0].xspjList[3].pjzbxm_id": ids[3+33+50],
-            "modelList[0].xspjList[3].childXspjList[0].zsmbmcb_id": ids[4+33+50],
-            "modelList[0].xspjList[3].childXspjList[0].pjzbxm_id": ids[5+33+50],
-            "modelList[0].xspjList[3].childXspjList[0].pfdjdmb_id": ids[6+33+50],
-            "modelList[0].xspjList[3].childXspjList[1].zsmbmcb_id": ids[12+33+50],
-            "modelList[0].xspjList[3].childXspjList[1].pjzbxm_id": ids[13+33+50],
-            "modelList[0].xspjList[3].childXspjList[1].pfdjdmb_id": ids[14+33+50],
-            "modelList[0].xspjList[3].childXspjList[2].zsmbmcb_id": ids[20+33+50],
-            "modelList[0].xspjList[3].childXspjList[2].pjzbxm_id": ids[21+33+50],
-            "modelList[0].xspjList[3].childXspjList[2].pfdjdmb_id": ids[22+33+50],
+                "modelList[0].xspjList[3].pjzbxm_id": ids[3 + 33 + 50],
+                "modelList[0].xspjList[3].childXspjList[0].zsmbmcb_id": ids[4 + 33 + 50],
+                "modelList[0].xspjList[3].childXspjList[0].pjzbxm_id": ids[5 + 33 + 50],
+                "modelList[0].xspjList[3].childXspjList[0].pfdjdmb_id": ids[6 + 33 + 50],
+                "modelList[0].xspjList[3].childXspjList[1].zsmbmcb_id": ids[12 + 33 + 50],
+                "modelList[0].xspjList[3].childXspjList[1].pjzbxm_id": ids[13 + 33 + 50],
+                "modelList[0].xspjList[3].childXspjList[1].pfdjdmb_id": ids[14 + 33 + 50],
+                "modelList[0].xspjList[3].childXspjList[2].zsmbmcb_id": ids[20 + 33 + 50],
+                "modelList[0].xspjList[3].childXspjList[2].pjzbxm_id": ids[21 + 33 + 50],
+                "modelList[0].xspjList[3].childXspjList[2].pfdjdmb_id": ids[22 + 33 + 50],
 
-            "modelList[0].xspjList[4].pjzbxm_id": ids[3+33+75],
-            "modelList[0].xspjList[4].childXspjList[0].zsmbmcb_id": ids[4+33+75],
-            "modelList[0].xspjList[4].childXspjList[0].pjzbxm_id": ids[5+33+75],
-            "modelList[0].xspjList[4].childXspjList[0].pfdjdmb_id": ids[6+33+75],
-            "modelList[0].xspjList[4].childXspjList[1].zsmbmcb_id": ids[12+33+75],
-            "modelList[0].xspjList[4].childXspjList[1].pjzbxm_id": ids[13+33+75],
-            "modelList[0].xspjList[4].childXspjList[1].pfdjdmb_id": ids[14+33+75],
-            "modelList[0].xspjList[4].childXspjList[2].zsmbmcb_id": ids[20+33+75],
-            "modelList[0].xspjList[4].childXspjList[2].pjzbxm_id": ids[21+33+75],
-            "modelList[0].xspjList[4].childXspjList[2].pfdjdmb_id": ids[22+33+75],
+                "modelList[0].xspjList[4].pjzbxm_id": ids[3 + 33 + 75],
+                "modelList[0].xspjList[4].childXspjList[0].zsmbmcb_id": ids[4 + 33 + 75],
+                "modelList[0].xspjList[4].childXspjList[0].pjzbxm_id": ids[5 + 33 + 75],
+                "modelList[0].xspjList[4].childXspjList[0].pfdjdmb_id": ids[6 + 33 + 75],
+                "modelList[0].xspjList[4].childXspjList[1].zsmbmcb_id": ids[12 + 33 + 75],
+                "modelList[0].xspjList[4].childXspjList[1].pjzbxm_id": ids[13 + 33 + 75],
+                "modelList[0].xspjList[4].childXspjList[1].pfdjdmb_id": ids[14 + 33 + 75],
+                "modelList[0].xspjList[4].childXspjList[2].zsmbmcb_id": ids[20 + 33 + 75],
+                "modelList[0].xspjList[4].childXspjList[2].pjzbxm_id": ids[21 + 33 + 75],
+                "modelList[0].xspjList[4].childXspjList[2].pfdjdmb_id": ids[22 + 33 + 75],
 
-            "modelList[0].pjzt": 0,
-            "tjzt": 0,
-        },
-            newsub);
+                "modelList[0].pjzt": 0,
+                tjzt: 0,
+            },
+            newsub,
+        );
         init();
     };
 
