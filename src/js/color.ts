@@ -371,7 +371,7 @@ export namespace Color {
      * @param color2 第二个颜色
      * @param ratio 比例，0-1，越小越接近第一个颜色，反之接近第二颜色
      */
-    export function mix(color1: IColor | string, color2: IColor | string, ratio: number): IColor {
+    export function mix(color1: IColor | string, color2: IColor | string, ratio: number = 0.5): IColor {
         const c1 = typeof color1 === "string" ? Color(color1) : color1;
         const c2 = typeof color2 === "string" ? Color(color2) : color2;
 

@@ -70,7 +70,7 @@ export function SettingIndex() {
                     type: "any",
                     value: (
                         <ColorPicker
-                            color={theme.colors.primary}
+                            color={userConfig.theme.primaryColor}
                             onColorChange={v => {
                                 userConfig.theme.primaryColor = v;
                                 updateUserConfig(userConfig);
@@ -85,7 +85,8 @@ export function SettingIndex() {
                         <Flex gap={10} inline>
                             <Button
                                 onPress={() => {
-                                    updateUserTheme({...userTheme, bgUri: ""});
+                                    userConfig.theme.bgUrl = "";
+                                    updateUserConfig(userConfig);
                                 }}
                                 size="sm">
                                 重置背景
@@ -104,9 +105,10 @@ export function SettingIndex() {
                             step={1}
                             minimumValue={0}
                             maximumValue={130}
-                            value={userTheme.bgOpacity}
+                            value={userConfig.theme.bgOpacity}
                             onValueChange={v => {
-                                updateUserTheme({...userTheme, bgOpacity: v});
+                                userConfig.theme.bgOpacity = v;
+                                updateUserConfig(userConfig);
                             }}
                         />
                     ),

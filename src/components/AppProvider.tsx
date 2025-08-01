@@ -1,7 +1,7 @@
 import {createContext, ProviderProps, useEffect, useMemo, useState} from "react";
 import {store} from "@/js/store.ts";
 import {IUserConfig} from "@/type/IUserConfig.ts";
-import {createTheme, useTheme} from "@rneui/themed";
+import {createTheme, CreateThemeOptions, useTheme} from "@rneui/themed";
 import {theme} from "@/js/theme.ts";
 import {useColorScheme} from "react-native";
 import {deepMerge} from "@/utils/objectUtils.ts";
@@ -58,22 +58,23 @@ export function AppProvider(props: Omit<ProviderProps<IUserConfig>, "value">) {
             key: "userConfig",
             data: config,
         });
-        const newUiTheme = createTheme({
-            ...theme,
-            mode: colorScheme ?? "light",
-            lightColors: {
-                primary: config.theme?.primaryColor ?? "#48A6EF",
-            },
-            darkColors: {
-                primary: config.theme?.primaryColor ?? "#48A6EF",
-            },
-        });
+        const newUiTheme = createTheme(
+            deepMerge<CreateThemeOptions, CreateThemeOptions>(theme, {
+                mode: colorScheme ?? "light",
+                lightColors: {
+                    primary: config.theme?.primaryColor ?? "#48A6EF",
+                },
+                darkColors: {
+                    primary: config.theme?.primaryColor ?? "#48A6EF",
+                },
+            }),
+        );
         uiTheme.updateTheme(newUiTheme);
     }
 
-    useEffect(()=>{
-        init()
-    }, [colorScheme])
+    useEffect(() => {
+        init();
+    }, [colorScheme]);
 
     useEffect(() => {
         init();
