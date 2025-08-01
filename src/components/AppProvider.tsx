@@ -71,6 +71,10 @@ export function AppProvider(props: Omit<ProviderProps<IUserConfig>, "value">) {
         uiTheme.updateTheme(newUiTheme);
     }
 
+    useEffect(()=>{
+        init()
+    }, [colorScheme])
+
     useEffect(() => {
         init();
         cowsay({

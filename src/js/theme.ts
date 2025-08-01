@@ -121,38 +121,6 @@ export function useUserTheme() {
     const [userTheme, setUserTheme] = useState(DefaultUserTheme);
     const update = useCallback(
         (newUserTheme: typeof DefaultUserTheme) => {
-            const newUiTheme = createTheme({
-                ...theme,
-                ...newUserTheme.uiTheme,
-                mode: colorScheme,
-                lightColors: {
-                    primary: newUserTheme.colors.primary,
-                },
-                darkColors: {
-                    primary: newUserTheme.colors.primary,
-                },
-            });
-
-            // 批量更新状态
-            Promise.resolve().then(() => {
-                setUserTheme(newUserTheme);
-                setNavigationTheme(old => ({
-                    light: {
-                        ...old.light,
-                        colors: {
-                            ...old.light.colors,
-                            ...newUiTheme.lightColors,
-                        },
-                    },
-                    dark: {
-                        ...old.dark,
-                        colors: {
-                            ...old.dark.colors,
-                            ...newUiTheme.darkColors,
-                        },
-                    },
-                }));
-            });
         },
         [colorScheme, uiTheme, userTheme],
     );
