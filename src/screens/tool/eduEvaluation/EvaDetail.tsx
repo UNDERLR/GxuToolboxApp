@@ -69,7 +69,7 @@ export function EvaDetail({navigation}) {
     const defaultColor = Color.mix(
         Color(theme.colors.primary),
         Color(theme.colors.background),
-        theme.mode === "dark" ? 0.7 : 0.1,
+        theme.mode === "dark" ? 0.2 : 0.1,
     ).setAlpha(theme.mode === "dark" ? 0.3 : 0.8).rgbaString;
 
     const styles = StyleSheet.create({
@@ -78,7 +78,7 @@ export function EvaDetail({navigation}) {
         category: {marginBottom: 10},
         categoryName: {fontSize: 16, fontWeight: "500", color: defaultColor, marginBottom: 4},
         item: {marginBottom: 8},
-        itemTitle: {fontSize: 14, marginBottom: 4},
+        itemTitle: {fontSize: 14, marginBottom: 4, marginLeft: 10, marginRight: 10},
         optionButton: {
             paddingVertical: 8,
             paddingHorizontal: 12,
@@ -90,9 +90,9 @@ export function EvaDetail({navigation}) {
         optionButtonChecked: {
             backgroundColor: defaultColor,
         },
-        optionText: {fontSize: 15, color: "#333"},
+        optionText: {fontSize: 15, color: theme.colors.black},
         optionTextChecked: {color: "#fff", fontWeight: "bold"},
-        comment: {marginTop: 8, fontSize: 13, fontStyle: "italic", color: "#555"},
+        comment: {marginTop: 8, fontSize: 13, fontStyle: "italic", color: defaultColor},
         submitButton: {
             backgroundColor: defaultColor,
             borderRadius: 8,
@@ -104,7 +104,7 @@ export function EvaDetail({navigation}) {
             marginHorizontal: 20,
         },
         submitButtonText: {
-            color: "#ffffff",
+            color: "#fff",
             fontSize: 16,
             fontWeight: "bold",
         },
