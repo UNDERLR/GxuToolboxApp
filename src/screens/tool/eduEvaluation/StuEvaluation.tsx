@@ -1,11 +1,14 @@
 import {useEffect, useState} from "react";
 import {infoQuery} from "@/js/jw/infoQuery.ts";
 import {Evaluation} from "@/type/eduEvaluation/evaluation.ts";
-import {Dimensions, ScrollView, TouchableOpacity, View} from "react-native";
+import {Dimensions, ScrollView, StyleSheet, TouchableOpacity, View} from "react-native";
 import {Row, Table} from "react-native-reanimated-table";
 import {useNavigation} from "@react-navigation/native";
+import {Color} from "@/js/color.ts";
+import {useUserTheme} from "@/js/theme.ts";
 
 export function StuEvaluation() {
+    const {theme} = useUserTheme();
     const [evaList, setEvaList] = useState<Evaluation[]>([]);
     const navigation = useNavigation<any>();
     const screenWidth = Dimensions.get("window").width;
@@ -13,15 +16,38 @@ export function StuEvaluation() {
     const handleRowPress = (item: Evaluation) => {
         navigation.navigate("EvaDetail", {evaluationItem: item});
     };
-
-    const styles = {
-        list: {
-            padding: 15,
-            fontSize: 18,
-            borderBottomWidth: 1,
-            borderBottomColor: "yellow",
+    const defaultColor = Color.mix(
+        Color(theme.colors.primary),
+        Color(theme.colors.background),
+        theme.mode === "dark" ? 0.7 : 0.1,
+    ).setAlpha(theme.mode === "dark" ? 0.3 : 0.8).rgbaString;
+    const styles = StyleSheet.create({
+        container: {
+            flex: 1,
+            backgroundColor: theme.colors.background,
         },
-    };
+        header: {
+            height: 50,
+            backgroundColor: defaultColor,
+        },
+        headerText: {
+            textAlign: "center",
+            fontWeight: "bold",
+            color: theme.colors.black,
+            fontSize: 16,
+        },
+        row: {
+            height: 45,
+            borderBottomWidth: 1,
+            borderBottomColor: defaultColor,
+            alignItems: "center",
+        },
+        rowText: {
+            textAlign: "center",
+            color: theme.colors.black,
+            fontSize: 14,
+        },
+    });
 
     async function init() {
         const res = await infoQuery.getEvaluateList();
@@ -34,13 +60,13 @@ export function StuEvaluation() {
     }, []);
 
     return (
-        <ScrollView style={{flex: 1}}>
+        <ScrollView style={styles.container}>
             <View style={{width: "100%"}}>
                 <Table>
-                    <Row data={["课程", "教师", "评价"]} style={styles.list} widthArr={colWidths} />
+                    <Row data={["课程", "教师", "评价"]} style={styles.header} widthArr={colWidths} textStyle={styles.headerText}/>
                     {evaList.map((item, index) => (
                         <TouchableOpacity key={index} onPress={() => handleRowPress(item)}>
-                            <Row data={[item.kcmc, item.jzgmc, item.tjztmc]} style={styles.list} widthArr={colWidths} />
+                            <Row data={[item.kcmc, item.jzgmc, item.tjztmc]} style={styles.row} widthArr={colWidths} textStyle={styles.rowText}/>
                         </TouchableOpacity>
                     ))}
                 </Table>
