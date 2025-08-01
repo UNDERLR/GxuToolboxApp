@@ -68,6 +68,12 @@ export function CourseScheduleView(props: Props) {
         props.onExamPress?.(examInfo);
     }
 
+    const isAtThisTerm = moment().isBetween(
+        userConfig.jw.startDay,
+        moment(userConfig.jw.startDay).add(20, "w"),
+        "d",
+        "[]",
+    );
     return (
         <View>
             <AnimatedPagerView
@@ -89,11 +95,16 @@ export function CourseScheduleView(props: Props) {
                         rest.pages.map((_, index) => (
                             <View testID="pager-view-content" key={index} collapsable={false}>
                                 {props.showDate && (
-                                    <Flex inline>
+                                    <Flex inline justifyContent="center" gap={5}>
                                         <Text>
-                                            {index + 1 === realCurrentWeek
-                                                ? `（第${index + 1}周）`
-                                                : `（第${index + 1}周，目前为第${realCurrentWeek}周）`}
+                                            {moment().isBefore(userConfig.jw.startDay) && "当前学期未开始"}
+                                            {moment().isAfter(moment(userConfig.jw.startDay).add(20, "w")) &&
+                                                "当前学期已结束"}
+                                            {isAtThisTerm &&
+                                                (index + 1 === realCurrentWeek
+                                                    ? `（第${index + 1}周）`
+                                                    : `（第${index + 1}周，目前为第${realCurrentWeek}周）`)}
+                                            {!isAtThisTerm && `（第${index + 1}周）`}
                                         </Text>
                                         <Text>点击课程查看详情</Text>
                                     </Flex>

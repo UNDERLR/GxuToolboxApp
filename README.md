@@ -6,6 +6,7 @@ This is a new [**React Native**](https://reactnative.dev) project, bootstrapped 
 - [icon](https://oblador.github.io/react-native-vector-icons/)
 - [react navigation](https://reactnavigation.org/docs/getting-started/)
 - [RN库市场](https://reactnative.directory/)
+- [moment](https://momentjs.com/docs/)
 - []()
 
 # Getting Started

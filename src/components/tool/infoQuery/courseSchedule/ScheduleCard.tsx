@@ -25,8 +25,7 @@ export function ScheduleCard() {
     const {...rest} = pagerView;
 
     const [apiRes, setApiRes] = useState<CourseScheduleQueryRes>();
-    const {courseScheduleData} = useContext(CourseScheduleContext)!;
-    const startDay = moment(courseScheduleData.startDay);
+    const startDay = moment(userConfig.jw.startDay);
 
     const realCurrentWeek = Math.ceil(moment.duration(moment().diff(startDay)).asWeeks());
     const [year, setYear] = useState(+userConfig.jw.year);
