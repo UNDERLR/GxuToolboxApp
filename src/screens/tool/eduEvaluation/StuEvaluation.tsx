@@ -19,7 +19,7 @@ export function StuEvaluation() {
     const defaultColor = Color.mix(
         Color(theme.colors.primary),
         Color(theme.colors.background),
-        theme.mode === "dark" ? 0.7 : 0.1,
+        theme.mode === "dark" ? 0.1 : 0.4,
     ).setAlpha(theme.mode === "dark" ? 0.3 : 0.8).rgbaString;
     const styles = StyleSheet.create({
         container: {
@@ -39,8 +39,9 @@ export function StuEvaluation() {
         row: {
             height: 45,
             borderBottomWidth: 1,
-            borderBottomColor: defaultColor,
+            borderBottomColor: theme.colors.primary,
             alignItems: "center",
+            backgroundColor: theme.colors.background,
         },
         rowText: {
             textAlign: "center",
