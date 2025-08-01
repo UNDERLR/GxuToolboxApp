@@ -6,10 +6,21 @@ import {DefaultUserTheme, generateUiTheme} from "@/js/theme.ts";
 import {useColorScheme} from "react-native";
 import {deepMerge} from "@/utils/objectUtils.ts";
 import {cowsay} from "@/js/cowsay.ts";
+import moment from "moment/moment";
+import {SchoolTerms, SchoolYearValue} from "@/type/global.ts";
 
 const defaultUserConfig: IUserConfig = {
     theme: DefaultUserTheme,
+    jw: {
+        year: ("" +
+            (moment().isBefore(moment("8", "M"), "M") ? moment().year() - 1 : moment().year())) as SchoolYearValue,
+        term: moment().isBetween(moment("02", "MM"), moment("07", "MM"), "month", "[]")
+            ? SchoolTerms[1][0]
+            : SchoolTerms[0][0],
+        startDay: "2025-09-08",
+    },
 };
+
 export const UserConfigContext = createContext<{
     userConfig: IUserConfig;
     updateUserConfig: (config: Partial<IUserConfig>) => void;

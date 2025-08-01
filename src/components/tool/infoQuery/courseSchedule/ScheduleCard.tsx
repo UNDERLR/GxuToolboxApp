@@ -29,12 +29,8 @@ export function ScheduleCard() {
     const startDay = moment(courseScheduleData.startDay);
 
     const realCurrentWeek = Math.ceil(moment.duration(moment().diff(startDay)).asWeeks());
-    const [year, setYear] = useState(moment().isBefore(moment("8", "M"), "M") ? moment().year() - 1 : moment().year());
-    const [term, setTerm] = useState<SchoolTermValue>(
-        moment().isBetween(moment("02", "MM"), moment("08", "MM"), "month", "[]")
-            ? SchoolTerms[1][0]
-            : SchoolTerms[0][0],
-    );
+    const [year, setYear] = useState(+userConfig.jw.year);
+    const [term, setTerm] = useState<SchoolTermValue>(userConfig.jw.term);
     const [courseScheduleSettingVisible, setCourseScheduleSettingVisible] = useState(false);
 
     const style = StyleSheet.create({

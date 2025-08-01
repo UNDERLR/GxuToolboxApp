@@ -1,6 +1,6 @@
 import {ScrollView, StyleSheet, ToastAndroid, View} from "react-native";
 import {Button, Divider, Text, useTheme} from "@rneui/themed";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import moment from "moment/moment";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {Picker} from "@react-native-picker/picker";
@@ -12,16 +12,14 @@ import {ExamInfoQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
 import {store} from "@/js/store.ts";
 import {Color} from "@/js/color.ts";
 import {UnPicker} from "@/components/un-ui/UnPicker.tsx";
+import {UserConfigContext} from "@/components/AppProvider.tsx";
 
 export function ExamInfo() {
     const {theme} = useTheme();
+    const {userConfig} = useContext(UserConfigContext);
     const [apiRes, setApiRes] = useState<ExamInfoQueryRes>({} as ExamInfoQueryRes);
-    const [year, setYear] = useState(moment().isBefore(moment("8", "M"), "M") ? moment().year() - 1 : moment().year());
-    const [term, setTerm] = useState<SchoolTermValue>(
-        moment().isBetween(moment("02", "MM"), moment("08", "MM"), "month", "[]")
-            ? SchoolTerms[1][0]
-            : SchoolTerms[0][0],
-    );
+    const [year, setYear] = useState(+userConfig.jw.year);
+    const [term, setTerm] = useState<SchoolTermValue>(userConfig.jw.term);
     const [page, setPage] = useState(1);
     const [tableData, setTableData] = useState({
         header: ["课程名称", "考试时间", "考试校区", "考试地点", "考试座号", "学年", "学期", "教学班", "考试名称"],

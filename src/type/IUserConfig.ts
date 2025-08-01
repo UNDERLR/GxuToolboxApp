@@ -1,10 +1,24 @@
 import {PressableAndroidRippleConfig} from "react-native";
+import {SchoolTermValue, SchoolYearValue} from "@/type/global.ts";
 
 export interface IUserConfig {
     /** 主题相关配置 */
     theme: IUserTheme;
+    /** 部分教务配置 */
+    jw: IUserJwConfig;
 }
 
+/** 用户教务配置 */
+export interface IUserJwConfig {
+    /** 学年 */
+    year: SchoolYearValue;
+    /** 学期 */
+    term: SchoolTermValue;
+    /** 当前课表起始 */
+    startDay: string;
+}
+
+/** 用户主题配置 */
 export interface IUserTheme {
     /** 主题色 */
     primaryColor: string;
@@ -12,7 +26,7 @@ export interface IUserTheme {
     bgUrl: string;
     /** 背景透明度 */
     bgOpacity: number;
-    ripple: PressableAndroidRippleConfig,
+    ripple: PressableAndroidRippleConfig;
     /** 课程表主题相关属性 */
     course: {
         /** 课表时间段高度（两节课） */
