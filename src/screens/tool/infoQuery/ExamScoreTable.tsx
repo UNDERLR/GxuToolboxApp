@@ -71,9 +71,11 @@ export function ExamScoreTable(props: Props) {
             paddingHorizontal: 12,
             marginVertical: 4,
             backgroundColor: bgColor,
+            borderWidth: 0.5,
+            borderColor: theme.colors.primary,
         },
         detailItemLabel: {
-            fontSize: 17,
+            fontSize: 16,
             width: "100%",
             marginBottom: 2,
         },
@@ -103,8 +105,11 @@ export function ExamScoreTable(props: Props) {
             textAlign: "right",
         },
         detailContainer: {
-            paddingHorizontal: 20,
+            paddingHorizontal: 10,
             paddingVertical: 12,
+            backgroundColor: bgColor,
+            borderWidth: 0.5,
+            borderColor: theme.colors.primary,
         },
         detailItemValue: {
             fontSize: 16,
