@@ -206,7 +206,7 @@ export function CourseScheduleTable(props: Props) {
                         {courseSchedule[index].map((course, i) => (
                             <CourseItem
                                 onCoursePress={props.onCoursePress}
-                                key={`day${index}-${course.kcmc}-${course.jc}-${course.jxb_id}`}
+                                key={`day${index}-${course.jxb_id}-${i}`}
                                 course={course}
                                 index={i}
                             />
