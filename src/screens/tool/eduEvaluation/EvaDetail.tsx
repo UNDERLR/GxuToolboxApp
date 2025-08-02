@@ -413,9 +413,11 @@ export function EvaDetail({navigation}) {
                 keyExtractor={(_, idx) => idx.toString()}
                 renderItem={({item: teacher, index: teacherIdx}) => (
                     <>
-                        <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
-                            <Text style={styles.submitButtonText}>提交</Text>
-                        </TouchableOpacity>
+                        {ids.length >= 135 && (
+                            <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
+                                <Text style={styles.submitButtonText}>保存</Text>
+                            </TouchableOpacity>
+                        )}
                         <View style={styles.card}>
                             <Text style={styles.header}>
                                 {evaluationItem.kcmc}——{evaluationItem.jzgmc}：{evaluationItem.tjztmc}
@@ -456,9 +458,11 @@ export function EvaDetail({navigation}) {
 
                             {teacher.comment && <Text style={styles.comment}>评语：{teacher.comment}</Text>}
                         </View>
-                        <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
-                            <Text style={styles.submitButtonText}>提交</Text>
-                        </TouchableOpacity>
+                        {ids.length >= 135 && (
+                            <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
+                                <Text style={styles.submitButtonText}>保存</Text>
+                            </TouchableOpacity>
+                        )}
                     </>
                 )}
             />
