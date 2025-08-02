@@ -3,7 +3,7 @@ import {StyleProp, StyleSheet, TextStyle, View, ViewStyle} from "react-native";
 import moment from "moment/moment";
 import {Color} from "@/js/color.ts";
 import {Text, useTheme} from "@rneui/themed";
-import {useContext, useEffect, useState} from "react";
+import {useContext, useEffect, useMemo, useState} from "react";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {CourseItem} from "@/components/tool/infoQuery/courseSchedule/CourseItem.tsx";
 import {CourseScheduleContext} from "@/js/jw/course.ts";
@@ -20,6 +20,7 @@ interface Props {
     // 非课程类型
     examList?: ExamInfo[];
     onExamPress?: (examInfo: ExamInfo) => void;
+    onNextCourseCalculated?: (course: Course | null) => void;
 }
 
 interface CourseItem extends Course {
@@ -37,17 +38,66 @@ export function CourseScheduleTable(props: Props) {
     const currentWeek = props.currentWeek ?? Math.ceil(moment.duration(moment().diff(startDay)).asWeeks());
     const currentTimeSpan = getCurrentTimeSpan();
 
+    const nextCourse = useMemo(() => {
+        const allCourses = props.courseList;
+        if (!allCourses || allCourses.length === 0) {
+            return null;
+        }
+
+        const now = moment();
+        const futureCourses: { course: Course; time: moment.Moment }[] = [];
+        const startTimes = courseScheduleData.timeSpanList.map(span => span.split("\n")[0]);
+
+        allCourses.forEach(course => {
+            const weekSpans = course.zcd.split(",");
+            const dayOfWeek = parseInt(course.xqj, 10);
+            const startSection = parseInt(course.jcs.split("-")[0], 10) - 1;
+            const courseTime = startTimes[startSection];
+
+            if (!courseTime) {return;}
+
+            const [hour, minute] = courseTime.split(":").map(Number);
+
+            weekSpans.forEach(weekSpan => {
+                const weeks = weekSpan.replace("周", "").split("-").map(Number);
+                const startWeek = weeks[0];
+                const endWeek = weeks.length > 1 ? weeks[1] : startWeek;
+
+                for (let week = startWeek; week <= endWeek; week++) {
+                    const courseDate = moment(userConfig.jw.startDay)
+                        .add(week - 1, "weeks")
+                        .day(dayOfWeek)
+                        .hour(hour)
+                        .minute(minute)
+                        .second(0);
+
+                    if (courseDate.isAfter(now)) {
+                        futureCourses.push({course, time: courseDate});
+                    }
+                }
+            });
+        });
+
+        if (futureCourses.length === 0) {
+            return null;
+        }
+
+        futureCourses.sort((a, b) => a.time.diff(b.time));
+        return futureCourses[0]?.course ?? null;
+    }, [props.courseList, courseScheduleData.timeSpanList, userConfig.jw.startDay]);
+
     function init() {
         parseCourses(props.courseList as CourseItem[]);
     }
 
     useEffect(() => {
         init();
+        props.onNextCourseCalculated?.(nextCourse);
         const id = setInterval(() => setCurrentTime(moment().format()), 1000);
         return () => {
             clearInterval(id);
         };
-    }, [props]);
+    }, [props, nextCourse]);
 
     useEffect(() => {
         randomCourseColor(props.courseList as CourseItem[]);

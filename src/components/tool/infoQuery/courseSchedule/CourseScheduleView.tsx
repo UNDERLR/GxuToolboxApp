@@ -1,7 +1,7 @@
 import React, {useContext, useMemo, useState} from "react";
-import {StyleSheet, View} from "react-native";
+import {StyleSheet, View, Text} from "react-native";
 import Flex from "@/components/un-ui/Flex.tsx";
-import {BottomSheet, Text, useTheme} from "@rneui/themed";
+import {BottomSheet, useTheme} from "@rneui/themed";
 import {CourseScheduleTable} from "@/components/tool/infoQuery/courseSchedule/CourseScheduleTable.tsx";
 import {usePagerView} from "react-native-pager-view";
 import moment from "moment/moment";
@@ -33,6 +33,7 @@ export function CourseScheduleView(props: Props) {
 
     const [courseDetailVisible, setCourseDetailVisible] = useState(false);
     const [activeCourse, setActiveCourse] = useState<Course>({} as Course);
+    const [nextCourse, setNextCourse] = useState<Course | null>(null);
 
     const style = StyleSheet.create({
         pagerView: {
@@ -76,6 +77,11 @@ export function CourseScheduleView(props: Props) {
     );
     return (
         <View>
+            {nextCourse && (
+                <Text>
+                    下一节课：{nextCourse.kcmc} @{nextCourse.cdmc}
+                </Text>
+            )}
             <AnimatedPagerView
                 testID="pager-view"
                 ref={ref}
@@ -117,6 +123,7 @@ export function CourseScheduleView(props: Props) {
                                     currentWeek={index + 1}
                                     examList={props.examList}
                                     onExamPress={showExamDetail}
+                                    onNextCourseCalculated={setNextCourse}
                                 />
                             </View>
                         )),
