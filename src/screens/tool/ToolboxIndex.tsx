@@ -1,20 +1,11 @@
-import {
-    Linking,
-    Pressable,
-    PressableAndroidRippleConfig,
-    SectionList,
-    StyleSheet,
-    ToastAndroid,
-    View,
-} from "react-native";
-import {ListItem, Text, useTheme} from "@rneui/themed";
+import {Pressable, PressableAndroidRippleConfig, ScrollView, StyleSheet, View} from "react-native";
+import {Text, useTheme} from "@rneui/themed";
 import {Color} from "@/js/color.ts";
 import {useNavigation} from "@react-navigation/native";
 import {Icon} from "@/components/un-ui/Icon.tsx";
-import Flex from "@/components/un-ui/Flex.tsx";
-import Clipboard from "@react-native-clipboard/clipboard";
 import {useContext} from "react";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
+import Flex from "@/components/un-ui/Flex.tsx";
 
 interface settingSection {
     title: string;
@@ -23,13 +14,11 @@ interface settingSection {
 
 interface ToolboxItem {
     label: string;
-    type: "navigation" | "text" | "link";
     icon?: React.ReactNode;
-    navigation?: string;
-    value?: string;
-    url?: string;
+    navigation: string;
 }
 
+const iconSize = 25;
 const toolList = [
     {
         title: "课程表",
@@ -42,8 +31,7 @@ const toolList = [
             // },
             {
                 label: "班级课表查询",
-                icon: <Icon name="calendar" size={20} />,
-                type: "navigation",
+                icon: <Icon name="calendar" size={iconSize} />,
                 navigation: "classCourseSchedule",
             },
         ],
@@ -53,14 +41,12 @@ const toolList = [
         data: [
             {
                 label: "考试信息查询",
-                icon: <Icon name="book" size={20} />,
-                type: "navigation",
+                icon: <Icon name="book" size={iconSize} />,
                 navigation: "examInfo",
             },
             {
                 label: "考试成绩查询",
-                icon: <Icon name="barschart" size={20} />,
-                type: "navigation",
+                icon: <Icon name="barschart" size={iconSize} />,
                 navigation: "examScore",
             },
         ],
@@ -70,8 +56,7 @@ const toolList = [
         data: [
             {
                 label: "期末学生评价",
-                icon: <Icon name="infocirlceo" size={20} />,
-                type: "navigation",
+                icon: <Icon name="infocirlceo" size={iconSize} />,
                 navigation: "studentEvaluation",
             },
         ],
@@ -106,94 +91,43 @@ export function ToolboxIndex() {
             backgroundColor: data.style.cardBg,
             marginBottom: 10,
         },
-        settingSectionHeader: {
-            marginTop: 10,
+        toolListContainer: {
+            flexWrap: "wrap",
+            width: "100%",
+            paddingTop: 10,
         },
         settingItem: {
-            flexDirection: "row",
-            justifyContent: "space-between",
-            paddingVertical: 20,
-            paddingHorizontal: 10,
-            borderBottomWidth: 1,
-            borderBottomColor: theme.colors.grey3,
+            width: "33%",
+            borderRadius: 8,
+            paddingVertical: 4,
         },
-        linkText: {
-            borderBottomWidth: 1,
-            borderBottomColor: theme.colors.black,
+        toolIcon: {
+            marginVertical: 10,
         },
     });
 
-    function openUrl(url: string) {
-        Linking.canOpenURL(url)
-            .then(v => {
-                if (v) {
-                    Linking.openURL(url);
-                    return;
-                } else {
-                    ToastAndroid.show("打开链接失败，已将链接复制至剪切板", ToastAndroid.LONG);
-                    Clipboard.setString(url);
-                }
-            })
-            .catch(() => {
-                ToastAndroid.show("打开链接失败，已将链接复制至剪切板", ToastAndroid.LONG);
-                Clipboard.setString(url);
-            });
-    }
-
     return (
-        <View style={style.settingContainer}>
-            <SectionList
-                sections={toolList}
-                renderItem={({item}: {item: ToolboxItem}) => {
-                    switch (item.type) {
-                        case "navigation":
-                            return (
-                                <Pressable
-                                    onPress={() => navigation.navigate(item.navigation)}
-                                    style={style.settingItem}
-                                    android_ripple={data.style.settingItemRipple}>
-                                    <Flex gap={5}>
-                                        {item.icon}
-                                        <Text>{item.label}</Text>
-                                    </Flex>
-                                    <Icon name="right" size={16} />
-                                </Pressable>
-                            );
-                        case "text":
-                            return (
-                                <Flex style={style.settingItem} justifyContent="space-between">
-                                    <Text>{item.label}</Text>
-                                    <Text>{item.value}</Text>
+        <ScrollView style={style.settingContainer}>
+            {toolList.map(section => (
+                <View style={style.settingSectionContainer}>
+                    <Text h4>{section.title}</Text>
+                    <Flex style={style.toolListContainer}>
+                        {section.data.map(tool => (
+                            <Pressable
+                                style={style.settingItem}
+                                android_ripple={userConfig.theme.ripple}
+                                onPress={() => navigation.navigate(tool.navigation)}>
+                                <Flex direction="column">
+                                    <View style={style.toolIcon}>{tool.icon}</View>
+                                    <View>
+                                        <Text>{tool.label}</Text>
+                                    </View>
                                 </Flex>
-                            );
-                        case "link":
-                            return (
-                                <Pressable
-                                    onPress={() => openUrl(item.url)}
-                                    style={style.settingItem}
-                                    android_ripple={data.style.settingItemRipple}>
-                                    <Text>{item.label}</Text>
-                                    <Text style={style.linkText}>
-                                        <Icon name="link" size={16} />
-                                        {item.value ?? item.url}
-                                    </Text>
-                                </Pressable>
-                            );
-                        default:
-                            return (
-                                <View style={style.settingItem}>
-                                    <Text>{item.label}</Text>
-                                </View>
-                            );
-                    }
-                }}
-                contentContainerStyle={style.settingSectionContainer}
-                renderSectionHeader={({section: {title}}) => (
-                    <ListItem.Subtitle style={style.settingSectionHeader}>
-                        <Text h4>{title}</Text>
-                    </ListItem.Subtitle>
-                )}
-            />
-        </View>
+                            </Pressable>
+                        ))}
+                    </Flex>
+                </View>
+            ))}
+        </ScrollView>
     );
 }
