@@ -1,12 +1,13 @@
 import {RouteProp, useRoute} from "@react-navigation/native";
 import {Evaluation} from "@/type/eduEvaluation/evaluation.ts";
-import {FlatList, StyleSheet, TouchableOpacity, View} from "react-native";
+import {FlatList, KeyboardAvoidingView, Platform, StyleSheet, TextInput, TouchableOpacity, View} from "react-native";
 import {Text, useTheme} from "@rneui/themed";
 import {infoQuery} from "@/js/jw/infoQuery.ts";
-import {useEffect, useLayoutEffect, useState} from "react";
+import {memo, useEffect, useLayoutEffect, useState} from "react";
 import cheerio from "react-native-cheerio";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {Color} from "@/js/color.ts";
+import {UnOption} from "@/components/un-ui/UnOption.tsx";
 
 type RootStackParamList = {
     EvaDetail: {evaluationItem: Evaluation};
@@ -51,10 +52,32 @@ interface Evaluation {
     teachers: Teacher[];
 }
 
+const CatEle = memo(({cat, catIdx, styles, onSelect}: {cat: Category; catIdx: number} & any) => (
+    <View style={styles.category}>
+        <Text style={styles.categoryName}>
+            {cat.name} (权重 {cat.qzz})
+        </Text>
+
+        {cat.items.map((it, itIdx) => (
+            <UnOption
+                key={it.pfdjdmb_id + it.pjzbxm_id}
+                options={it.options.map(item => ({
+                    ...item,
+                    key: item.pfdjdmxmb_id,
+                    checked: item.checked === true,
+                }))}
+                label={it.title}
+                onSelect={optIdx => onSelect(optIdx, itIdx)}
+            />
+        ))}
+    </View>
+));
+
 export function EvaDetail({navigation}) {
     const {theme} = useTheme();
     const [response, setResponse] = useState<string>("");
     const [data, setData] = useState<Evaluation>();
+    const [categories, setCategories] = useState<Category[]>([]);
     const [ids, setIds] = useState();
     const [selected, setSelected] = useState<SelectedMap>({});
     const route = useRoute<RouteProp<RootStackParamList, "EvaDetail">>();
@@ -67,10 +90,10 @@ export function EvaDetail({navigation}) {
     }, [navigation, evaluationItem]);
 
     const defaultColor = Color.mix(
-        Color(theme.colors.primary),
-        Color(theme.colors.background),
+        theme.colors.primary,
+        theme.colors.black,
         theme.mode === "dark" ? 0.2 : 0.1,
-    ).setAlpha(theme.mode === "dark" ? 0.3 : 0.8).rgbaString;
+    ).setAlpha(theme.mode === "dark" ? 0.5 : 0.8).rgbaString;
 
     const styles = StyleSheet.create({
         header: {fontSize: 24, fontWeight: "bold", marginBottom: 4},
@@ -112,7 +135,6 @@ export function EvaDetail({navigation}) {
 
     /** 解析HTML页面 */
     const parseEvaluationHTML = (html: string): any => {
-        console.log(html);
         /* ---------- 0. 基本环境 ---------- */
         const $ = cheerio.load(html);
 
@@ -390,6 +412,8 @@ export function EvaDetail({navigation}) {
         setResponse(res);
         const k = parseEvaluationHTML(res);
         setData(k);
+        setCategories(k.teachers![0].categories);
+        console.log(data);
         const l = EvaIds(res);
         setIds(l);
     }
@@ -407,65 +431,52 @@ export function EvaDetail({navigation}) {
     }
 
     return (
-        <Flex direction="column">
-            <FlatList
-                data={data.teachers}
-                keyExtractor={(_, idx) => idx.toString()}
-                renderItem={({item: teacher, index: teacherIdx}) => (
-                    <>
-                        {ids.length >= 135 && (
-                            <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
-                                <Text style={styles.submitButtonText}>保存</Text>
-                            </TouchableOpacity>
-                        )}
-                        <View style={styles.card}>
-                            <Text style={styles.header}>
-                                {evaluationItem.kcmc}——{evaluationItem.jzgmc}：{evaluationItem.tjztmc}
-                            </Text>
-                            {teacher.categories.map((cat, catIdx) => (
-                                <View key={catIdx} style={styles.category}>
-                                    <Text style={styles.categoryName}>
-                                        {cat.name} (权重 {cat.qzz})
-                                    </Text>
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{flex: 1}}>
+            <Flex direction="column">
+                <FlatList
+                    data={data.teachers}
+                    keyExtractor={(_, idx) => idx.toString()}
+                    renderItem={({item: teacher, index: teacherIdx}) => (
+                        <>
+                            {ids.length >= 135 && (
+                                <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
+                                    <Text style={styles.submitButtonText}>保存</Text>
+                                </TouchableOpacity>
+                            )}
+                            <View style={styles.card}>
+                                <Text style={styles.header}>
+                                    {evaluationItem.kcmc}——{evaluationItem.jzgmc}：{evaluationItem.tjztmc}
+                                </Text>
+                                {categories.map((cat, catIdx) => {
+                                    const onSelect = (optIdx, itIdx) => {
+                                        const options = categories[catIdx].items[itIdx].options;
+                                        options.forEach(option => (option.checked = false));
+                                        options[optIdx].checked = true;
+                                        setCategories(categories);
+                                    };
+                                    return (
+                                        <CatEle
+                                            key={cat.name + cat.qzz}
+                                            cat={cat}
+                                            catIdx={catIdx}
+                                            styles={styles}
+                                            onSelect={onSelect}
+                                        />
+                                    );
+                                })}
 
-                                    {cat.items.map((it, itIdx) => (
-                                        <View key={itIdx} style={styles.item}>
-                                            <Text style={styles.itemTitle}>{it.title}</Text>
-
-                                            {it.options.map((opt, optIdx) => (
-                                                <TouchableOpacity
-                                                    key={opt.pfdjdmxmb_id}
-                                                    style={[
-                                                        styles.optionButton,
-                                                        opt.checked && styles.optionButtonChecked,
-                                                    ]}
-                                                    onPress={() =>
-                                                        handleOptionSelect(teacherIdx, catIdx, itIdx, optIdx)
-                                                    }>
-                                                    <Text
-                                                        style={[
-                                                            styles.optionText,
-                                                            opt.checked && styles.optionTextChecked,
-                                                        ]}>
-                                                        {opt.label}
-                                                    </Text>
-                                                </TouchableOpacity>
-                                            ))}
-                                        </View>
-                                    ))}
-                                </View>
-                            ))}
-
-                            {teacher.comment && <Text style={styles.comment}>评语：{teacher.comment}</Text>}
-                        </View>
-                        {ids.length >= 135 && (
-                            <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
-                                <Text style={styles.submitButtonText}>保存</Text>
-                            </TouchableOpacity>
-                        )}
-                    </>
-                )}
-            />
-        </Flex>
+                                {teacher.comment && <Text style={styles.comment}>评语：{teacher.comment}</Text>}
+                            </View>
+                            <TextInput multiline numberOfLines={4} />
+                            {ids.length >= 135 && (
+                                <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
+                                    <Text style={styles.submitButtonText}>保存</Text>
+                                </TouchableOpacity>
+                            )}
+                        </>
+                    )}
+                />
+            </Flex>
+        </KeyboardAvoidingView>
     );
 }

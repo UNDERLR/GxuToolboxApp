@@ -1,7 +1,7 @@
 import React, {useContext, useMemo, useState} from "react";
-import {StyleSheet, View, Text} from "react-native";
+import {StyleSheet, View} from "react-native";
 import Flex from "@/components/un-ui/Flex.tsx";
-import {BottomSheet, useTheme} from "@rneui/themed";
+import {BottomSheet, useTheme, Text} from "@rneui/themed";
 import {CourseScheduleTable} from "@/components/tool/infoQuery/courseSchedule/CourseScheduleTable.tsx";
 import {usePagerView} from "react-native-pager-view";
 import moment from "moment/moment";
