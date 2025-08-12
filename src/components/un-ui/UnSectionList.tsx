@@ -87,7 +87,7 @@ export function UnSectionList(props: Props) {
         const itemStyle = [
             style.settingItem,
             underlined && {
-                borderBottomColor: Color.mix(theme.colors.grey3, theme.colors.primary, 0.2).rgbaString,
+                borderBottomColor: Color.mix(theme.colors.grey3, theme.colors.primary).setAlpha(0.3).rgbaString,
                 borderBottomWidth: 1,
             },
         ];

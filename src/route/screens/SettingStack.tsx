@@ -5,6 +5,7 @@ import {JWAccountScreen} from "@/screens/setting/account/JWAccountScreen.tsx";
 import {Color} from "@/js/color.ts";
 import {useTheme} from "@rneui/themed";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
+import {UserPreferenceSettingIndex} from "@/screens/setting/account/UserPreferenceSettingIndex.tsx";
 
 const Stack = createNativeStackNavigator();
 
@@ -34,6 +35,21 @@ export function SettingStack() {
                 component={SettingIndex}
                 options={{
                     title: "工具箱设置",
+                    headerStyle: {
+                        backgroundColor: Color(theme.colors.background).setAlpha(
+                            ((theme.mode === "dark" ? 0.5 : 0.4) * userConfig.theme.bgOpacity) / 100,
+                        ).rgbaString,
+                    },
+                    contentStyle: {
+                        backgroundColor: "transparent",
+                    },
+                }}
+            />
+            <Stack.Screen
+                name="userPreferenceSetting"
+                component={UserPreferenceSettingIndex}
+                options={{
+                    title: "偏好设置",
                     headerStyle: {
                         backgroundColor: Color(theme.colors.background).setAlpha(
                             ((theme.mode === "dark" ? 0.5 : 0.4) * userConfig.theme.bgOpacity) / 100,

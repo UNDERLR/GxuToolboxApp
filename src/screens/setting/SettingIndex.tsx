@@ -1,8 +1,5 @@
-import {Linking, Pressable, PressableAndroidRippleConfig, SectionList, StyleSheet, View} from "react-native";
-import {Button, Text, useTheme} from "@rneui/themed";
-import {Color} from "@/js/color.ts";
-import {useNavigation} from "@react-navigation/native";
-import {Icon} from "@/components/un-ui/Icon.tsx";
+import {View} from "react-native";
+import {Button} from "@rneui/themed";
 import Flex from "@/components/un-ui/Flex.tsx";
 import packageJson from "../../../package.json";
 import moment from "moment/moment";
@@ -27,7 +24,7 @@ export function SettingIndex() {
         });
     }
 
-    const settingList:UnListSection[] = [
+    const settingList: UnListSection[] = [
         {
             title: "账号",
             data: [
@@ -35,6 +32,11 @@ export function SettingIndex() {
                     label: "教务账号设置",
                     type: "navigation",
                     value: "jwAccount",
+                },
+                {
+                    label: "偏好设置",
+                    type: "navigation",
+                    value: "userPreferenceSetting",
                 },
             ],
         },
