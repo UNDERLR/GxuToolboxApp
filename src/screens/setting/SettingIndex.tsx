@@ -1,43 +1,20 @@
-import {
-    Linking,
-    Pressable,
-    PressableAndroidRippleConfig,
-    SectionList,
-    StyleSheet,
-    ToastAndroid,
-    View,
-} from "react-native";
+import {Linking, Pressable, PressableAndroidRippleConfig, SectionList, StyleSheet, View} from "react-native";
 import {Button, Text, useTheme} from "@rneui/themed";
 import {Color} from "@/js/color.ts";
 import {useNavigation} from "@react-navigation/native";
 import {Icon} from "@/components/un-ui/Icon.tsx";
 import Flex from "@/components/un-ui/Flex.tsx";
 import packageJson from "../../../package.json";
-import Clipboard from "@react-native-clipboard/clipboard";
 import moment from "moment/moment";
 import {ColorPicker} from "@/components/un-ui/ColorPicker.tsx";
 import {launchImageLibrary} from "react-native-image-picker";
 import {UnSlider} from "@/components/un-ui/UnSlider.tsx";
 import {useContext} from "react";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
-
-interface settingSection {
-    title: string;
-    data: SettingItem[];
-}
-
-interface SettingItem {
-    label: string;
-    type: "navigation" | "text" | "link" | "any" | "blockAny";
-    navigation?: string;
-    value?: any;
-    url?: string;
-}
+import {UnListSection, UnSectionList} from "@/components/un-ui/UnSectionList.tsx";
 
 export function SettingIndex() {
     const {userConfig, updateUserConfig} = useContext(UserConfigContext);
-    const navigation = useNavigation();
-    const {theme} = useTheme();
 
     function selectBg() {
         launchImageLibrary({
@@ -50,14 +27,14 @@ export function SettingIndex() {
         });
     }
 
-    const settingList = [
+    const settingList:UnListSection[] = [
         {
             title: "账号",
             data: [
                 {
                     label: "教务账号设置",
                     type: "navigation",
-                    navigation: "jwAccount",
+                    value: "jwAccount",
                 },
             ],
         },
@@ -97,7 +74,7 @@ export function SettingIndex() {
                     ),
                 },
                 {
-                    label: "背景蒙版相对透明度（需重启）",
+                    label: "背景蒙版相对透明度",
                     type: "blockAny",
                     value: (
                         <UnSlider
@@ -135,134 +112,11 @@ export function SettingIndex() {
                 },
             ],
         },
-    ] as settingSection[];
-
-    const data = {
-        style: {
-            cardBg: Color(theme.colors.background).setAlpha(
-                0.1 + ((theme.mode === "light" ? 0.7 : 0.4) * userConfig.theme.bgOpacity) / 100,
-            ).rgbaString,
-            settingItemRipple: {
-                color: theme.colors.grey4,
-            } as PressableAndroidRippleConfig,
-        },
-    };
-
-    const style = StyleSheet.create({
-        settingContainer: {
-            padding: "5%",
-        },
-        settingSectionContainer: {
-            paddingHorizontal: "3%",
-            paddingTop: "2%",
-            paddingBottom: "5%",
-            borderRadius: 5,
-            backgroundColor: data.style.cardBg,
-            marginBottom: 10,
-        },
-        settingSectionHeader: {
-            marginTop: 10,
-        },
-        settingItem: {
-            flexDirection: "row",
-            justifyContent: "space-between",
-            paddingVertical: 20,
-            paddingHorizontal: 10,
-            borderBottomWidth: 1,
-            borderBottomColor: theme.colors.grey3,
-        },
-        linkText: {
-            borderBottomWidth: 1,
-            borderBottomColor: theme.colors.black,
-        },
-    });
-
-    function openUrl(url: string) {
-        if (url) {
-            Linking.canOpenURL(url)
-                .then(v => {
-                    if (v) {
-                        Linking.openURL(url);
-                        return;
-                    } else {
-                        ToastAndroid.show("打开链接失败，已将链接复制至剪切板", ToastAndroid.LONG);
-                        Clipboard.setString(url);
-                    }
-                })
-                .catch(() => {
-                    ToastAndroid.show("打开链接失败，已将链接复制至剪切板", ToastAndroid.LONG);
-                    Clipboard.setString(url);
-                });
-        }
-    }
+    ];
 
     return (
-        <View style={style.settingContainer}>
-            <SectionList
-                sections={settingList}
-                renderItem={({item}: {item: SettingItem}) => {
-                    switch (item.type) {
-                        case "navigation":
-                            return (
-                                <Pressable
-                                    onPress={() => navigation.navigate(item.navigation)}
-                                    style={style.settingItem}
-                                    android_ripple={data.style.settingItemRipple}>
-                                    <Text>{item.label}</Text>
-                                    <Icon name="right" size={16} />
-                                </Pressable>
-                            );
-                        case "text":
-                            return (
-                                <Flex style={style.settingItem} justifyContent="space-between">
-                                    <Text>{item.label}</Text>
-                                    <Text>{item.value}</Text>
-                                </Flex>
-                            );
-                        case "link":
-                            return (
-                                <Pressable
-                                    onPress={() => openUrl(item.url)}
-                                    style={style.settingItem}
-                                    android_ripple={data.style.settingItemRipple}>
-                                    <Text>{item.label}</Text>
-                                    <Text style={style.linkText}>
-                                        <Icon name="link" size={16} />
-                                        {item.value ?? item.url}
-                                    </Text>
-                                </Pressable>
-                            );
-                        case "any":
-                            return (
-                                <Flex style={style.settingItem} justifyContent="space-between">
-                                    <Text>{item.label}</Text>
-                                    {item.value}
-                                </Flex>
-                            );
-                        case "blockAny":
-                            return (
-                                <Flex direction="column" alignItems="flex-start" gap={10} style={style.settingItem}>
-                                    <View>
-                                        <Text>{item.label}</Text>
-                                    </View>
-                                    {item.value}
-                                </Flex>
-                            );
-                        default:
-                            return (
-                                <View style={style.settingItem}>
-                                    <Text>{item.label}</Text>
-                                </View>
-                            );
-                    }
-                }}
-                contentContainerStyle={style.settingSectionContainer}
-                renderSectionHeader={({section: {title}}) => (
-                    <View style={style.settingSectionHeader}>
-                        <Text h4>{title}</Text>
-                    </View>
-                )}
-            />
+        <View style={{padding: "5%"}}>
+            <UnSectionList list={settingList} />
         </View>
     );
 }

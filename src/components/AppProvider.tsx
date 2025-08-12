@@ -53,6 +53,7 @@ export function AppProvider(props: Omit<ProviderProps<IUserConfig>, "value">) {
             key: "userConfig",
             data: newConfig,
         });
+        // 生成新的主题
         const newUiTheme = createTheme(generateUiTheme(newConfig, colorScheme));
         uiTheme.updateTheme(newUiTheme);
     }

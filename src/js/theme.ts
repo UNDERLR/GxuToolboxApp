@@ -48,9 +48,11 @@ export function generateUiTheme(config: IUserConfig, colorScheme: ColorSchemeNam
         mode: colorScheme ?? "light",
         lightColors: {
             primary: config.theme?.primaryColor ?? "#48A6EF",
+            greyOutline: "pink",
         },
         darkColors: {
             primary: config.theme?.primaryColor ?? "#48A6EF",
+            greyOutline: "pink",
         },
     });
 }
