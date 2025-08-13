@@ -13,44 +13,17 @@ interface Props extends ViewProps {
 
 interface Info {
     label: string;
-    icon: React.JSX.Element;
-    key: keyof Course;
+    key: keyof Omit<Course, "queryModel" | "userModel">;
 }
 
 export function CourseDetail(props: Props) {
     const {userConfig} = useContext(UserConfigContext);
-    const infoList = [
-        {
-            label: "课程名称",
-            icon: <Icon name="infocirlceo" size={20} />,
-            key: "kcmc",
-        },
-        {
-            label: "地点",
-            icon: <Icon type="fontawesome" name="map-marker" size={20} />,
-            key: "cdmc",
-        },
-        {
-            label: "考核方式",
-            icon: <Icon type="fontawesome" name="pen" size={20} />,
-            key: "khfsmc",
-        },
-        {
-            label: "上课教师",
-            icon: <Icon name="user" size={20} />,
-            key: "xm",
-        },
-        {
-            label: "学分",
-            icon: <Icon name="infocirlceo" size={20} />,
-            key: "xf",
-        },
-        {
-            label: "QQ群",
-            icon: <Icon name="QQ" size={20} />,
-            key: "qqqh",
-        },
-    ] as Info[];
+    const infoList = Object.entries(userConfig.preference.courseDetail)
+        .filter(prop => prop[1].show)
+        .map<Info>(([key, {label}]) => ({
+            key,
+            label,
+        }));
 
     const style = StyleSheet.create({
         infoIcon: {
@@ -79,9 +52,6 @@ export function CourseDetail(props: Props) {
                 <ListItem bottomDivider={index !== infoList.length - 1} key={index}>
                     <Flex justifyContent="space-between" gap={30}>
                         <Flex gap={10} inline>
-                            <Flex inline justifyContent="center" style={style.infoIcon}>
-                                {item.icon}
-                            </Flex>
                             <Text style={style.infoLabel}>{item.label}</Text>
                         </Flex>
                         <Flex justifyContent="flex-end">
@@ -98,14 +68,16 @@ export function CourseDetail(props: Props) {
                 <Flex justifyContent="space-between" gap={30}>
                     <Flex gap={10} inline>
                         <Flex inline justifyContent="center" style={style.infoIcon}>
-                            <Icon type="fontawesome" name="code" size={20}/>
+                            <Icon type="fontawesome" name="code" size={20} />
                         </Flex>
                         <Text style={style.infoLabel}>复制课程信息JSON</Text>
                     </Flex>
                     <Flex justifyContent="flex-end">
                         <Pressable
                             android_ripple={userConfig.theme.ripple}
-                            onPress={() => copy(JSON.stringify(props.course, null, 4) + "" ?? "", "复制课程信息JSON成功")}>
+                            onPress={() =>
+                                copy(JSON.stringify(props.course, null, 4) + "" ?? "", "复制课程信息JSON成功")
+                            }>
                             <Text style={style.infoData}>&#123; ... &#125;</Text>
                         </Pressable>
                     </Flex>
