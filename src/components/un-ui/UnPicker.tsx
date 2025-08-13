@@ -7,6 +7,7 @@ export function UnPicker<T>(props: PickerProps<T>) {
     return (
         <Picker
             {...props}
+            mode="dropdown"
             style={{
                 color: theme.colors.black,
             }}
