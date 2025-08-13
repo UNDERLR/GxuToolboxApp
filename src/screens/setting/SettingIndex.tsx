@@ -108,6 +108,12 @@ export function SettingIndex() {
                     url: "https://gitlab.unde.site/gxutool/gxu_tool_app",
                 },
                 {
+                    label: "公测群",
+                    type: "link",
+                    value: "101974491",
+                    url: "https://qm.qq.com/q/n8l4zsvsGW",
+                },
+                {
                     label: "软件信息",
                     type: "text",
                     value: `CopyRight © ${moment().year()} \n寰辰<UNDERLR@foxmail.com>`,
