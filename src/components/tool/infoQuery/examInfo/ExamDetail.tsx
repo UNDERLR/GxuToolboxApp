@@ -13,39 +13,17 @@ interface Props extends ViewProps {
 
 interface Info {
     label: string;
-    icon: React.JSX.Element;
-    key: keyof ExamInfo;
+    key: keyof Omit<ExamInfo, "queryModel" | "userModel">;
 }
 
 export function ExamDetail(props: Props) {
     const {userConfig} = useContext(UserConfigContext);
-    const infoList = [
-        {
-            label: "课程名称",
-            icon: <Icon name="infocirlceo" size={20} />,
-            key: "kcmc",
-        },
-        {
-            label: "考试时间",
-            icon: <Icon name="clockcircleo" size={20} />,
-            key: "kssj",
-        },
-        {
-            label: "地点",
-            icon: <Icon type="fontawesome" name="map-marker" size={20} />,
-            key: "cdmc",
-        },
-        {
-            label: "座位号",
-            icon: <Icon type="fontawesome" name="map-marker" size={20} />,
-            key: "zwh",
-        },
-        {
-            label: "考试名称",
-            icon: <Icon name="infocirlceo" size={20} />,
-            key: "ksmc",
-        },
-    ] as Info[];
+    const infoList = Object.entries(userConfig.preference.examDetail)
+        .filter(prop => prop[1].show)
+        .map<Info>(([key, {label}]) => ({
+            key,
+            label,
+        }));
 
     const style = StyleSheet.create({
         infoIcon: {
@@ -74,9 +52,6 @@ export function ExamDetail(props: Props) {
                 <ListItem bottomDivider={index !== infoList.length - 1} key={index}>
                     <Flex justifyContent="space-between" gap={30}>
                         <Flex gap={10} inline>
-                            <Flex inline justifyContent="center" style={style.infoIcon}>
-                                {item.icon}
-                            </Flex>
                             <Text style={style.infoLabel}>{item.label}</Text>
                         </Flex>
                         <Flex justifyContent="flex-end">

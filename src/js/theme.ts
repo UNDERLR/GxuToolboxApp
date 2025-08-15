@@ -2,6 +2,7 @@ import {createTheme, CreateThemeOptions} from "@rneui/themed";
 import {IUserConfig, IUserTheme} from "@/type/IUserConfig.ts";
 import {deepMerge} from "@/utils/objectUtils.ts";
 import {ColorSchemeName} from "react-native";
+import {Color} from "@/js/color.ts";
 
 export const theme = createTheme({
     components: {
@@ -44,15 +45,21 @@ export const DefaultUserTheme: IUserTheme = {
 };
 
 export function generateUiTheme(config: IUserConfig, colorScheme: ColorSchemeName): CreateThemeOptions {
+    const primaryColor = config.theme?.primaryColor ?? "#48A6EF";
     return deepMerge<CreateThemeOptions, CreateThemeOptions>(theme, {
         mode: colorScheme ?? "light",
         lightColors: {
-            primary: config.theme?.primaryColor ?? "#48A6EF",
+            primary: primaryColor,
             greyOutline: "pink",
         },
         darkColors: {
-            primary: config.theme?.primaryColor ?? "#48A6EF",
+            primary: primaryColor,
             greyOutline: "pink",
+        },
+        components: {
+            Divider: {
+                color: Color.mix(theme.darkColors?.grey3 ?? "#5e6977", primaryColor).setAlpha(0.3).rgbaString,
+            },
         },
     });
 }

@@ -1,4 +1,4 @@
-import {View} from "react-native";
+import {ScrollView} from "react-native";
 import {Button} from "@rneui/themed";
 import Flex from "@/components/un-ui/Flex.tsx";
 import packageJson from "../../../package.json";
@@ -108,6 +108,12 @@ export function SettingIndex() {
                     url: "https://gitlab.unde.site/gxutool/gxu_tool_app",
                 },
                 {
+                    label: "公测群",
+                    type: "link",
+                    value: "101974491",
+                    url: "https://qm.qq.com/q/n8l4zsvsGW",
+                },
+                {
                     label: "软件信息",
                     type: "text",
                     value: `CopyRight © ${moment().year()} \n寰辰<UNDERLR@foxmail.com>`,
@@ -117,8 +123,8 @@ export function SettingIndex() {
     ];
 
     return (
-        <View style={{padding: "5%"}}>
+        <ScrollView style={{padding: "5%"}}>
             <UnSectionList list={settingList} />
-        </View>
+        </ScrollView>
     );
 }

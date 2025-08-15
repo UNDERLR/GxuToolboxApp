@@ -1,11 +1,15 @@
 import {PressableAndroidRippleConfig} from "react-native";
 import {SchoolTermValue, SchoolYearValue} from "@/type/global.ts";
+import {Course} from "@/type/infoQuery/course/course.ts";
+import {ExamInfo} from "@/type/infoQuery/exam/examInfo.ts";
 
 export interface IUserConfig {
     /** 主题相关配置 */
     theme: IUserTheme;
     /** 部分教务配置 */
     jw: IUserJwConfig;
+    /** 偏好配置 */
+    preference: IUserPreference;
 }
 
 /** 用户教务配置 */
@@ -16,6 +20,22 @@ export interface IUserJwConfig {
     term: SchoolTermValue;
     /** 当前课表起始 */
     startDay: string;
+}
+
+/** 偏好配置 */
+export interface IUserPreference {
+    /** 课程元素详情 */
+    courseDetail: Record<keyof Omit<Course, "queryModel" | "userModel">, IDetailItem>;
+    /** 考试元素详情 */
+    examDetail: Record<keyof Omit<ExamInfo, "queryModel" | "userModel">, IDetailItem>;
+}
+
+/** 元素详情元素 */
+export interface IDetailItem {
+    /** 是否展示 */
+    show: boolean;
+    /** 对应的标签 */
+    label: string;
 }
 
 /** 用户主题配置 */

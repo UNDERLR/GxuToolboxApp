@@ -1,4 +1,4 @@
-import {View} from "react-native";
+import {ScrollView} from "react-native";
 import {useContext} from "react";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 import {UnListSection, UnSectionList} from "@/components/un-ui/UnSectionList.tsx";
@@ -25,8 +25,8 @@ export function UserPreferenceSettingIndex() {
     ];
 
     return (
-        <View style={{padding: "5%"}}>
+        <ScrollView style={{padding: "5%"}}>
             <UnSectionList list={settingList} />
-        </View>
+        </ScrollView>
     );
 }
