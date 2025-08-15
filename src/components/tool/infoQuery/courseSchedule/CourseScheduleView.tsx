@@ -52,6 +52,18 @@ export function CourseScheduleView(props: Props) {
             marginBottom: "5%",
             padding: "5%",
         },
+        nextCourse: {
+            alignItems: "center",
+            borderColor: Color.mix(theme.colors.primary, theme.colors.background, 0.4).rgbaString,
+            backgroundColor: theme.colors.background,
+            borderWidth: 1,
+            borderRadius: 15,
+            paddingVertical: "2%",
+            marginLeft: "auto",
+            marginRight: "auto",
+            marginBottom: "3%",
+            paddingHorizontal:"8%",
+        }
     });
 
     function showCourseDetail(course: Course) {
@@ -77,11 +89,13 @@ export function CourseScheduleView(props: Props) {
     );
     return (
         <View>
-            {nextCourse && (
-                <Text>
-                    下一节课：{nextCourse.kcmc} @{nextCourse.cdmc}
-                </Text>
-            )}
+            <View style={style.nextCourse}>
+                {nextCourse && (
+                    <Text style={{fontSize: 13}}>
+                        下节：{nextCourse.kcmc} #{nextCourse.cdmc}
+                    </Text>
+                )}
+            </View>
             <AnimatedPagerView
                 testID="pager-view"
                 ref={ref}
