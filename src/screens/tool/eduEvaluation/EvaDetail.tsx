@@ -3,7 +3,7 @@ import {Evaluation} from "@/type/eduEvaluation/evaluation.ts";
 import {FlatList, KeyboardAvoidingView, Platform, StyleSheet, TextInput, TouchableOpacity, View} from "react-native";
 import {Text, useTheme} from "@rneui/themed";
 import {infoQuery} from "@/js/jw/infoQuery.ts";
-import {memo, useEffect, useLayoutEffect, useState} from "react";
+import {memo, useEffect, useLayoutEffect, useState, useCallback} from "react";
 import cheerio from "react-native-cheerio";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {Color} from "@/js/color.ts";
@@ -44,6 +44,8 @@ interface Teacher {
 }
 
 interface Evaluation {
+    kcmc: any;
+    jzgmc: any;
     tjztmc: any;
     course: string;
     classTime: string;
@@ -67,7 +69,7 @@ const CatEle = memo(({cat, catIdx, styles, onSelect}: {cat: Category; catIdx: nu
                     checked: item.checked === true,
                 }))}
                 label={it.title}
-                onSelect={optIdx => onSelect(optIdx, itIdx)}
+                onSelect={optIdx => onSelect(catIdx, itIdx, optIdx)}
             />
         ))}
     </View>
@@ -82,6 +84,22 @@ export function EvaDetail({navigation}) {
     const [selected, setSelected] = useState<SelectedMap>({});
     const route = useRoute<RouteProp<RootStackParamList, "EvaDetail">>();
     const {evaluationItem} = route.params;
+
+    const onSelect = useCallback((catIdx: number, itIdx: number, optIdx: number) => {
+        const itemKey = `0-${catIdx}-${itIdx}`;
+        console.log("fuck you");
+        setSelected(prev => ({
+            ...prev,
+            "0": {
+                ...(prev["0"] || {}),
+                [itemKey]: optIdx,
+            },
+        }));
+    }, []);
+
+    useEffect(() => {
+        console.log("Selected state updated:", selected);
+    }, [selected]);
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -413,7 +431,6 @@ export function EvaDetail({navigation}) {
         const k = parseEvaluationHTML(res);
         setData(k);
         setCategories(k.teachers![0].categories);
-        console.log(data);
         const l = EvaIds(res);
         setIds(l);
     }
@@ -431,52 +448,40 @@ export function EvaDetail({navigation}) {
     }
 
     return (
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{flex: 1}}>
-            <Flex direction="column">
-                <FlatList
-                    data={data.teachers}
-                    keyExtractor={(_, idx) => idx.toString()}
-                    renderItem={({item: teacher, index: teacherIdx}) => (
-                        <>
-                            {ids.length >= 135 && (
-                                <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
-                                    <Text style={styles.submitButtonText}>保存</Text>
-                                </TouchableOpacity>
-                            )}
-                            <View style={styles.card}>
-                                <Text style={styles.header}>
-                                    {evaluationItem.kcmc}——{evaluationItem.jzgmc}：{evaluationItem.tjztmc}
-                                </Text>
-                                {categories.map((cat, catIdx) => {
-                                    const onSelect = (optIdx, itIdx) => {
-                                        const options = categories[catIdx].items[itIdx].options;
-                                        options.forEach(option => (option.checked = false));
-                                        options[optIdx].checked = true;
-                                        setCategories(categories);
-                                    };
-                                    return (
-                                        <CatEle
-                                            key={cat.name + cat.qzz}
-                                            cat={cat}
-                                            catIdx={catIdx}
-                                            styles={styles}
-                                            onSelect={onSelect}
-                                        />
-                                    );
-                                })}
-
-                                {teacher.comment && <Text style={styles.comment}>评语：{teacher.comment}</Text>}
-                            </View>
-                            <TextInput multiline numberOfLines={4} />
-                            {ids.length >= 135 && (
-                                <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
-                                    <Text style={styles.submitButtonText}>保存</Text>
-                                </TouchableOpacity>
-                            )}
-                        </>
-                    )}
-                />
-            </Flex>
-        </KeyboardAvoidingView>
+        <Flex direction="column">
+            <FlatList
+                data={data.teachers}
+                keyExtractor={(_, idx) => idx.toString()}
+                renderItem={({item: teacher}) => (
+                    <>
+                        {ids.length >= 135 && (
+                            <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
+                                <Text style={styles.submitButtonText}>保存</Text>
+                            </TouchableOpacity>
+                        )}
+                        <View style={styles.card}>
+                            <Text style={styles.header}>
+                                {evaluationItem.kcmc}——{evaluationItem.jzgmc}：{evaluationItem.tjztmc}
+                            </Text>
+                            {categories.map((cat, catIdx) => (
+                                <CatEle
+                                    key={cat.name + cat.qzz}
+                                    cat={cat}
+                                    catIdx={catIdx}
+                                    styles={styles}
+                                    onSelect={onSelect}
+                                />
+                            ))}
+                        </View>
+                        <TextInput multiline numberOfLines={4} />
+                        {ids.length >= 135 && (
+                            <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
+                                <Text style={styles.submitButtonText}>保存</Text>
+                            </TouchableOpacity>
+                        )}
+                    </>
+                )}
+            />
+        </Flex>
     );
 }

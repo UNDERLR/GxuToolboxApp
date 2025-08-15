@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {Text, useTheme} from "@rneui/themed";
 import {StyleSheet, TouchableOpacity, View, ViewProps} from "react-native";
 import {Color} from "@/js/color.ts";
@@ -17,6 +17,8 @@ interface Option {
 
 export function UnOption(props: Props & ViewProps) {
     const {theme} = useTheme();
+
+    const [selectIdx, setSelectIdx] = useState<number>(-1);
     const defaultColor = Color.mix(
         Color(theme.colors.primary),
         Color(theme.colors.background),
@@ -46,11 +48,12 @@ export function UnOption(props: Props & ViewProps) {
             {props.options.map((opt, optIdx) => (
                 <TouchableOpacity
                     key={opt.key}
-                    style={[styles.optionButton, opt.checked && styles.optionButtonChecked]}
+                    style={[styles.optionButton, ((opt.checked && selectIdx === -1) || selectIdx === optIdx) && styles.optionButtonChecked]}
                     onPress={() => {
                         props.onSelect?.(optIdx);
+                        setSelectIdx(optIdx);
                     }}>
-                    <Text style={[styles.optionText, opt.checked && styles.optionTextChecked]}>{opt.label}</Text>
+                    <Text style={[styles.optionText, ((opt.checked && selectIdx === -1) || selectIdx === optIdx) && styles.optionTextChecked]}>{opt.label}</Text>
                 </TouchableOpacity>
             ))}
         </View>
