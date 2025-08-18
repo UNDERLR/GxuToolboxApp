@@ -24,7 +24,6 @@ export function StuEvaluation() {
     const styles = StyleSheet.create({
         container: {
             flex: 1,
-            backgroundColor: theme.colors.background,
         },
         header: {
             height: 50,
@@ -41,7 +40,6 @@ export function StuEvaluation() {
             borderBottomWidth: 1,
             borderBottomColor: theme.colors.primary,
             alignItems: "center",
-            backgroundColor: theme.colors.background,
         },
         rowText: {
             textAlign: "center",
