@@ -1,13 +1,14 @@
 import {RouteProp, useRoute} from "@react-navigation/native";
 import {Evaluation} from "@/type/eduEvaluation/evaluation.ts";
 import {FlatList, KeyboardAvoidingView, Platform, StyleSheet, TextInput, TouchableOpacity, View} from "react-native";
-import {Text, useTheme} from "@rneui/themed";
+import {Button, Text, useTheme} from "@rneui/themed";
 import {infoQuery} from "@/js/jw/infoQuery.ts";
 import {memo, useEffect, useLayoutEffect, useState, useCallback} from "react";
 import cheerio from "react-native-cheerio";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {Color} from "@/js/color.ts";
 import {UnOption} from "@/components/un-ui/UnOption.tsx";
+import {Comment} from "./Comment";
 
 type RootStackParamList = {
     EvaDetail: {evaluationItem: Evaluation};
@@ -80,6 +81,7 @@ export function EvaDetail({navigation}) {
     const [response, setResponse] = useState<string>("");
     const [data, setData] = useState<Evaluation>();
     const [categories, setCategories] = useState<Category[]>([]);
+    const [comment, setComment] = useState<string>("");
     const [ids, setIds] = useState();
     const [selected, setSelected] = useState<SelectedMap>({});
     const route = useRoute<RouteProp<RootStackParamList, "EvaDetail">>();
@@ -87,7 +89,6 @@ export function EvaDetail({navigation}) {
 
     const onSelect = useCallback((catIdx: number, itIdx: number, optIdx: number) => {
         const itemKey = `0-${catIdx}-${itIdx}`;
-        console.log("fuck you");
         setSelected(prev => ({
             ...prev,
             "0": {
@@ -120,6 +121,17 @@ export function EvaDetail({navigation}) {
         categoryName: {fontSize: 16, fontWeight: "500", color: defaultColor, marginBottom: 4},
         item: {marginBottom: 8},
         itemTitle: {fontSize: 14, marginBottom: 4, marginLeft: 10, marginRight: 10},
+        commentInput: {
+            paddingVertical: 8,
+            paddingHorizontal: 12,
+            borderWidth: 1,
+            borderColor: defaultColor,
+            backgroundColor: theme.colors.background,
+            borderRadius: 8,
+            marginBottom: 9,
+            marginHorizontal: "3%",
+            height: "auto",
+        },
         optionButton: {
             paddingVertical: 8,
             paddingHorizontal: 12,
@@ -262,62 +274,40 @@ export function EvaDetail({navigation}) {
             }),
         );
     };
-    /** 创造请求头 */
-    const handleOptionSelect = (teacherIdx: number, categoryIdx: number, itemIdx: number, optionIdx: number) => {
-        console.log(ids);
-        const itemId = `${teacherIdx}-${categoryIdx}-${itemIdx}`;
-        setSelected(prev => {
-            const next = {
-                ...prev,
-                [teacherIdx]: {
-                    ...prev[teacherIdx],
-                    [itemId]: optionIdx,
-                },
-            };
-            console.log(next);
-            return next;
-        });
-        // 以下是AI写的，被RN警告了，需要优化效率
-        setData(prevData => {
-            if (!prevData) {
-                return prevData;
-            }
-            // 高效地创建状态的副本，只拷贝需要改变的部分
-            const newTeachers = prevData.teachers.map((teacher, tIndex) => {
-                if (tIndex !== teacherIdx) {
-                    return teacher;
-                }
 
-                const newCategories = teacher.categories.map((category, cIndex) => {
-                    if (cIndex !== categoryIdx) {
-                        return category;
-                    }
-
-                    const newItems = category.items.map((item, iIndex) => {
-                        if (iIndex !== itemIdx) {
-                            return item;
-                        }
-
-                        const newOptions = item.options.map((option, oIndex) => ({
-                            ...option,
-                            checked: oIndex === optionIdx, // 直接设置选中状态
-                        }));
-
-                        return {...item, options: newOptions};
-                    });
-
-                    return {...category, items: newItems};
-                });
-
-                return {...teacher, categories: newCategories};
-            });
-
-            return {...prevData, teachers: newTeachers};
-        });
+    const FastSubmit = () => {
+        console.log(selected);
+        const defaultSelected = {
+            "0": {
+                "0-0-0": 0,
+                "0-0-1": 0,
+                "0-0-2": 0,
+                "0-0-3": 0,
+                "0-1-0": 0,
+                "0-1-1": 0,
+                "0-1-2": 0,
+                "0-2-0": 0,
+                "0-2-1": 0,
+                "0-2-2": 1,
+                "0-3-0": 0,
+                "0-3-1": 0,
+                "0-3-2": 0,
+                "0-4-0": 0,
+                "0-4-1": 0,
+                "0-4-2": 0,
+            },
+        };
+        setSelected(defaultSelected);
+        const defaultComment =
+            "老师专业功底深厚，治学态度严谨。在教学中，您逻辑清晰，重点突出，" +
+            "善于运用启发式教学引导我们独立思考，将理论与实践紧密结合。课堂富有感染力，" +
+            "不仅传授了我们前沿的知识，更点燃了我们对该领域的探索热情。是我们学术道路上当之无愧的引路人。" +
+            "老师的悉心栽培令我们受益匪浅！";
+        setComment(defaultComment);
+        handleSubmit(defaultSelected, defaultComment);
     };
-
     /** 点击提交按钮触发提交 */
-    const handleSubmit = () => {
+    const handleSubmit = async (submitSelected = selected, submitComment: string = comment) => {
         const f = (x: number, y: number, z: number) => {
             if (x === 0) {
                 return 7 + 8 * y + z;
@@ -325,18 +315,19 @@ export function EvaDetail({navigation}) {
             return 40 + 25 * (x - 1) + 8 * y + z;
         };
         let newsub = {};
-        Object.entries(selected[0]).forEach(([key, z]) => {
+        console.log(submitSelected, selected);
+        Object.entries(submitSelected[0]).forEach(([key, z]) => {
             const [xStr, yStr] = key.split("-").slice(1); // 忽略第一个"0"
             const x = parseInt(xStr, 10);
             const y = parseInt(yStr, 10);
             const result = f(x, y, z);
             newsub = {
                 ...newsub,
-                [`modelList[0].xspjList[${x}].childXspjList[${y}].pfdjdmxmb_id`]: ids[result],
+                [`modelList[0].xspjList[${x}].childXspjList[${y}].pfdjdmxmb_id`]: ids![result],
             };
         });
         console.log(selected[0], newsub, ids.length);
-        infoQuery.handleEvaResult(
+        await infoQuery.handleEvaResult(
             {
                 ztpjbl: 100,
                 jxb_id: evaluationItem.jxb_id,
@@ -344,72 +335,72 @@ export function EvaDetail({navigation}) {
                 kch_id: evaluationItem.kch_id,
                 xsdm: evaluationItem.xsdm,
 
-                "modelList[0].pjmbmcb_id": ids[1],
+                "modelList[0].pjmbmcb_id": ids![1],
                 "modelList[0].pjdxdm": "01",
                 "modelList[0].fxzgf": null,
-                "modelList[0].py": "awa!!",
-                "modelList[0].xspfb_id": ids[2],
+                "modelList[0].py": submitComment,
+                "modelList[0].xspfb_id": ids![2],
 
-                "modelList[0].xspjList[0].pjzbxm_id": ids[3],
-                "modelList[0].xspjList[0].childXspjList[0].zsmbmcb_id": ids[4],
-                "modelList[0].xspjList[0].childXspjList[0].pjzbxm_id": ids[5],
-                "modelList[0].xspjList[0].childXspjList[0].pfdjdmb_id": ids[6],
+                "modelList[0].xspjList[0].pjzbxm_id": ids![3],
+                "modelList[0].xspjList[0].childXspjList[0].zsmbmcb_id": ids![4],
+                "modelList[0].xspjList[0].childXspjList[0].pjzbxm_id": ids![5],
+                "modelList[0].xspjList[0].childXspjList[0].pfdjdmb_id": ids![6],
 
-                "modelList[0].xspjList[0].childXspjList[1].zsmbmcb_id": ids[12],
-                "modelList[0].xspjList[0].childXspjList[1].pjzbxm_id": ids[13],
-                "modelList[0].xspjList[0].childXspjList[1].pfdjdmb_id": ids[14],
+                "modelList[0].xspjList[0].childXspjList[1].zsmbmcb_id": ids![12],
+                "modelList[0].xspjList[0].childXspjList[1].pjzbxm_id": ids![13],
+                "modelList[0].xspjList[0].childXspjList[1].pfdjdmb_id": ids![14],
 
-                "modelList[0].xspjList[0].childXspjList[2].zsmbmcb_id": ids[20],
-                "modelList[0].xspjList[0].childXspjList[2].pjzbxm_id": ids[21],
-                "modelList[0].xspjList[0].childXspjList[2].pfdjdmb_id": ids[22],
+                "modelList[0].xspjList[0].childXspjList[2].zsmbmcb_id": ids![20],
+                "modelList[0].xspjList[0].childXspjList[2].pjzbxm_id": ids![21],
+                "modelList[0].xspjList[0].childXspjList[2].pfdjdmb_id": ids![22],
 
-                "modelList[0].xspjList[0].childXspjList[3].zsmbmcb_id": ids[28],
-                "modelList[0].xspjList[0].childXspjList[3].pjzbxm_id": ids[29],
-                "modelList[0].xspjList[0].childXspjList[3].pfdjdmb_id": ids[30],
+                "modelList[0].xspjList[0].childXspjList[3].zsmbmcb_id": ids![28],
+                "modelList[0].xspjList[0].childXspjList[3].pjzbxm_id": ids![29],
+                "modelList[0].xspjList[0].childXspjList[3].pfdjdmb_id": ids![30],
 
-                "modelList[0].xspjList[1].pjzbxm_id": ids[3 + 33],
-                "modelList[0].xspjList[1].childXspjList[0].zsmbmcb_id": ids[4 + 33],
-                "modelList[0].xspjList[1].childXspjList[0].pjzbxm_id": ids[5 + 33],
-                "modelList[0].xspjList[1].childXspjList[0].pfdjdmb_id": ids[6 + 33],
-                "modelList[0].xspjList[1].childXspjList[1].zsmbmcb_id": ids[12 + 33],
-                "modelList[0].xspjList[1].childXspjList[1].pjzbxm_id": ids[13 + 33],
-                "modelList[0].xspjList[1].childXspjList[1].pfdjdmb_id": ids[14 + 33],
-                "modelList[0].xspjList[1].childXspjList[2].zsmbmcb_id": ids[20 + 33],
-                "modelList[0].xspjList[1].childXspjList[2].pjzbxm_id": ids[21 + 33],
-                "modelList[0].xspjList[1].childXspjList[2].pfdjdmb_id": ids[22 + 33],
+                "modelList[0].xspjList[1].pjzbxm_id": ids![3 + 33],
+                "modelList[0].xspjList[1].childXspjList[0].zsmbmcb_id": ids![4 + 33],
+                "modelList[0].xspjList[1].childXspjList[0].pjzbxm_id": ids![5 + 33],
+                "modelList[0].xspjList[1].childXspjList[0].pfdjdmb_id": ids![6 + 33],
+                "modelList[0].xspjList[1].childXspjList[1].zsmbmcb_id": ids![12 + 33],
+                "modelList[0].xspjList[1].childXspjList[1].pjzbxm_id": ids![13 + 33],
+                "modelList[0].xspjList[1].childXspjList[1].pfdjdmb_id": ids![14 + 33],
+                "modelList[0].xspjList[1].childXspjList[2].zsmbmcb_id": ids![20 + 33],
+                "modelList[0].xspjList[1].childXspjList[2].pjzbxm_id": ids![21 + 33],
+                "modelList[0].xspjList[1].childXspjList[2].pfdjdmb_id": ids![22 + 33],
 
-                "modelList[0].xspjList[2].pjzbxm_id": ids[3 + 33 + 25],
-                "modelList[0].xspjList[2].childXspjList[0].zsmbmcb_id": ids[4 + 33 + 25],
-                "modelList[0].xspjList[2].childXspjList[0].pjzbxm_id": ids[5 + 33 + 25],
-                "modelList[0].xspjList[2].childXspjList[0].pfdjdmb_id": ids[6 + 33 + 25],
-                "modelList[0].xspjList[2].childXspjList[1].zsmbmcb_id": ids[12 + 33 + 25],
-                "modelList[0].xspjList[2].childXspjList[1].pjzbxm_id": ids[13 + 33 + 25],
-                "modelList[0].xspjList[2].childXspjList[1].pfdjdmb_id": ids[14 + 33 + 25],
-                "modelList[0].xspjList[2].childXspjList[2].zsmbmcb_id": ids[20 + 33 + 25],
-                "modelList[0].xspjList[2].childXspjList[2].pjzbxm_id": ids[21 + 33 + 25],
-                "modelList[0].xspjList[2].childXspjList[2].pfdjdmb_id": ids[22 + 33 + 25],
+                "modelList[0].xspjList[2].pjzbxm_id": ids![3 + 33 + 25],
+                "modelList[0].xspjList[2].childXspjList[0].zsmbmcb_id": ids![4 + 33 + 25],
+                "modelList[0].xspjList[2].childXspjList[0].pjzbxm_id": ids![5 + 33 + 25],
+                "modelList[0].xspjList[2].childXspjList[0].pfdjdmb_id": ids![6 + 33 + 25],
+                "modelList[0].xspjList[2].childXspjList[1].zsmbmcb_id": ids![12 + 33 + 25],
+                "modelList[0].xspjList[2].childXspjList[1].pjzbxm_id": ids![13 + 33 + 25],
+                "modelList[0].xspjList[2].childXspjList[1].pfdjdmb_id": ids![14 + 33 + 25],
+                "modelList[0].xspjList[2].childXspjList[2].zsmbmcb_id": ids![20 + 33 + 25],
+                "modelList[0].xspjList[2].childXspjList[2].pjzbxm_id": ids![21 + 33 + 25],
+                "modelList[0].xspjList[2].childXspjList[2].pfdjdmb_id": ids![22 + 33 + 25],
 
-                "modelList[0].xspjList[3].pjzbxm_id": ids[3 + 33 + 50],
-                "modelList[0].xspjList[3].childXspjList[0].zsmbmcb_id": ids[4 + 33 + 50],
-                "modelList[0].xspjList[3].childXspjList[0].pjzbxm_id": ids[5 + 33 + 50],
-                "modelList[0].xspjList[3].childXspjList[0].pfdjdmb_id": ids[6 + 33 + 50],
-                "modelList[0].xspjList[3].childXspjList[1].zsmbmcb_id": ids[12 + 33 + 50],
-                "modelList[0].xspjList[3].childXspjList[1].pjzbxm_id": ids[13 + 33 + 50],
-                "modelList[0].xspjList[3].childXspjList[1].pfdjdmb_id": ids[14 + 33 + 50],
-                "modelList[0].xspjList[3].childXspjList[2].zsmbmcb_id": ids[20 + 33 + 50],
-                "modelList[0].xspjList[3].childXspjList[2].pjzbxm_id": ids[21 + 33 + 50],
-                "modelList[0].xspjList[3].childXspjList[2].pfdjdmb_id": ids[22 + 33 + 50],
+                "modelList[0].xspjList[3].pjzbxm_id": ids![3 + 33 + 50],
+                "modelList[0].xspjList[3].childXspjList[0].zsmbmcb_id": ids![4 + 33 + 50],
+                "modelList[0].xspjList[3].childXspjList[0].pjzbxm_id": ids![5 + 33 + 50],
+                "modelList[0].xspjList[3].childXspjList[0].pfdjdmb_id": ids![6 + 33 + 50],
+                "modelList[0].xspjList[3].childXspjList[1].zsmbmcb_id": ids![12 + 33 + 50],
+                "modelList[0].xspjList[3].childXspjList[1].pjzbxm_id": ids![13 + 33 + 50],
+                "modelList[0].xspjList[3].childXspjList[1].pfdjdmb_id": ids![14 + 33 + 50],
+                "modelList[0].xspjList[3].childXspjList[2].zsmbmcb_id": ids![20 + 33 + 50],
+                "modelList[0].xspjList[3].childXspjList[2].pjzbxm_id": ids![21 + 33 + 50],
+                "modelList[0].xspjList[3].childXspjList[2].pfdjdmb_id": ids![22 + 33 + 50],
 
-                "modelList[0].xspjList[4].pjzbxm_id": ids[3 + 33 + 75],
-                "modelList[0].xspjList[4].childXspjList[0].zsmbmcb_id": ids[4 + 33 + 75],
-                "modelList[0].xspjList[4].childXspjList[0].pjzbxm_id": ids[5 + 33 + 75],
-                "modelList[0].xspjList[4].childXspjList[0].pfdjdmb_id": ids[6 + 33 + 75],
-                "modelList[0].xspjList[4].childXspjList[1].zsmbmcb_id": ids[12 + 33 + 75],
-                "modelList[0].xspjList[4].childXspjList[1].pjzbxm_id": ids[13 + 33 + 75],
-                "modelList[0].xspjList[4].childXspjList[1].pfdjdmb_id": ids[14 + 33 + 75],
-                "modelList[0].xspjList[4].childXspjList[2].zsmbmcb_id": ids[20 + 33 + 75],
-                "modelList[0].xspjList[4].childXspjList[2].pjzbxm_id": ids[21 + 33 + 75],
-                "modelList[0].xspjList[4].childXspjList[2].pfdjdmb_id": ids[22 + 33 + 75],
+                "modelList[0].xspjList[4].pjzbxm_id": ids![3 + 33 + 75],
+                "modelList[0].xspjList[4].childXspjList[0].zsmbmcb_id": ids![4 + 33 + 75],
+                "modelList[0].xspjList[4].childXspjList[0].pjzbxm_id": ids![5 + 33 + 75],
+                "modelList[0].xspjList[4].childXspjList[0].pfdjdmb_id": ids![6 + 33 + 75],
+                "modelList[0].xspjList[4].childXspjList[1].zsmbmcb_id": ids![12 + 33 + 75],
+                "modelList[0].xspjList[4].childXspjList[1].pjzbxm_id": ids![13 + 33 + 75],
+                "modelList[0].xspjList[4].childXspjList[1].pfdjdmb_id": ids![14 + 33 + 75],
+                "modelList[0].xspjList[4].childXspjList[2].zsmbmcb_id": ids![20 + 33 + 75],
+                "modelList[0].xspjList[4].childXspjList[2].pjzbxm_id": ids![21 + 33 + 75],
+                "modelList[0].xspjList[4].childXspjList[2].pfdjdmb_id": ids![22 + 33 + 75],
 
                 "modelList[0].pjzt": 0,
                 tjzt: 0,
@@ -431,6 +422,7 @@ export function EvaDetail({navigation}) {
         const k = parseEvaluationHTML(res);
         setData(k);
         setCategories(k.teachers![0].categories);
+        console.log("fuck", k.teachers![0].categories);
         const l = EvaIds(res);
         setIds(l);
     }
@@ -455,9 +447,15 @@ export function EvaDetail({navigation}) {
                 renderItem={({item: teacher}) => (
                     <>
                         {ids.length >= 135 && (
-                            <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
-                                <Text style={styles.submitButtonText}>保存</Text>
-                            </TouchableOpacity>
+                            <>
+                                {/*<Button onPress={init}>refresh</Button>*/}
+                                <TouchableOpacity onPress={FastSubmit} style={styles.submitButton}>
+                                    <Text style={styles.submitButtonText}>应用默认评价示例</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => handleSubmit()} style={styles.submitButton}>
+                                    <Text style={styles.submitButtonText}>保存</Text>
+                                </TouchableOpacity>
+                            </>
                         )}
                         <View style={styles.card}>
                             <Text style={styles.header}>
@@ -473,9 +471,21 @@ export function EvaDetail({navigation}) {
                                 />
                             ))}
                         </View>
-                        <TextInput multiline numberOfLines={4} />
+                        <View>
+                            <Text style={[styles.categoryName, {paddingLeft: "3%"}]}>评语</Text>
+                            <TouchableOpacity
+                                style={styles.commentInput}
+                                onPress={() =>
+                                    navigation.navigate("Comment", {
+                                        initialComment: comment,
+                                        onSave: setComment,
+                                    })
+                                }>
+                                <Text style={{color: "#999"}}>{comment || "请输入评语"}</Text>
+                            </TouchableOpacity>
+                        </View>
                         {ids.length >= 135 && (
-                            <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
+                            <TouchableOpacity onPress={() => handleSubmit()} style={styles.submitButton}>
                                 <Text style={styles.submitButtonText}>保存</Text>
                             </TouchableOpacity>
                         )}
