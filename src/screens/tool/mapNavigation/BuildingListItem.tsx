@@ -1,0 +1,78 @@
+import {Text, useTheme} from "@rneui/themed";
+import {Linking, StyleSheet, TouchableOpacity, View} from "react-native";
+import {Icon} from "@/components/un-ui/Icon.tsx";
+import Flex from "@/components/un-ui/Flex.tsx";
+import {Color} from "@/js/color.ts";
+import {Building} from "@/type/building.ts";
+
+interface Props {
+    building: Building;
+}
+
+export default function BuildingListItem(props: Props){
+    const openMap = async () => {
+        const name = props.building.fullName;
+        const url = `androidamap://poi?sourceApplication=softname&keywords=${name}`;
+        Linking.canOpenURL(url).then(() => {
+            Linking.openURL(url);
+        });
+    };
+
+    const {theme} = useTheme();
+    const defaultColor = Color.mix(
+        Color(theme.colors.primary),
+        Color(theme.colors.background),
+        theme.mode === "dark" ? 0.1 : 0.4,
+    ).setAlpha(theme.mode === "dark" ? 0.3 : 0.8).rgbaString;
+
+    const styles = StyleSheet.create({
+        container: {
+            marginHorizontal: 16,
+            marginVertical: 8,
+            padding: 16,
+            borderRadius: 12,
+            borderWidth: 1,
+            borderColor: defaultColor,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+        },
+        nameText: {
+            fontSize: 18,
+            fontWeight: "500",
+            color: theme.colors.black,
+        },
+        iconContainer: {
+            marginLeft: 16,
+            padding: 4,
+        },
+        tag: {
+            backgroundColor: "#f0f2f5",
+            borderRadius: 4,
+            paddingHorizontal: 8,
+            paddingVertical: 4,
+        },
+        tagText: {
+            fontSize: 12,
+            color: "#555",
+        },
+    });
+
+    return (
+        <View style={styles.container}>
+            <Flex direction="column" alignItems="flex-start" style={{flex: 1}}>
+                <Text style={styles.nameText}>{props.building.name}</Text>
+                <Flex style={{flexWrap: "wrap", marginTop: 8}} gap={8}>
+                    {props.building.simpleName.map((name, index) => (
+                        <View key={index} style={styles.tag}>
+                            <Text style={styles.tagText}>{name}</Text>
+                        </View>
+                    ))}
+                </Flex>
+            </Flex>
+            <TouchableOpacity onPress={openMap} style={styles.iconContainer}>
+                <Icon type="Ionicon" name="navigate" color={defaultColor} size={28} />
+            </TouchableOpacity>
+        </View>
+    );
+};

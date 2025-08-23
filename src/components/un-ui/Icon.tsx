@@ -1,12 +1,13 @@
 import AntDesign from "react-native-vector-icons/AntDesign.js";
 import FontAwesome from "react-native-vector-icons/FontAwesome.js";
+import Ionicons from "react-native-vector-icons/Ionicons.js";
 import {IconProps, useTheme} from "@rneui/themed";
 
 interface Props extends IconProps{
     name: string;
     size?: number;
     color?: string;
-    type?: "antdesign" | "fontawesome";
+    type?: "antdesign" | "fontawesome" | "Ionicon";
 }
 
 export function Icon({type = "antdesign", name, size = 12, color, ...props}: Props) {
@@ -18,6 +19,8 @@ export function Icon({type = "antdesign", name, size = 12, color, ...props}: Pro
             return <AntDesign name={name} size={size} color={iconColor} {...props} />;
         case "fontawesome":
             return <FontAwesome name={name} size={size} color={iconColor} {...props} />;
+        case "Ionicon":
+            return <Ionicons name={name} size={size} color={iconColor} {...props} />;
         default:
             return <AntDesign name={name} size={size} color={iconColor} {...props} />;
     }

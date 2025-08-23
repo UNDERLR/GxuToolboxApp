@@ -61,6 +61,16 @@ const toolList = [
             },
         ],
     },
+    {
+        title: "其他",
+        data: [
+            {
+                label: "地图导航",
+                icon: <Icon type="Ionicon" name="compass-outline" size={iconSize} />,
+                navigation: "PositionListScreen",
+            },
+        ],
+    },
 ] as settingSection[];
 
 export function ToolboxIndex() {
