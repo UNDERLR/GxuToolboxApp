@@ -24,8 +24,6 @@ function App(): React.JSX.Element {
         [colorScheme],
     );
 
-    const appRef = useRef<View>(null);
-
     const handleRequestPermission = async () => {
         // 首先检查权限状态
         const hasPermission = await checkStoragePermission();
@@ -76,7 +74,7 @@ function App(): React.JSX.Element {
         <ThemeProvider theme={currentTheme}>
             <AppProvider>
                 <SafeAreaProvider>
-                    <Root ref={appRef} />
+                    <Root/>
                 </SafeAreaProvider>
             </AppProvider>
         </ThemeProvider>

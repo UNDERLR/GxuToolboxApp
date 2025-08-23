@@ -1,7 +1,7 @@
 import {ImageBackground, StatusBar, StyleSheet, useColorScheme, View, ViewProps} from "react-native";
 import {DarkTheme, DefaultTheme, NavigationContainer} from "@react-navigation/native";
 import {RootStack} from "@/route/RootStack.tsx";
-import React, {useCallback, useContext, useMemo} from "react";
+import React, {useCallback, useContext, useEffect, useMemo, useState} from "react";
 import {CheckUpdate} from "@/components/CheckUpdate.tsx";
 import {CourseScheduleContext, generateCourseScheduleStyle, useCourseScheduleData} from "@/js/jw/course.ts";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
@@ -31,6 +31,7 @@ export function Root(props: ViewProps) {
     const style = StyleSheet.create({
         backgroundStyle: {
             flex: 1,
+            backgroundColor: theme.colors.grey5,
         },
         bg: {
             width: "100%",

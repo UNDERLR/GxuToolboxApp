@@ -109,11 +109,12 @@ export function ToolboxIndex() {
     return (
         <ScrollView style={style.settingContainer}>
             {toolList.map(section => (
-                <View style={style.settingSectionContainer}>
+                <View style={style.settingSectionContainer} key={`tool-${section.title}`}>
                     <Text h4>{section.title}</Text>
                     <Flex style={style.toolListContainer}>
                         {section.data.map(tool => (
                             <Pressable
+                                key={`tool-${section.title}-${tool.label}`}
                                 style={style.settingItem}
                                 android_ripple={userConfig.theme.ripple}
                                 onPress={() => navigation.navigate(tool.navigation)}>
