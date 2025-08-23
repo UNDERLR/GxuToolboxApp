@@ -11,7 +11,7 @@ import Flex from "@/components/un-ui/Flex.tsx";
 export function StuEvaluation() {
     const {theme} = useTheme();
     const [evaList, setEvaList] = useState<Evaluation[]>([]);
-    const navigation = useNavigation<any>();
+    const navigation = useNavigation();
     const colWidths = [9, 6, 5];
     const handleRowPress = (item: Evaluation) => {
         navigation.navigate("EvaDetail", {evaluationItem: item});
@@ -63,6 +63,10 @@ export function StuEvaluation() {
     }
 
     useEffect(() => {
+        navigation.addListener("focus", init);
+    }, []);
+
+    useEffect(() => {
         init();
     }, []);
 
@@ -71,7 +75,8 @@ export function StuEvaluation() {
             <Flex direction="column" gap={10}>
                 <Text style={{fontSize: 14}}>请点击下方评价列表中的元素进入详情页进行评价</Text>
                 <Text style={{fontSize: 14}}>
-                    当前共有项评价，其中 {evaList.filter(eva => eva.tjztmc === statusList[0]).length} 项已评完，
+                    当前共有 {evaList.length}
+                    项评价，其中 {evaList.filter(eva => eva.tjztmc === statusList[0]).length} 项已评完，
                     {evaList.filter(eva => eva.tjztmc === statusList[1]).length} 项未评完，
                     {evaList.filter(eva => eva.tjztmc === statusList[2]).length} 项未评
                 </Text>

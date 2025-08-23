@@ -1,14 +1,13 @@
 import {RouteProp, useRoute} from "@react-navigation/native";
 import {Evaluation} from "@/type/eduEvaluation/evaluation.ts";
-import {FlatList, KeyboardAvoidingView, Platform, StyleSheet, TextInput, TouchableOpacity, View} from "react-native";
+import {FlatList, StyleSheet, TouchableOpacity, View} from "react-native";
 import {Button, Text, useTheme} from "@rneui/themed";
 import {infoQuery} from "@/js/jw/infoQuery.ts";
-import {memo, useEffect, useLayoutEffect, useState, useCallback} from "react";
+import {memo, useCallback, useEffect, useLayoutEffect, useState} from "react";
 import cheerio from "react-native-cheerio";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {Color} from "@/js/color.ts";
 import {UnOption} from "@/components/un-ui/UnOption.tsx";
-import {EvaComment} from "./EvaComment.tsx";
 
 type RootStackParamList = {
     EvaDetail: {evaluationItem: Evaluation};
@@ -89,13 +88,10 @@ export function EvaDetail({navigation}) {
 
     const onSelect = useCallback((catIdx: number, itIdx: number, optIdx: number) => {
         const itemKey = `0-${catIdx}-${itIdx}`;
-        setSelected(prev => ({
-            ...prev,
-            "0": {
-                ...(prev["0"] || {}),
-                [itemKey]: optIdx,
-            },
-        }));
+        selected["0"] = {
+            ...(selected["0"] || {}),
+            [itemKey]: optIdx,
+        };
     }, []);
 
     useEffect(() => {
@@ -308,6 +304,7 @@ export function EvaDetail({navigation}) {
     };
     /** 点击提交按钮触发提交 */
     const handleSubmit = async (submitSelected = selected, submitComment: string = comment) => {
+        console.log('start-saving');
         const f = (x: number, y: number, z: number) => {
             if (x === 0) {
                 return 7 + 8 * y + z;
@@ -407,6 +404,7 @@ export function EvaDetail({navigation}) {
             },
             newsub,
         );
+        setSelected(submitSelected);
         init();
     };
 

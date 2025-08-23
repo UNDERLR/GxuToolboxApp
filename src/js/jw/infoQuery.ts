@@ -226,8 +226,8 @@ export const infoQuery = {
                 return;
             }
             const reqBody = objectToFormUrlEncoded(Params1) + "&" + objectToFormUrlEncoded(Params2);
-            console.log(reqBody);
             const res = await http.post("/xspjgl/xspj_bcXspj.html?gnmkdm=N401605", reqBody);
+            console.log(res.data);
             if (typeof res.data === "string") {
                 ToastAndroid.show(res.data, ToastAndroid.SHORT);
                 resolve(res.data);
