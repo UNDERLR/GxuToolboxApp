@@ -101,7 +101,8 @@ export function generateCourseScheduleStyle(config: IUserConfig["theme"]["course
             borderRadius: 5,
             borderWidth: config.courseItemBorderWidth,
             borderStyle: "solid",
-            padding: 5,
+            paddingVertical: 5,
+            paddingHorizontal: 2,
         },
         practicalCourseItem: {
             gap: 3,

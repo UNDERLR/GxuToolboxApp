@@ -1,7 +1,7 @@
 import React, {useContext, useMemo, useState} from "react";
 import {StyleSheet, View} from "react-native";
 import Flex from "@/components/un-ui/Flex.tsx";
-import {BottomSheet, useTheme, Text} from "@rneui/themed";
+import {BottomSheet, Text, useTheme} from "@rneui/themed";
 import {CourseScheduleTable} from "@/components/tool/infoQuery/courseSchedule/CourseScheduleTable.tsx";
 import {usePagerView} from "react-native-pager-view";
 import moment from "moment/moment";
@@ -33,7 +33,7 @@ export function CourseScheduleView(props: Props) {
 
     const [courseDetailVisible, setCourseDetailVisible] = useState(false);
     const [activeCourse, setActiveCourse] = useState<Course>({} as Course);
-    const [nextCourse, setNextCourse] = useState<Course | null>(null);
+    const [nextCourse, setNextCourse] = useState<Course>();
 
     const style = StyleSheet.create({
         pagerView: {
@@ -53,17 +53,16 @@ export function CourseScheduleView(props: Props) {
             padding: "5%",
         },
         nextCourse: {
-            alignItems: "center",
-            borderColor: Color.mix(theme.colors.primary, theme.colors.background, 0.4).rgbaString,
-            backgroundColor: theme.colors.background,
+            textAlign: "center",
+            borderColor: Color.mix(theme.colors.primary, theme.colors.background, 0.6).rgbaString,
             borderWidth: 1,
             borderRadius: 15,
             paddingVertical: "2%",
             marginLeft: "auto",
             marginRight: "auto",
             marginBottom: "3%",
-            paddingHorizontal:"8%",
-        }
+            paddingHorizontal: "8%",
+        },
     });
 
     function showCourseDetail(course: Course) {
@@ -89,13 +88,13 @@ export function CourseScheduleView(props: Props) {
     );
     return (
         <View>
-            <View style={style.nextCourse}>
-                {nextCourse && (
+            {nextCourse && (
+                <View style={style.nextCourse}>
                     <Text style={{fontSize: 13}}>
-                        下节：{nextCourse.kcmc} #{nextCourse.cdmc}
+                        下一节课程：{nextCourse.kcmc} #{nextCourse.cdmc}
                     </Text>
-                )}
-            </View>
+                </View>
+            )}
             <AnimatedPagerView
                 testID="pager-view"
                 ref={ref}

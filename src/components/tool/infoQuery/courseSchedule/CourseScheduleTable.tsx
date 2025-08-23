@@ -20,7 +20,7 @@ interface Props {
     // 非课程类型
     examList?: ExamInfo[];
     onExamPress?: (examInfo: ExamInfo) => void;
-    onNextCourseCalculated?: (course: Course | null) => void;
+    onNextCourseCalculated?: (course?: Course) => void;
 }
 
 interface CourseItem extends Course {
@@ -41,7 +41,7 @@ export function CourseScheduleTable(props: Props) {
     const nextCourse = useMemo(() => {
         const allCourses = props.courseList;
         if (!allCourses || allCourses.length === 0) {
-            return null;
+            return;
         }
 
         const now = moment();
@@ -79,11 +79,11 @@ export function CourseScheduleTable(props: Props) {
         });
 
         if (futureCourses.length === 0) {
-            return null;
+            return;
         }
 
         futureCourses.sort((a, b) => a.time.diff(b.time));
-        return futureCourses[0]?.course ?? null;
+        return futureCourses[0]?.course;
     }, [props.courseList, courseScheduleData.timeSpanList, userConfig.jw.startDay]);
 
     function init() {
