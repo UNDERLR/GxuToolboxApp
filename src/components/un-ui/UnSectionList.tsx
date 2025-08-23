@@ -1,4 +1,4 @@
-import {Linking, Pressable, SectionList, StyleSheet, ToastAndroid, View} from "react-native";
+import {Linking, Pressable, SectionList, SectionListProps, StyleSheet, ToastAndroid, View} from "react-native";
 import Clipboard from "@react-native-clipboard/clipboard";
 import {Color} from "@/js/color.ts";
 import {useNavigation} from "@react-navigation/native";
@@ -20,11 +20,9 @@ interface UnListItem {
     url?: string;
 }
 
-interface Props {
-    list: UnListSection[];
-}
+interface Props {}
 
-export function UnSectionList(props: Props) {
+export function UnSectionList(props: Props & SectionListProps<UnListItem, UnListSection>) {
     const {userConfig} = useContext(UserConfigContext);
     const navigation = useNavigation();
     const {theme} = useTheme();
@@ -71,15 +69,13 @@ export function UnSectionList(props: Props) {
         },
     });
 
-    async function openUrl(url: string) {
+    async function openUrl(url?: string) {
         if (url) {
-            const supported = await Linking.canOpenURL(url);
-            if (supported) {
-                await Linking.openURL(url);
-            } else {
+            Linking.openURL(url).catch(e => {
+                console.error(e);
                 ToastAndroid.show("打开链接失败，已将链接复制至剪切板", ToastAndroid.LONG);
                 Clipboard.setString(url);
-            }
+            });
         }
     }
 
@@ -112,7 +108,7 @@ export function UnSectionList(props: Props) {
             case "link":
                 return (
                     <Pressable
-                        onPress={() => openUrl(item.value)}
+                        onPress={() => openUrl(item.url)}
                         style={itemStyle}
                         android_ripple={userConfig.theme.ripple}>
                         <Text>{item.label}</Text>
@@ -148,7 +144,6 @@ export function UnSectionList(props: Props) {
     };
     return (
         <SectionList<UnListItem, UnListSection>
-            sections={props.list}
             renderItem={({item, index, section}) => (
                 <View style={style.settingItemContainer}>{renderItem(item, index !== section.data.length - 1)}</View>
             )}
@@ -159,6 +154,7 @@ export function UnSectionList(props: Props) {
                 </View>
             )}
             renderSectionFooter={() => <View style={style.settingSectionFooter} />}
+            {...props}
         />
     );
 }

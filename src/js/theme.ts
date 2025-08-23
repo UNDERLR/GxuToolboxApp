@@ -58,7 +58,7 @@ export function generateUiTheme(config: IUserConfig, colorScheme: ColorSchemeNam
         },
         components: {
             Divider: {
-                color: Color.mix(theme.darkColors?.grey3 ?? "#5e6977", primaryColor).setAlpha(0.3).rgbaString,
+                color: theme.lightColors?.grey3,
             },
         },
     });

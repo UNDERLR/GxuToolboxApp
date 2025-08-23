@@ -1,4 +1,3 @@
-import {ScrollView} from "react-native";
 import {Button} from "@rneui/themed";
 import Flex from "@/components/un-ui/Flex.tsx";
 import packageJson from "../../../package.json";
@@ -122,9 +121,5 @@ export function SettingIndex() {
         },
     ];
 
-    return (
-        <ScrollView style={{padding: "5%"}}>
-            <UnSectionList list={settingList} />
-        </ScrollView>
-    );
+    return <UnSectionList sections={settingList} contentContainerStyle={{padding: "5%"}} />;
 }
