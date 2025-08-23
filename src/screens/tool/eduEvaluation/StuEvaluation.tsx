@@ -1,18 +1,18 @@
 import {useEffect, useState} from "react";
 import {infoQuery} from "@/js/jw/infoQuery.ts";
 import {Evaluation} from "@/type/eduEvaluation/evaluation.ts";
-import {Dimensions, ScrollView, StyleSheet, TouchableOpacity, View} from "react-native";
+import {ScrollView, StyleSheet, TouchableOpacity} from "react-native";
 import {Row, Table} from "react-native-reanimated-table";
 import {useNavigation} from "@react-navigation/native";
 import {Color} from "@/js/color.ts";
-import {useTheme} from "@rneui/themed";
+import {Text, useTheme} from "@rneui/themed";
+import Flex from "@/components/un-ui/Flex.tsx";
 
 export function StuEvaluation() {
     const {theme} = useTheme();
     const [evaList, setEvaList] = useState<Evaluation[]>([]);
     const navigation = useNavigation<any>();
-    const screenWidth = Dimensions.get("window").width;
-    const colWidths = [screenWidth * 0.45, screenWidth * 0.3, screenWidth * 0.25];
+    const colWidths = [9, 6, 5];
     const handleRowPress = (item: Evaluation) => {
         navigation.navigate("EvaDetail", {evaluationItem: item});
     };
@@ -24,6 +24,8 @@ export function StuEvaluation() {
     const styles = StyleSheet.create({
         container: {
             flex: 1,
+            paddingHorizontal: 10,
+            paddingVertical: 15,
         },
         header: {
             height: 50,
@@ -38,20 +40,26 @@ export function StuEvaluation() {
         row: {
             height: 45,
             borderBottomWidth: 1,
-            borderBottomColor: theme.colors.primary,
+            borderBottomColor: Color(theme.colors.primary).setAlpha(0.3).rgbaString,
             alignItems: "center",
         },
         rowText: {
             textAlign: "center",
-            color: theme.colors.black,
             fontSize: 14,
         },
     });
 
+    const colorMap: Record<string, string> = {
+        已评完: theme.colors.success,
+        未评完: theme.colors.warning,
+        未评: theme.colors.error,
+    };
+    const statusList = Object.keys(colorMap);
+
     async function init() {
         const res = await infoQuery.getEvaluateList();
+        res.items.sort((a, b) => statusList.indexOf(a.tjztmc) - statusList.indexOf(b.tjztmc));
         setEvaList(res.items);
-        console.log(res.items);
     }
 
     useEffect(() => {
@@ -59,27 +67,34 @@ export function StuEvaluation() {
     }, []);
 
     return (
-        <ScrollView style={styles.container}>
-            <View style={{width: "100%"}}>
-                <Table>
+        <ScrollView contentContainerStyle={styles.container}>
+            <Flex direction="column" gap={10}>
+                <Text style={{fontSize: 14}}>请点击下方评价列表中的元素进入详情页进行评价</Text>
+                <Text style={{fontSize: 14}}>
+                    当前共有项评价，其中 {evaList.filter(eva => eva.tjztmc === statusList[0]).length} 项已评完，
+                    {evaList.filter(eva => eva.tjztmc === statusList[1]).length} 项未评完，
+                    {evaList.filter(eva => eva.tjztmc === statusList[2]).length} 项未评
+                </Text>
+                <Table style={{width: "100%"}}>
                     <Row
                         data={["课程", "教师", "评价"]}
                         style={styles.header}
-                        widthArr={colWidths}
+                        flexArr={colWidths}
                         textStyle={styles.headerText}
                     />
                     {evaList.map((item, index) => (
                         <TouchableOpacity key={index} onPress={() => handleRowPress(item)}>
                             <Row
+                                cellTextStyle={cell => ({color: colorMap[cell] ?? theme.colors.black})}
                                 data={[item.kcmc, item.jzgmc, item.tjztmc]}
                                 style={styles.row}
-                                widthArr={colWidths}
+                                flexArr={colWidths}
                                 textStyle={styles.rowText}
                             />
                         </TouchableOpacity>
                     ))}
                 </Table>
-            </View>
+            </Flex>
         </ScrollView>
     );
 }

@@ -13,7 +13,7 @@ type CommentRouteParams = {
 // 为 useRoute 指定类型
 type CommentScreenRouteProp = RouteProp<{params: CommentRouteParams}, "params">;
 
-export function Comment() {
+export function EvaComment() {
     const {theme} = useTheme();
     const navigation = useNavigation();
     const route = useRoute<CommentScreenRouteProp>();

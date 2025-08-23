@@ -8,7 +8,7 @@ import cheerio from "react-native-cheerio";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {Color} from "@/js/color.ts";
 import {UnOption} from "@/components/un-ui/UnOption.tsx";
-import {Comment} from "./Comment";
+import {EvaComment} from "./EvaComment.tsx";
 
 type RootStackParamList = {
     EvaDetail: {evaluationItem: Evaluation};
