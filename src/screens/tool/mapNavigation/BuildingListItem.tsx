@@ -3,21 +3,16 @@ import {Linking, StyleSheet, ToastAndroid, TouchableOpacity, View} from "react-n
 import {Icon} from "@/components/un-ui/Icon.tsx";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {Color} from "@/js/color.ts";
-import {Building} from "@/type/building.ts";
+import {IPos} from "@/type/pos.ts";
+import {Pos} from "@/js/pos.ts";
 
 interface Props {
-    building: Building;
+    building: IPos;
 }
 
 export default function BuildingListItem(props: Props) {
     const openMap = async () => {
-        const name = props.building.fullName;
-        const url = `androidamap://poi?sourceApplication=softname&keywords=${name}`;
-        Linking.canOpenURL(url)
-            .then(() => {
-                Linking.openURL(url);
-            })
-            .catch(e => {
+            Pos.searchInMap(props.building).catch(e => {
                 console.error(e);
                 ToastAndroid.show("无法打开地图", ToastAndroid.SHORT);
             });
