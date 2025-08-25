@@ -48,7 +48,7 @@ export function BuildingListScreen() {
             </View>
 
             <FlatList
-                BuildingList={selectedData}
+                data={selectedData}
                 renderItem={({item}) => <BuildingListItem building={item} />}
                 keyExtractor={item => item.fullName}
             />
