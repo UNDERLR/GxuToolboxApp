@@ -91,7 +91,7 @@ export function CourseScheduleView(props: Props) {
             {nextCourse && (
                 <View style={style.nextCourse}>
                     <Text style={{fontSize: 13}}>
-                        下一节课程：{nextCourse.kcmc} #{nextCourse.cdmc}
+                        下一节：{nextCourse.kcmc} #{nextCourse.cdmc}
                     </Text>
                 </View>
             )}

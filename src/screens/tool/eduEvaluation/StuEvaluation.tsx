@@ -1,12 +1,13 @@
-import {useEffect, useState} from "react";
+import {useCallback, useState} from "react";
 import {infoQuery} from "@/js/jw/infoQuery.ts";
 import {Evaluation} from "@/type/eduEvaluation/evaluation.ts";
-import {ScrollView, StyleSheet, TouchableOpacity} from "react-native";
+import {ScrollView, StyleSheet} from "react-native";
 import {Row, Table} from "react-native-reanimated-table";
-import {useNavigation} from "@react-navigation/native";
+import {useFocusEffect, useNavigation} from "@react-navigation/native";
 import {Color} from "@/js/color.ts";
 import {Text, useTheme} from "@rneui/themed";
 import Flex from "@/components/un-ui/Flex.tsx";
+import {EvaluationRow} from "@/components/tool/eduEvaluation/EvaluationRow.tsx";
 
 export function StuEvaluation() {
     const {theme} = useTheme();
@@ -23,7 +24,6 @@ export function StuEvaluation() {
     ).setAlpha(theme.mode === "dark" ? 0.3 : 0.8).rgbaString;
     const styles = StyleSheet.create({
         container: {
-            flex: 1,
             paddingHorizontal: 10,
             paddingVertical: 15,
         },
@@ -62,41 +62,39 @@ export function StuEvaluation() {
         setEvaList(res.items);
     }
 
-    useEffect(() => {
-        navigation.addListener("focus", init);
-    }, []);
-
-    useEffect(() => {
-        init();
-    }, []);
+    useFocusEffect(
+        useCallback(() => {
+            init();
+        }, [])
+    );
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <Flex direction="column" gap={10}>
-                <Text style={{fontSize: 14}}>请点击下方评价列表中的元素进入详情页进行评价</Text>
+                <Text style={{fontSize: 14}}>请点击下方评价列表中的元素，进入详情页评价</Text>
                 <Text style={{fontSize: 14}}>
-                    当前共有 {evaList.length}
-                    项评价，其中 {evaList.filter(eva => eva.tjztmc === statusList[0]).length} 项已评完，
+                    当前共有 {evaList.length} 项评价
+                </Text>
+                <Text style={{fontSize: 14}}>
+                    其中 {evaList.filter(eva => eva.tjztmc === statusList[0]).length} 项已评完，
                     {evaList.filter(eva => eva.tjztmc === statusList[1]).length} 项未评完，
                     {evaList.filter(eva => eva.tjztmc === statusList[2]).length} 项未评
                 </Text>
                 <Table style={{width: "100%"}}>
                     <Row
-                        data={["课程", "教师", "评价"]}
+                        data={["课程", "教师", "状态"]}
                         style={styles.header}
                         flexArr={colWidths}
                         textStyle={styles.headerText}
                     />
-                    {evaList.map((item, index) => (
-                        <TouchableOpacity key={index} onPress={() => handleRowPress(item)}>
-                            <Row
-                                cellTextStyle={cell => ({color: colorMap[cell] ?? theme.colors.black})}
-                                data={[item.kcmc, item.jzgmc, item.tjztmc]}
-                                style={styles.row}
-                                flexArr={colWidths}
-                                textStyle={styles.rowText}
-                            />
-                        </TouchableOpacity>
+                    {evaList.map((item) => (
+                        <EvaluationRow
+                            key={item.jxb_id + item.jgh_id}
+                            item={item}
+                            onPress={handleRowPress}
+                            colWidths={colWidths}
+                            colorMap={colorMap}
+                        />
                     ))}
                 </Table>
             </Flex>
