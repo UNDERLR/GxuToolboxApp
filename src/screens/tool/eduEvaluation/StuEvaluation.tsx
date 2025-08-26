@@ -1,9 +1,9 @@
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {infoQuery} from "@/js/jw/infoQuery.ts";
 import {Evaluation} from "@/type/eduEvaluation/evaluation.ts";
 import {ScrollView, StyleSheet} from "react-native";
 import {Row, Table} from "react-native-reanimated-table";
-import {useNavigation} from "@react-navigation/native";
+import {useFocusEffect, useNavigation} from "@react-navigation/native";
 import {Color} from "@/js/color.ts";
 import {Text, useTheme} from "@rneui/themed";
 import Flex from "@/components/un-ui/Flex.tsx";
@@ -62,13 +62,11 @@ export function StuEvaluation() {
         setEvaList(res.items);
     }
 
-    useEffect(() => {
-        navigation.addListener("focus", init);
-    }, []);
-
-    useEffect(() => {
-        init();
-    }, []);
+    useFocusEffect(
+        useCallback(() => {
+            init();
+        }, [])
+    );
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
@@ -77,8 +75,8 @@ export function StuEvaluation() {
                 <Text style={{fontSize: 14}}>
                     当前共有 {evaList.length} 项评价
                 </Text>
-                    <Text style={{fontSize: 14}}>
-                        其中 {evaList.filter(eva => eva.tjztmc === statusList[0]).length} 项已评完，
+                <Text style={{fontSize: 14}}>
+                    其中 {evaList.filter(eva => eva.tjztmc === statusList[0]).length} 项已评完，
                     {evaList.filter(eva => eva.tjztmc === statusList[1]).length} 项未评完，
                     {evaList.filter(eva => eva.tjztmc === statusList[2]).length} 项未评
                 </Text>
@@ -91,6 +89,7 @@ export function StuEvaluation() {
                     />
                     {evaList.map((item) => (
                         <EvaluationRow
+                            key={item.jxb_id + item.jgh_id}
                             item={item}
                             onPress={handleRowPress}
                             colWidths={colWidths}
