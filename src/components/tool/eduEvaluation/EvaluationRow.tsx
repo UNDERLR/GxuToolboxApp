@@ -28,7 +28,7 @@ const EvaluationRowComponent = ({item, onPress, colWidths, colorMap}: Evaluation
     });
 
     return (
-        <TouchableOpacity key={item.jgh_id} onPress={() => onPress(item)}>
+        <TouchableOpacity onPress={() => onPress(item)}>
             <Row
                 cellTextStyle={cell => ({color: colorMap[cell] ?? theme.colors.black})}
                 data={[item.kcmc, item.jzgmc, item.tjztmc]}
@@ -41,4 +41,3 @@ const EvaluationRowComponent = ({item, onPress, colWidths, colorMap}: Evaluation
 };
 
 export const EvaluationRow = React.memo(EvaluationRowComponent);
-
