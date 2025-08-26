@@ -89,9 +89,8 @@ export function StuEvaluation() {
                         flexArr={colWidths}
                         textStyle={styles.headerText}
                     />
-                    {evaList.map((item, index) => (
+                    {evaList.map((item) => (
                         <EvaluationRow
-                            index={index}
                             item={item}
                             onPress={handleRowPress}
                             colWidths={colWidths}

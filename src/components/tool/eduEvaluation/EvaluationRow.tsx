@@ -6,14 +6,13 @@ import {useTheme} from "@rneui/themed";
 import React from "react";
 
 interface EvaluationRowProps {
-    index: number;
     item: Evaluation;
     onPress: (item: Evaluation) => void;
     colWidths: number[];
     colorMap: Record<string, string>;
 }
 
-const EvaluationRowComponent = ({index, item, onPress, colWidths, colorMap}: EvaluationRowProps) => {
+const EvaluationRowComponent = ({item, onPress, colWidths, colorMap}: EvaluationRowProps) => {
     const {theme} = useTheme();
     const styles = StyleSheet.create({
         row: {
@@ -29,7 +28,7 @@ const EvaluationRowComponent = ({index, item, onPress, colWidths, colorMap}: Eva
     });
 
     return (
-        <TouchableOpacity key={index} onPress={() => onPress(item)}>
+        <TouchableOpacity key={item.jgh_id} onPress={() => onPress(item)}>
             <Row
                 cellTextStyle={cell => ({color: colorMap[cell] ?? theme.colors.black})}
                 data={[item.kcmc, item.jzgmc, item.tjztmc]}
