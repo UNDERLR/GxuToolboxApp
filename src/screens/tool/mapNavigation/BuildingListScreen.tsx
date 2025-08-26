@@ -1,14 +1,11 @@
 import BuildingListItem from "@/screens/tool/mapNavigation/BuildingListItem.tsx";
 import {FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import {BuildingList} from "@/type/building.ts";
+import {BuildingList} from "@/type/pos.ts";
 import {useState} from "react";
 import {useTheme} from "@rneui/themed";
 import {Color} from "@/js/color.ts";
-import {Building} from "@/type/building.ts";
 
-
-const data: Building[] = BuildingList;
-const buildingTypes = ["全部", ...new Set(data.map(item => item.type))];
+const buildingTypes = ["全部", ...new Set(BuildingList.map(item => item.type))];
 
 export function BuildingListScreen() {
     const {theme} = useTheme();
@@ -20,10 +17,8 @@ export function BuildingListScreen() {
 
     const [selectedType, setSelectedType] = useState("全部");
 
-    const selectedData = selectedType === "全部"
-        ? data
-        : data.filter(item => item.type === selectedType);
-
+    const selectedData =
+        selectedType === "全部" ? BuildingList : BuildingList.filter(item => item.type === selectedType);
     return (
         <View style={{flex: 1}}>
             <View>
@@ -53,7 +48,7 @@ export function BuildingListScreen() {
             </View>
 
             <FlatList
-                data={selectedData}
+                BuildingList={selectedData}
                 renderItem={({item}) => <BuildingListItem building={item} />}
                 keyExtractor={item => item.fullName}
             />
