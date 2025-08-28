@@ -18,7 +18,7 @@ export const BuildingList: IPos[] = [
         type: "教学楼",
         name: "东校园第十教学楼",
         fullName: "广西大学东校园第十教学楼",
-        simpleName: ["十教", "东十A", "东十B"],
+        simpleName: ["十教", "东10-A", "东10-B"],
         test: /^东10/,
     },
     {
