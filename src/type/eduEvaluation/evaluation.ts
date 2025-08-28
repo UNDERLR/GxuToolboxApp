@@ -1,6 +1,5 @@
 export interface Evaluation {
-    // 发请求必备参数
-
+    // 发请求获取评价总况的必备参数
     /** 教工号ID（疑似经SHA256加密）*/
     jgh_id: string;
     /** 教学班ID */
@@ -11,8 +10,8 @@ export interface Evaluation {
     xsdm: string;
     /** ? */
     pjmbmcb_id: string;
-    // 前端显示
 
+    // 前端显示
     /** 评价状态 */
     tjztmc: string;
     /** 教师姓名 */
