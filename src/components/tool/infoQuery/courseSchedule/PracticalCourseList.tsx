@@ -82,8 +82,8 @@ export function PracticalCourseList(props: Props) {
                         key={`${course.qtkcgs}-${index}`}
                         style={[
                             itemStyle.course,
-                            courseScheduleStyle.courseItem,
                             courseScheduleStyle.practicalCourseItem,
+                            courseScheduleStyle.courseItem,
                         ]}>
                         <Text style={itemStyle.text}>{course.qtkcgs}</Text>
                         <Flex gap={5}>

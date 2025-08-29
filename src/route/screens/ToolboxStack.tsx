@@ -9,8 +9,9 @@ import {StuEvaluation} from "@/screens/tool/eduEvaluation/StuEvaluation.tsx";
 import {EvaDetail} from "@/screens/tool/eduEvaluation/EvaDetail.tsx";
 import {useTheme} from "@rneui/themed";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
-import { EvaComment } from "@/screens/tool/eduEvaluation/EvaComment.tsx";
+import {EvaComment} from "@/screens/tool/eduEvaluation/EvaComment.tsx";
 import {BuildingListScreen} from "@/screens/tool/mapNavigation/BuildingListScreen.tsx";
+import {CourseScheduleQuery} from "@/screens/tool/infoQuery/courseSchedule/CourseScheduleQuery.tsx";
 
 const Stack = createNativeStackNavigator();
 
@@ -53,6 +54,11 @@ export function ToolboxStack() {
 
             {/*  工具  */}
             <Stack.Screen
+                name="courseScheduleQuery"
+                component={CourseScheduleQuery}
+                options={{title: "课表查询"}}
+            />
+            <Stack.Screen
                 name="classCourseSchedule"
                 component={ClassCourseSchedule}
                 options={{title: "班级课表查询"}}
@@ -63,7 +69,7 @@ export function ToolboxStack() {
 
             <Stack.Screen name="studentEvaluation" component={StuEvaluation} options={{title: "期末学生评价"}} />
             <Stack.Screen name="EvaDetail" component={EvaDetail} options={{title: "学生评价细节"}} />
-            <Stack.Screen name="Comment" component={EvaComment} options={{title:"填写评语"}} />
+            <Stack.Screen name="Comment" component={EvaComment} options={{title: "填写评语"}} />
 
             <Stack.Screen name="PositionListScreen" component={BuildingListScreen} options={{title: "地图导航"}} />
         </Stack.Navigator>

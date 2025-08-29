@@ -4,7 +4,6 @@ import {useContext, useEffect, useState} from "react";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {Picker} from "@react-native-picker/picker";
 import {SchoolTerms, SchoolTermValue, SchoolYears} from "@/type/global.ts";
-import {infoQuery} from "@/js/jw/infoQuery.ts";
 import {NumberInput} from "@/components/un-ui/NumberInput.tsx";
 import {Row, Rows, Table} from "react-native-reanimated-table";
 import {ExamInfoQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
@@ -35,9 +34,6 @@ export function ExamInfo() {
     const style = StyleSheet.create({
         container: {
             padding: "5%",
-        },
-        table: {
-            width: "100%",
         },
         tableText: {
             color: theme.colors.black,
@@ -134,7 +130,7 @@ export function ExamInfo() {
                         <Text>每页15条记录</Text>
                     </Flex>
                     <ScrollView horizontal>
-                        <Table style={style.table} borderStyle={style.tableBorder}>
+                        <Table borderStyle={style.tableBorder}>
                             <Row
                                 data={tableData.header}
                                 widthArr={tableData.width}

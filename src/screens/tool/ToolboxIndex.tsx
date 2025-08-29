@@ -23,15 +23,15 @@ const toolList = [
     {
         title: "课程表",
         data: [
-            // {
-            //     label: "课表查询",
-            //     icon: <Icon name="calendar" size={20} />,
-            //     type: "navigation",
-            //     navigation: "courseSchedule",
-            // },
+            {
+                label: "课表查询",
+                icon: <Icon name="calendar-sharp" type="Ionicon" size={iconSize} />,
+                type: "navigation",
+                navigation: "courseScheduleQuery",
+            },
             {
                 label: "班级课表查询",
-                icon: <Icon name="calendar" size={iconSize} />,
+                icon: <Icon name="calendar-outline" type="Ionicon" size={iconSize} />,
                 navigation: "classCourseSchedule",
             },
         ],

@@ -114,8 +114,9 @@ export function generateCourseScheduleStyle(config: IUserConfig["theme"]["course
         },
         practicalCourseItem: {
             gap: 3,
-            marginHorizontal: "2%",
-            marginVertical: 10,
+            marginHorizontal: "1%",
+            paddingHorizontal: 5,
+            marginTop: 10,
         },
     });
 }
