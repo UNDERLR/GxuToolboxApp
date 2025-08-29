@@ -13,10 +13,13 @@ import {UnPicker} from "@/components/un-ui/UnPicker.tsx";
 import {ExamScoreTable} from "@/screens/tool/infoQuery/ExamScoreTable.tsx";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 import {examApi} from "@/js/jw/exam.ts";
+import {useNavigation} from "@react-navigation/native";
+import {jwxt} from "@/js/jw/jwxt.ts";
 
 export function ExamScore() {
     const {userConfig} = useContext(UserConfigContext);
     const {theme} = useTheme();
+    const navigation = useNavigation();
     const [apiRes, setApiRes] = useState<ExamScoreQueryRes>({} as ExamScoreQueryRes);
     const [year, setYear] = useState(+userConfig.jw.year);
     const [term, setTerm] = useState<SchoolTermValue>(userConfig.jw.term);
@@ -131,9 +134,15 @@ export function ExamScore() {
                             </UnPicker>
                         </View>
                     </Flex>
-                    <View style={{width: "100%"}}>
-                        <Button onPress={query}>查询</Button>
-                    </View>
+                    <Flex gap={10}>
+                        <Button containerStyle={{flex: 1}} onPress={query}>查询</Button>
+                        <Button
+                            onPress={() => {
+                                jwxt.openPageInWebView("/cjcx/cjcx_cxDgXscj.html?gnmkdm=N305005&layout=default", navigation);
+                            }}>
+                            前往教务查询
+                        </Button>
+                    </Flex>
                 </Flex>
                 <Divider />
                 <Flex direction="column" gap={15} alignItems="flex-start">

@@ -16,9 +16,12 @@ import {UnPicker} from "@/components/un-ui/UnPicker";
 import {Picker} from "@react-native-picker/picker";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 import {courseApi} from "@/js/jw/course.ts";
+import {jwxt} from "@/js/jw/jwxt.ts";
+import {useNavigation} from "@react-navigation/native";
 
 export function ClassCourseSchedule() {
     const {userConfig} = useContext(UserConfigContext);
+    const navigation = useNavigation();
     const {theme} = useTheme();
     const [userInfo, setUserInfo] = useState<UserInfo>();
     const [subjectList, setSubjectList] = useState<string[][]>([]);
@@ -196,9 +199,20 @@ export function ClassCourseSchedule() {
                             </UnPicker>
                         </View>
                     </Flex>
-                    <View style={{width: "100%"}}>
-                        <Button onPress={() => queryClassCourseScheduleList(true)}>查询课表</Button>
-                    </View>
+                    <Flex gap={10}>
+                        <Button containerStyle={{flex: 1}} onPress={() => queryClassCourseScheduleList(true)}>
+                            查询课表
+                        </Button>
+                        <Button
+                            onPress={() =>
+                                jwxt.openPageInWebView(
+                                    "/kbdy/bjkbdy_cxBjkbdyIndex.html?gnmkdm=N214505&layout=default",
+                                    navigation,
+                                )
+                            }>
+                            前往教务查询
+                        </Button>
+                    </Flex>
                 </Flex>
                 <Divider />
                 <Text h4>课表查询结果</Text>

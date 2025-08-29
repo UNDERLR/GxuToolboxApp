@@ -5,6 +5,7 @@ import {jwxt} from "@/js/jw/jwxt.ts";
 import {userMgr} from "@/js/mgr/user.ts";
 import {Icon} from "@/components/un-ui/Icon.tsx";
 import {beQuery} from "@/js/be/log.ts";
+import { useNavigation } from "@react-navigation/native";
 
 async function getToken(username: string, password: string) {
     userMgr.storeAccount(username, password);
@@ -33,6 +34,7 @@ export function JWAccountScreen() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [showPwd, setShowPwd] = useState(false);
+    const navigation = useNavigation();
 
     //从存储中读取数据
     useEffect(() => {
@@ -70,6 +72,13 @@ export function JWAccountScreen() {
                 }
             />
             <Button onPress={() => getToken(username, password)}>获取Token</Button>
+            <Button
+                containerStyle={{marginTop: 10}}
+                onPress={() => {
+                    jwxt.openPageInWebView("/xtgl/login_slogin.html", navigation);
+                }}>
+                打开教务登录页
+            </Button>
             <Text style={style.note}>提示获取成功后，回到课表页进行测试，若无法正常获取课表，可能为密码错误</Text>
         </View>
     );

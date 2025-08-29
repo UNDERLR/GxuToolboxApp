@@ -16,15 +16,18 @@ import {courseApi} from "@/js/jw/course.ts";
 import {Row, Rows, Table} from "react-native-reanimated-table";
 import {Course} from "@/type/infoQuery/course/course.ts";
 import Clipboard from "@react-native-clipboard/clipboard";
+import {jwxt} from "@/js/jw/jwxt.ts";
+import {useNavigation} from "@react-navigation/native";
 
 export function CourseScheduleQuery() {
     const {theme} = useTheme();
     const {userConfig} = useContext(UserConfigContext);
+    const navigation = useNavigation();
     const [year, setYear] = useState(+userConfig.jw.year);
     const [term, setTerm] = useState<SchoolTermValue>(userConfig.jw.term);
     const pageView = usePagerView({pagesAmount: 20});
     const [courseScheduleList, setCourseScheduleList] = useState<Course[]>();
-    const [courseScheduleApiRes, setcourseScheduleApiRes] = useState<CourseScheduleQueryRes>();
+    const [courseScheduleApiRes, setCourseScheduleApiRes] = useState<CourseScheduleQueryRes>();
     const style = StyleSheet.create({
         container: {
             padding: "5%",
@@ -51,7 +54,7 @@ export function CourseScheduleQuery() {
     async function query() {
         const res = await courseApi.getCourseSchedule(year, term);
         if (res?.kbList || res?.sjkList) {
-            setcourseScheduleApiRes(res);
+            setCourseScheduleApiRes(res);
             const courseList: Course[] = [];
             res.kbList.forEach(course => {
                 if (courseList.findIndex(item => item.kcmc === course.kcmc) < 0) {
@@ -100,9 +103,20 @@ export function CourseScheduleQuery() {
                             </UnPicker>
                         </View>
                     </Flex>
-                    <View style={{width: "100%"}}>
-                        <Button onPress={query}>查询</Button>
-                    </View>
+                    <Flex gap={10}>
+                        <Button containerStyle={{flex: 1}} onPress={query}>
+                            查询
+                        </Button>
+                        <Button
+                            onPress={() =>
+                                jwxt.openPageInWebView(
+                                    "/kbcx/xskbcx_cxXskbcxIndex.html?gnmkdm=N2151&layout=default",
+                                    navigation,
+                                )
+                            }>
+                            前往教务查询
+                        </Button>
+                    </Flex>
                 </Flex>
                 <Divider />
                 <Text h4>课表预览</Text>

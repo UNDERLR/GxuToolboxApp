@@ -33,8 +33,8 @@ export function MainTab() {
                     backgroundColor: Color(theme.colors.background).setAlpha(
                         ((theme.mode === "dark" ? 0.9 : 0.75) * userConfig.theme.bgOpacity) / 100,
                     ).rgbaString,
-                    elevation: 0,           // Android 去除阴影
-                    shadowOpacity: 0,       // iOS 去除阴影
+                    elevation: 0, // Android 去除阴影
+                    shadowOpacity: 0, // iOS 去除阴影
                 },
             }}>
             <Tab.Screen

@@ -4,10 +4,11 @@ import {ScrollView, StyleSheet} from "react-native";
 import {Row, Table} from "react-native-reanimated-table";
 import {useFocusEffect, useNavigation} from "@react-navigation/native";
 import {Color} from "@/js/color.ts";
-import {Text, useTheme} from "@rneui/themed";
+import {Button, Text, useTheme} from "@rneui/themed";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {EvaluationRow} from "@/components/tool/eduEvaluation/EvaluationRow.tsx";
 import {evaluationApi} from "@/js/jw/evaluation.ts";
+import {jwxt} from "@/js/jw/jwxt.ts";
 
 export function StuEvaluation() {
     const {theme} = useTheme();
@@ -78,6 +79,16 @@ export function StuEvaluation() {
                     {evaList.filter(eva => eva.tjztmc === statusList[1]).length} 项未评完，
                     {evaList.filter(eva => eva.tjztmc === statusList[2]).length} 项未评
                 </Text>
+                <Button
+                    containerStyle={{width: "100%"}}
+                    onPress={() => {
+                        jwxt.openPageInWebView(
+                            "/xspjgl/xspj_cxXspjIndex.html?doType=details&gnmkdm=N401605&layout=default",
+                            navigation,
+                        );
+                    }}>
+                    前往教务查看
+                </Button>
                 <Table style={{width: "100%"}}>
                     <Row
                         data={["课程", "教师", "状态"]}

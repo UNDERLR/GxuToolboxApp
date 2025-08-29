@@ -12,10 +12,13 @@ import {Color} from "@/js/color.ts";
 import {UnPicker} from "@/components/un-ui/UnPicker.tsx";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 import {examApi} from "@/js/jw/exam.ts";
+import {jwxt} from "@/js/jw/jwxt.ts";
+import {useNavigation} from "@react-navigation/native";
 
 export function ExamInfo() {
     const {theme} = useTheme();
     const {userConfig} = useContext(UserConfigContext);
+    const navigation = useNavigation();
     const [apiRes, setApiRes] = useState<ExamInfoQueryRes>({} as ExamInfoQueryRes);
     const [year, setYear] = useState(+userConfig.jw.year);
     const [term, setTerm] = useState<SchoolTermValue>(userConfig.jw.term);
@@ -110,9 +113,15 @@ export function ExamInfo() {
                             </UnPicker>
                         </View>
                     </Flex>
-                    <View style={{width: "100%"}}>
-                        <Button onPress={query}>查询</Button>
-                    </View>
+                    <Flex gap={10}>
+                        <Button containerStyle={{flex: 1}} onPress={query}>查询</Button>
+                        <Button
+                            onPress={() => {
+                                jwxt.openPageInWebView("/kwgl/kscx_cxXsksxxIndex.html?gnmkdm=N358105&layout=default", navigation);
+                            }}>
+                            前往教务查询
+                        </Button>
+                    </Flex>
                 </Flex>
                 <Divider />
                 <Flex direction="column" gap={15} alignItems="flex-start">
