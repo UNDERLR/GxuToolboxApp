@@ -12,7 +12,6 @@ import {UserConfigContext} from "@/components/AppProvider.tsx";
 import {EvaComment} from "@/screens/tool/eduEvaluation/EvaComment.tsx";
 import {BuildingListScreen} from "@/screens/tool/mapNavigation/BuildingListScreen.tsx";
 import {CourseScheduleQuery} from "@/screens/tool/infoQuery/courseSchedule/CourseScheduleQuery.tsx";
-import {WebViewScreen} from "@/screens/tool/WebViewScreen.tsx";
 
 const Stack = createNativeStackNavigator();
 
@@ -51,14 +50,6 @@ export function ToolboxStack() {
                         backgroundColor: "transparent",
                     },
                 }}
-            />
-
-            <Stack.Screen
-                name="webViewScreen"
-                options={{
-                    title: "内置浏览器",
-                }}
-                component={WebViewScreen}
             />
 
             {/*  工具  */}
