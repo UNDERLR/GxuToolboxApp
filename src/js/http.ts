@@ -50,16 +50,31 @@ export function urlWithParams(url: string, params: Record<string, any> = {}): st
     );
 }
 
-export function objectToFormUrlEncoded(obj: any, prefix = ""): string {
-    let res = "";
-    for (const key in obj) {
-        if (obj[key] === undefined) {
-            break;
+export function objectToFormUrlEncoded(obj: any): string {
+    const parts: string[] = [];
+
+    const buildParams = (prefix: string, value: any) => {
+        if (value === undefined || value === null) {
+            return;
         }
-        if (typeof obj[key] === "object") {
-            res += objectToFormUrlEncoded(obj[key], prefix + key + ".");
-        } else res += prefix + key + "=" + encodeURIComponent(obj[key]) + "&";
-    }
-    if (!prefix) res = res.slice(0, -1);
-    return res;
+
+        if (Array.isArray(value)) {
+            value.forEach((v, i) => {
+                buildParams(`${prefix}[${i}]`, v);
+            });
+        } else if (typeof value === "object") {
+            Object.keys(value).forEach(key => {
+                const newPrefix = prefix ? `${prefix}.${key}` : key;
+                buildParams(newPrefix, value[key]);
+            });
+        } else {
+            parts.push(`${prefix}=${encodeURIComponent(value)}`);
+        }
+    };
+
+    Object.keys(obj).forEach(key => {
+        buildParams(key, obj[key]);
+    });
+
+    return parts.join("&");
 }
