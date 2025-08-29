@@ -132,6 +132,7 @@ export function ScheduleCard() {
             <Card.Divider />
             <CourseScheduleView
                 showDate
+                showNextCourse
                 startDay={startDay}
                 courseApiRes={apiRes}
                 pageView={pagerView}

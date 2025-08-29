@@ -19,6 +19,7 @@ interface Props {
     pageView: ReturnType<typeof usePagerView>;
     courseApiRes?: CourseScheduleQueryRes;
     showDate?: boolean;
+    showNextCourse?: boolean;
 
     examList?: ExamInfo[];
     onExamPress?: (examInfo: ExamInfo) => void;
@@ -88,7 +89,7 @@ export function CourseScheduleView(props: Props) {
     );
     return (
         <View>
-            {nextCourse && (
+            {nextCourse && props.showNextCourse && (
                 <View style={style.nextCourse}>
                     <Text style={{fontSize: 13}}>
                         下一节：{nextCourse.kcmc} #{nextCourse.cdmc}
