@@ -15,6 +15,7 @@ import {UnSlider} from "@/components/un-ui/UnSlider.tsx";
 import {UnPicker} from "@/components/un-ui/UnPicker";
 import {Picker} from "@react-native-picker/picker";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
+import {courseApi} from "@/js/jw/course.ts";
 
 export function ClassCourseSchedule() {
     const {userConfig} = useContext(UserConfigContext);
@@ -45,7 +46,7 @@ export function ClassCourseSchedule() {
 
     const queryClassCourseScheduleList = async (tip = false) => {
         if (tip) ToastAndroid.show("正在获取班级课表列表", ToastAndroid.SHORT);
-        const res = await infoQuery.getClassCourseScheduleList(year, term, school, subject, grade, classId);
+        const res = await courseApi.getClassCourseScheduleList(year, term, school, subject, grade, classId);
         setClassScheduleList(res.items);
         setClassScheduleIndex(0);
         queryClassCourseSchedule(res.items[0]);
@@ -58,7 +59,7 @@ export function ClassCourseSchedule() {
     const queryClassCourseSchedule = async (item = {}, tip = false) => {
         if (tip) ToastAndroid.show("正在获取班级课表", ToastAndroid.SHORT);
         const {xnm, xqm, njdm_id, jgdm, zyh_id, bh_id} = {...classScheduleList[classScheduleIndex ?? 0], ...item};
-        const res = await infoQuery.getClassCourseSchedule(+xnm, xqm, jgdm, zyh_id, +njdm_id, bh_id);
+        const res = await courseApi.getClassCourseSchedule(+xnm, xqm, jgdm, zyh_id, +njdm_id, bh_id);
         setClassScheduleApiRes(res);
     };
 

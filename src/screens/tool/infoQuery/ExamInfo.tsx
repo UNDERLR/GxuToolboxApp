@@ -1,7 +1,6 @@
 import {ScrollView, StyleSheet, ToastAndroid, View} from "react-native";
 import {Button, Divider, Text, useTheme} from "@rneui/themed";
 import {useContext, useEffect, useState} from "react";
-import moment from "moment/moment";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {Picker} from "@react-native-picker/picker";
 import {SchoolTerms, SchoolTermValue, SchoolYears} from "@/type/global.ts";
@@ -13,6 +12,7 @@ import {store} from "@/js/store.ts";
 import {Color} from "@/js/color.ts";
 import {UnPicker} from "@/components/un-ui/UnPicker.tsx";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
+import {examApi} from "@/js/jw/exam.ts";
 
 export function ExamInfo() {
     const {theme} = useTheme();
@@ -64,7 +64,7 @@ export function ExamInfo() {
     }
 
     async function query() {
-        const res = await infoQuery.getExamInfo(year, term, page);
+        const res = await examApi.getExamInfo(year, term, page);
         if (res) {
             const tableBody = res.items.map(item => [
                 item.kcmc,

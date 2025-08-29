@@ -1,14 +1,13 @@
 import {RouteProp, useRoute} from "@react-navigation/native";
-import {ActivityIndicator, FlatList, ScrollView, StyleSheet, TouchableOpacity, View} from "react-native";
+import {ActivityIndicator, ScrollView, StyleSheet, TouchableOpacity, View} from "react-native";
 import {Button, Text, useTheme} from "@rneui/themed";
-import {infoQuery} from "@/js/jw/infoQuery.ts";
 import {useCallback, useEffect, useLayoutEffect, useState} from "react";
-import Flex from "@/components/un-ui/Flex.tsx";
 import {Color} from "@/js/color.ts";
 import {EvaPOST} from "@/type/eduEvaluation/evaDetail.ts";
-import {EvaIds, parseEvaluationHTML} from "@/js/jw/evaParser.ts";
+import {parseEvaluationHTML} from "@/js/jw/evaParser.ts";
 import {EvaCategory} from "@/components/tool/eduEvaluation/EvaCategory.tsx";
 import {EvaluationIds, EvaReq} from "@/type/eduEvaluation/evaReqForIds.ts";
+import {evaluationApi} from "@/js/jw/evaluation.ts";
 
 type RootStackParamList = {
     EvaDetail: {evaluationItem: EvaPOST};
@@ -167,7 +166,7 @@ export function EvaDetail({navigation}) {
     const handleSubmit = async (submitSelected = selected, submitComment: string = comment) => {
         console.log("start-saving");
 
-        await infoQuery.handleEvaResult(
+        await evaluationApi.handleEvaResult(
             {
                 ztpjbl: 100,
                 jxb_id: evaluationItem.jxb_id,
@@ -189,7 +188,7 @@ export function EvaDetail({navigation}) {
         setLoading(true);
         console.log(evaluationItem);
         try {
-            const HtmlText = await infoQuery.getEvaluateDetail(
+            const HtmlText = await evaluationApi.getEvaluationDetail(
                 evaluationItem.jgh_id,
                 evaluationItem.jxb_id,
                 evaluationItem.kch_id,
@@ -323,7 +322,7 @@ export function EvaDetail({navigation}) {
                 xsdm: "01",
                 ztpjbl: 100,
             };
-            console.log("fuck,",defaultReq);
+            console.log("fuck,", defaultReq);
         } catch (e: any) {
             setError(e.message);
         } finally {

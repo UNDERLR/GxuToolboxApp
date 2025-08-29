@@ -60,9 +60,11 @@ export function ToolboxStack() {
 
             <Stack.Screen name="examInfo" component={ExamInfo} options={{title: "考试信息查询"}} />
             <Stack.Screen name="examScore" component={ExamScore} options={{title: "考试成绩查询"}} />
+
             <Stack.Screen name="studentEvaluation" component={StuEvaluation} options={{title: "期末学生评价"}} />
             <Stack.Screen name="EvaDetail" component={EvaDetail} options={{title: "学生评价细节"}} />
             <Stack.Screen name="Comment" component={EvaComment} options={{title:"填写评语"}} />
+
             <Stack.Screen name="PositionListScreen" component={BuildingListScreen} options={{title: "地图导航"}} />
         </Stack.Navigator>
     );

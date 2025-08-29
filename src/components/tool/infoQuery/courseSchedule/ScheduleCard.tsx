@@ -16,6 +16,8 @@ import {CourseScheduleView} from "@/components/tool/infoQuery/courseSchedule/Cou
 import {ExamInfo} from "@/type/infoQuery/exam/examInfo.ts";
 import {ExamInfoQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
+import {courseApi} from "@/js/jw/course.ts";
+import {examApi} from "@/js/jw/exam.ts";
 
 export function ScheduleCard() {
     const {userConfig} = useContext(UserConfigContext);
@@ -64,7 +66,7 @@ export function ScheduleCard() {
     const [examList, setExamList] = useState<ExamInfo[]>([]);
 
     async function getExamList() {
-        const data = await infoQuery.getExamInfo(year, term);
+        const data = await examApi.getExamInfo(year, term);
         if (data?.items) {
             ToastAndroid.show("获取考试信息成功", ToastAndroid.SHORT);
             setExamList(data.items);
@@ -75,7 +77,7 @@ export function ScheduleCard() {
     }
 
     async function getCourseSchedule() {
-        const data = await infoQuery.getCourseSchedule(year, term);
+        const data = await courseApi.getCourseSchedule(year, term);
         if (data?.kbList) {
             ToastAndroid.show("获取课表成功", ToastAndroid.SHORT);
             setApiRes(data);

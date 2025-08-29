@@ -66,7 +66,7 @@ export function PracticalCourseList(props: Props) {
     return (
         <View>
             <Text style={{textAlign: "center"}}>实践课</Text>
-            {courseList.map((course: PracticalCourseItem) => {
+            {courseList.map((course: PracticalCourseItem, index) => {
                 const itemStyle = StyleSheet.create({
                     course: {
                         backgroundColor: Color(course.backgroundColor).setAlpha(theme.mode === "light" ? 0.3 : 0.1)
@@ -79,7 +79,7 @@ export function PracticalCourseList(props: Props) {
                 });
                 return (
                     <View
-                        key={`${course.kcmc}`}
+                        key={`${course.qtkcgs}-${index}`}
                         style={[
                             itemStyle.course,
                             courseScheduleStyle.courseItem,

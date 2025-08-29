@@ -1,9 +1,17 @@
 import {BaseColor, Color} from "@/js/color.ts";
-import {createContext, useCallback, useContext, useEffect, useState} from "react";
-import {StyleSheet} from "react-native";
+import {createContext, useCallback, useEffect, useState} from "react";
+import {StyleSheet, ToastAndroid} from "react-native";
 import {store} from "@/js/store.ts";
-import {UserConfigContext} from "@/components/AppProvider.tsx";
 import {IUserConfig} from "@/type/IUserConfig.ts";
+import {SchoolTerms, SchoolTermValue, SchoolValue, SchoolYears} from "@/type/global.ts";
+import {
+    ClassScheduleQueryRes,
+    CourseScheduleQueryRes,
+    GetCourseScheduleListRes,
+} from "@/type/api/infoQuery/classScheduleAPI.ts";
+import {jwxt} from "@/js/jw/jwxt.ts";
+import {http, objectToFormUrlEncoded} from "@/js/http.ts";
+import {defaultYear} from "@/js/jw/infoQuery.ts";
 
 const CourseScheduleData = {
     courseInfoVisible: {
@@ -148,3 +156,67 @@ export const CourseScheduleContext = createContext<{
     courseScheduleStyle: ReturnType<typeof generateCourseScheduleStyle>;
     updateCourseScheduleData: (data: Partial<typeof CourseScheduleData>) => void;
 } | null>(null);
+
+export const courseApi = {
+    getCourseSchedule: async (year: number, term: SchoolTermValue): Promise<CourseScheduleQueryRes | null> => {
+        const yearIndex = SchoolYears.findIndex(v => +v[0] === year);
+        if (!(await jwxt.testToken())) {
+            return null;
+        }
+        const reqBody = objectToFormUrlEncoded({
+            xnm: SchoolYears[yearIndex ?? SchoolYears.findIndex(v => +v[0] === defaultYear)][0],
+            xqm: term ?? SchoolTerms[0][0],
+        });
+        const res = await http.post("/kbcx/xskbcx_cxXsgrkb.html", reqBody);
+        if (typeof res.data === "object") {
+            return res.data;
+        } else {
+            ToastAndroid.show("获取课表信息失败", ToastAndroid.SHORT);
+            return null;
+        }
+    },
+    getClassCourseScheduleList: async (
+        year?: number,
+        term?: SchoolTermValue,
+        schoolId?: SchoolValue,
+        subjectId?: string,
+        grade?: number,
+        classId?: string,
+    ): Promise<GetCourseScheduleListRes> => {
+        const reqBody = objectToFormUrlEncoded({
+            xnm: year,
+            xqm: term,
+            njdm_id: grade,
+            jg_id: schoolId,
+            zyh_id: subjectId,
+            bh_id: classId,
+            queryModel: {
+                showCount: 1000,
+            },
+        });
+        const res = await http.post("/kbdy/bjkbdy_cxBjkbdyTjkbList.html", reqBody);
+        return res.data;
+    },
+    getClassCourseSchedule: async (
+        year: number,
+        term: SchoolTermValue,
+        schoolId: SchoolValue,
+        subjectId: string,
+        grade: number,
+        classId: string,
+    ): Promise<ClassScheduleQueryRes> => {
+        const reqBody = objectToFormUrlEncoded({
+            xnm: year,
+            xqm: term,
+            njdm_id: grade,
+            jg_id: schoolId,
+            zyh_id: subjectId,
+            bh_id: classId,
+            // 不确定，但得有
+            tjkbzdm: 1,
+            tjkbzxsdm: 0,
+        });
+        const res = await http.post("/kbdy/bjkbdy_cxBjKb.html", reqBody);
+        return res.data;
+    },
+};

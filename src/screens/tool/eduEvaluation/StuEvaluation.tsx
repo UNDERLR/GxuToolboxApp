@@ -1,5 +1,4 @@
 import {useCallback, useState} from "react";
-import {infoQuery} from "@/js/jw/infoQuery.ts";
 import {Evaluation} from "@/type/eduEvaluation/evaluation.ts";
 import {ScrollView, StyleSheet} from "react-native";
 import {Row, Table} from "react-native-reanimated-table";
@@ -8,6 +7,7 @@ import {Color} from "@/js/color.ts";
 import {Text, useTheme} from "@rneui/themed";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {EvaluationRow} from "@/components/tool/eduEvaluation/EvaluationRow.tsx";
+import {evaluationApi} from "@/js/jw/evaluation.ts";
 
 export function StuEvaluation() {
     const {theme} = useTheme();
@@ -57,7 +57,7 @@ export function StuEvaluation() {
     const statusList = Object.keys(colorMap);
 
     async function init() {
-        const res = await infoQuery.getEvaluateList();
+        const res = await evaluationApi.getEvaluationList();
         res.items.sort((a, b) => statusList.indexOf(a.tjztmc) - statusList.indexOf(b.tjztmc));
         setEvaList(res.items);
     }
@@ -65,16 +65,14 @@ export function StuEvaluation() {
     useFocusEffect(
         useCallback(() => {
             init();
-        }, [])
+        }, []),
     );
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <Flex direction="column" gap={10}>
                 <Text style={{fontSize: 14}}>请点击下方评价列表中的元素，进入详情页评价</Text>
-                <Text style={{fontSize: 14}}>
-                    当前共有 {evaList.length} 项评价
-                </Text>
+                <Text style={{fontSize: 14}}>当前共有 {evaList.length} 项评价</Text>
                 <Text style={{fontSize: 14}}>
                     其中 {evaList.filter(eva => eva.tjztmc === statusList[0]).length} 项已评完，
                     {evaList.filter(eva => eva.tjztmc === statusList[1]).length} 项未评完，
@@ -87,7 +85,7 @@ export function StuEvaluation() {
                         flexArr={colWidths}
                         textStyle={styles.headerText}
                     />
-                    {evaList.map((item) => (
+                    {evaList.map(item => (
                         <EvaluationRow
                             key={item.jxb_id + item.jgh_id}
                             item={item}

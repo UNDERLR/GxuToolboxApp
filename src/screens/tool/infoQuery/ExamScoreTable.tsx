@@ -6,6 +6,7 @@ import {Color} from "@/js/color.ts";
 import {ExamScore} from "@/type/infoQuery/exam/examScore.ts";
 import {infoQuery} from "@/js/jw/infoQuery.ts";
 import {SchoolTermValue, SchoolYearValue} from "@/type/global.ts";
+import {examApi} from "@/js/jw/exam.ts";
 
 interface Props {
     data: ExamScore[];
@@ -23,7 +24,7 @@ export function ExamScoreTable(props: Props) {
 
         if (newExpandedId) {
             console.log("点击了教学班:", item);
-            infoQuery.getUsualScore(+props.year, item.xqm, item.jxb_id).then(res => {
+            examApi.getUsualScore(+props.year, item.xqm, item.jxb_id).then(res => {
                 setUsualScore(prev => ({
                     ...prev,
                     [item.jxb_id]: res,
