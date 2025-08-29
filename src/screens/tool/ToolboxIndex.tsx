@@ -21,7 +21,7 @@ interface ToolboxItem {
 const iconSize = 25;
 const toolList = [
     {
-        title: "课程表",
+        title: "信息查询",
         data: [
             {
                 label: "课表查询",
@@ -34,11 +34,6 @@ const toolList = [
                 icon: <Icon name="calendar-outline" type="Ionicon" size={iconSize} />,
                 navigation: "classCourseSchedule",
             },
-        ],
-    },
-    {
-        title: "考试",
-        data: [
             {
                 label: "考试信息查询",
                 icon: <Icon name="book" size={iconSize} />,
@@ -52,7 +47,7 @@ const toolList = [
         ],
     },
     {
-        title: "评价",
+        title: "教学评价",
         data: [
             {
                 label: "期末学生评价",
@@ -109,7 +104,7 @@ export function ToolboxIndex() {
         settingItem: {
             width: "33%",
             borderRadius: 8,
-            paddingVertical: 4,
+            paddingVertical: 10,
         },
         toolIcon: {
             marginVertical: 10,
@@ -128,7 +123,7 @@ export function ToolboxIndex() {
                                 style={style.settingItem}
                                 android_ripple={userConfig.theme.ripple}
                                 onPress={() => navigation.navigate(tool.navigation)}>
-                                <Flex direction="column">
+                                <Flex direction="column" inline>
                                     <View style={style.toolIcon}>{tool.icon}</View>
                                     <View>
                                         <Text>{tool.label}</Text>

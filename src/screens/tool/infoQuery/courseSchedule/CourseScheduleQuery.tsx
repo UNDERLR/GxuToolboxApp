@@ -72,12 +72,11 @@ export function CourseScheduleQuery() {
 
     async function qqLink(qq: string) {
         const url = `mqqapi://card/show_pslcard?src_type=internal&version=1&uin=${qq}&card_type=group&source=qrcode`;
-        if (await Linking.canOpenURL(url)) {
-            await Linking.openURL(url);
-        } else {
+        await Linking.openURL(url).catch(e => {
+            console.error(e);
             ToastAndroid.show("无法直接跳转QQ，已将QQ群号复制至剪切板", ToastAndroid.SHORT);
             Clipboard.setString(qq);
-        }
+        });
     }
 
     const tableWidthArr = [150, 70, 100, 150];
