@@ -53,15 +53,15 @@ export const evaluationApi = {
             }
         });
     },
-    handleEvaResult: (Params1: object, Params2: object): Promise<string> => {
+    // 只传 default 参数则会消掉所有已有的评价
+    handleEvaResult: (Params1: any, Params2?: any): Promise<string> => {
         return new Promise(async (resolve, reject) => {
             if (!(await jwxt.testToken())) {
                 reject();
                 return;
             }
-            const reqBody = objectToFormUrlEncoded(Params1) + "&" + objectToFormUrlEncoded(Params2);
+            const reqBody = objectToFormUrlEncoded({...Params1, ...Params2});
             const res = await http.post("/xspjgl/xspj_bcXspj.html?gnmkdm=N401605", reqBody);
-            console.log(res.data);
             if (typeof res.data === "string") {
                 ToastAndroid.show(res.data, ToastAndroid.SHORT);
                 resolve(res.data);

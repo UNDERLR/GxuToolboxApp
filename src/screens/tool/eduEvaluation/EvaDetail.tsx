@@ -1,19 +1,19 @@
 import {RouteProp, useRoute} from "@react-navigation/native";
-import {ActivityIndicator, ScrollView, StyleSheet, TouchableOpacity, View} from "react-native";
+import {ActivityIndicator, ScrollView, StyleSheet, ToastAndroid, TouchableOpacity, View} from "react-native";
 import {Button, Text, useTheme} from "@rneui/themed";
 import {useCallback, useEffect, useLayoutEffect, useState} from "react";
 import {Color} from "@/js/color.ts";
 import {EvaPOST} from "@/type/eduEvaluation/evaDetail.ts";
 import {parseEvaluationHTML} from "@/js/jw/evaParser.ts";
 import {EvaCategory} from "@/components/tool/eduEvaluation/EvaCategory.tsx";
-import {EvaluationIds, EvaReq} from "@/type/eduEvaluation/evaReqForIds.ts";
+import {EvaluationIds, EvaReq, EvaSelected} from "@/type/eduEvaluation/evaReqForIds.ts";
 import {evaluationApi} from "@/js/jw/evaluation.ts";
 
 type RootStackParamList = {
     EvaDetail: {evaluationItem: EvaPOST};
 };
 
-type SelectedMap = Record<number, Record<string, number>>;
+type SelectedMap = Record<number, Record<number, Record<number, number>>>;
 
 interface Option {
     label: string; // 选项文字
@@ -51,23 +51,35 @@ export function EvaDetail({navigation}) {
     const [comment, setComment] = useState<string>("");
     const [ids, setIds] = useState<EvaluationIds>();
     const [selected, setSelected] = useState<SelectedMap>({});
+    const [defaultReq, setDefaultReq] = useState<EvaReq>();
     const route = useRoute<RouteProp<RootStackParamList, "EvaDetail">>();
     const {evaluationItem} = route.params;
 
     const onSelect = useCallback((catIdx: number, itIdx: number, optIdx: number) => {
-        const itemKey = `0-${catIdx}-${itIdx}`;
-        setSelected(prevSelected => ({
-            ...prevSelected,
-            "0": {
-                ...(prevSelected["0"] || {}),
-                [itemKey]: optIdx,
+        const teacherIdx = 0; // 一个老师，就定义成常量
+        setSelected(prev => ({
+            ...prev,
+            [teacherIdx]: {
+                ...(prev[teacherIdx] || {}),
+                [catIdx]: {
+                    ...(prev[teacherIdx]?.[catIdx] || {}),
+                    [itIdx]: optIdx,
+                },
             },
         }));
     }, []);
 
     useEffect(() => {
         console.log("Selected state updated:", selected[0]);
-        // console.log(ids?.sections[0].questions[0].optionIds[0]);
+        // for (const teacherIdx in selected) {
+        //     for (const categoryIdx in selected[teacherIdx]) {
+        //         for (const itemIdx in selected[teacherIdx][categoryIdx]) {
+        //             const optionIdx = selected[teacherIdx][categoryIdx][itemIdx];
+        //             console.log(`Teacher: ${teacherIdx}, Cat: ${categoryIdx}, Item: ${itemIdx}, Opt: ${optionIdx}`);
+        //             console.log(ids?.sections[categoryIdx].questions[itemIdx].optionIds[optionIdx]);
+        //         }
+        //     }
+        // }
     }, [selected]);
 
     useLayoutEffect(() => {
@@ -132,53 +144,58 @@ export function EvaDetail({navigation}) {
     });
 
     const FastSubmit = () => {
-        console.log(selected);
-        const defaultSelected = {
-            "0": {
-                "0-0-0": 0,
-                "0-0-1": 0,
-                "0-0-2": 0,
-                "0-0-3": 0,
-                "0-1-0": 0,
-                "0-1-1": 0,
-                "0-1-2": 0,
-                "0-2-0": 0,
-                "0-2-1": 0,
-                "0-2-2": 1,
-                "0-3-0": 0,
-                "0-3-1": 0,
-                "0-3-2": 0,
-                "0-4-0": 0,
-                "0-4-1": 0,
-                "0-4-2": 0,
+        const goodSelected = {
+            0: {
+                0: {0: 0, 1: 0, 2: 0, 3: 0},
+                1: {0: 0, 1: 0, 2: 0},
+                2: {0: 0, 1: 0, 2: 1},
+                3: {0: 0, 1: 0, 2: 0},
+                4: {0: 0, 1: 0, 2: 0},
             },
         };
-        setSelected(defaultSelected);
+        setSelected(goodSelected);
         const defaultComment =
             "老师专业功底深厚，治学态度严谨。在教学中，您逻辑清晰，重点突出，" +
             "善于运用启发式教学引导我们独立思考，将理论与实践紧密结合。课堂富有感染力，" +
             "不仅传授了我们前沿的知识，更点燃了我们对该领域的探索热情。是我们学术道路上当之无愧的引路人。" +
             "老师的悉心栽培令我们受益匪浅！";
         setComment(defaultComment);
-        handleSubmit(defaultSelected, defaultComment);
+        handleSubmit(goodSelected, defaultComment);
     };
     /** 点击提交按钮触发提交 */
     const handleSubmit = async (submitSelected = selected, submitComment: string = comment) => {
         console.log("start-saving");
 
-        await evaluationApi.handleEvaResult(
-            {
-                ztpjbl: 100,
-                jxb_id: evaluationItem.jxb_id,
-                jgh_id: evaluationItem.jgh_id,
-                kch_id: evaluationItem.kch_id,
-                xsdm: evaluationItem.xsdm,
+        const reqToSend: EvaReq = JSON.parse(JSON.stringify(defaultReq));
 
-                "modelList[0].pjzt": 0,
-                tjzt: 0,
-            },
-            submissionPayload,
-        );
+        if (reqToSend.modelList[0]) {
+            reqToSend.modelList[0].py = submitComment;
+        }
+
+        // 填充pfdjdmxmb_id
+        for (const teacherIdx in submitSelected) {
+            for (const categoryIdx in submitSelected[teacherIdx]) {
+                for (const itemIdx in submitSelected[teacherIdx][categoryIdx]) {
+                    const optionIdx = submitSelected[teacherIdx][categoryIdx][itemIdx];
+                    const categoryIndex = Number(categoryIdx);
+                    const itemIndex = Number(itemIdx);
+
+                    const targetQuestion =
+                        reqToSend.modelList?.[0]?.xspjList?.[categoryIndex]?.childXspjList?.[itemIndex];
+                    const optionId = ids.sections?.[categoryIndex]?.questions?.[itemIndex]?.optionIds?.[optionIdx];
+
+                    if (targetQuestion && optionId) {
+                        targetQuestion.pfdjdmxmb_id = optionId;
+                    } else {
+                        console.warn(`无法为[${categoryIndex}-${itemIndex}]找到对应的请求路径或选项ID`);
+                    }
+                }
+            }
+        }
+
+        const res = await evaluationApi.handleEvaResult(defaultReq, reqToSend);
+        console.log(res);
+        ToastAndroid.showWithGravity(res, ToastAndroid.SHORT, 5);
         setSelected(submitSelected);
         init();
     };
@@ -186,7 +203,6 @@ export function EvaDetail({navigation}) {
     // init，一点开页面就调用
     async function init() {
         setLoading(true);
-        console.log(evaluationItem);
         try {
             const HtmlText = await evaluationApi.getEvaluationDetail(
                 evaluationItem.jgh_id,
@@ -195,11 +211,12 @@ export function EvaDetail({navigation}) {
                 evaluationItem.xsdm,
                 evaluationItem.pjmbmcb_id,
             );
-            const {idObj, teachers} = parseEvaluationHTML(HtmlText);
+            const {idObj, teachers, selected} = parseEvaluationHTML(HtmlText);
             setData({teachers});
+            setSelected(selected || {});
             setIds(idObj);
             console.log(idObj);
-            const defaultReq: EvaReq = {
+            const k: EvaReq = {
                 jgh_id: evaluationItem.jgh_id,
                 jxb_id: evaluationItem.jxb_id,
                 kch_id: evaluationItem.kch_id,
@@ -322,7 +339,7 @@ export function EvaDetail({navigation}) {
                 xsdm: "01",
                 ztpjbl: 100,
             };
-            console.log("fuck,", defaultReq);
+            setDefaultReq(k);
         } catch (e: any) {
             setError(e.message);
         } finally {

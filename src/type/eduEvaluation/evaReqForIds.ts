@@ -51,6 +51,13 @@ interface EvaReqProblem {
     pfdjdmxmb_id?: string[5];
 }
 
+export interface EvaSelected {
+    modelList: [{
+        xspjList: [{
+            childXspjList: [pfdjdmxmb_id: string],
+        }],
+    }];
+}
 export const defaultEvaReqIds: EvaReq = {
     ztpjbl: 0,
     jxb_id: "",

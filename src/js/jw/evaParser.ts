@@ -1,5 +1,5 @@
 import cheerio from "react-native-cheerio";
-import {defaultEvaReqIds, EvaluationIds, EvaReq} from "@/type/eduEvaluation/evaReqForIds.ts";
+import {defaultEvaReqIds, EvaluationIds, EvaReq, SelectedMap} from "@/type/eduEvaluation/evaReqForIds.ts";
 import {objectToFormUrlEncoded} from "@/js/http.ts";
 
 interface Category {
@@ -33,16 +33,16 @@ interface Teacher {
 export const parseEvaluationHTML = (html: string) => {
     /* ---------- 0. 基本环境 ---------- */
     const $ = cheerio.load(html);
-    const initialSelected: Record<number, Record<string, number>> = {};
+    const idObj: EvaluationIds = {panelId: "", formId: "", sections: []};
+    const teachers: Teacher[] = [];
+    const selected: SelectedMap = {};
 
     /* ---------- 1. 课程头部信息 ---------- */
 
     /* ---------- 2. 教师列表 ---------- */
-    const teachers: Teacher[] = [];
     const $panels = $(".panel-pjdx");
-    const idObj: EvaluationIds = {};
 
-    $panels.each((idx: number, panel: any) => {
+    $panels.each((teacherIdx: number, panel: any) => {
         const $panel = $(panel);
         idObj.formId = $panel[0].attribs["data-xspfb_id"];
         idObj.panelId = $panel[0].attribs["data-pjmbmcb_id"];
@@ -56,7 +56,7 @@ export const parseEvaluationHTML = (html: string) => {
         const categories: Category[] = [];
         const $blockquotes = $panel.find("blockquote");
 
-        $blockquotes.each((bIdx, bq) => {
+        $blockquotes.each((catIdx: number, bq: any) => {
             const $bq = $(bq);
             const categoryName = $bq.find("p").text().trim();
 
@@ -77,7 +77,7 @@ export const parseEvaluationHTML = (html: string) => {
             const items: Item[] = [];
             const $trs = $table.find("tr.tr-xspj");
 
-            $trs.each((tIdx, tr) => {
+            $trs.each((itIdx: number, tr: any) => {
                 const $tr = $(tr);
                 const title = $tr.find("td").first().text().trim();
                 const qzz = parseFloat($tr.attr("data-qzz") || "1");
@@ -95,12 +95,12 @@ export const parseEvaluationHTML = (html: string) => {
                     pjId: $tr[0].attribs["data-pjzbxm_id"],
                     zsId: $tr[0].attribs["data-zsmbmcb_id"],
                 };
-                idObj.sections[bIdx].questions.push(question);
+                idObj.sections[catIdx].questions.push(question);
                 /* 2.4 选项 */
                 const options: Option[] = [];
                 const $labels = $tr.find(".radio-inline");
 
-                $labels.each((oIdx, label) => {
+                $labels.each((optIdx: number, label: any) => {
                     const $label = $(label);
                     const input = $label.find("input");
                     const opt: Option = {
@@ -112,11 +112,13 @@ export const parseEvaluationHTML = (html: string) => {
                     question.optionIds.push(opt.pfdjdmxmb_id);
                     // console.log('optId', opt.pfdjdmxmb_id)
                     if (opt.checked) {
-                        const itemId = `${idx}-${bIdx}-${tIdx}`;
-                        if (!initialSelected[idx]) {
-                            initialSelected[idx] = {};
+                        if (!selected[teacherIdx]) {
+                            selected[teacherIdx] = {};
                         }
-                        initialSelected[idx][itemId] = oIdx;
+                        if (!selected[teacherIdx][catIdx]) {
+                            selected[teacherIdx][catIdx] = {};
+                        }
+                        selected[teacherIdx][catIdx][itIdx] = optIdx;
                     }
                     options.push(opt);
                 });
@@ -139,13 +141,12 @@ export const parseEvaluationHTML = (html: string) => {
 
         teachers.push({name: teacherName, categories, comment});
     });
-    console.log(idObj);
-    console.log(objectToFormUrlEncoded(idObj).replace(/&/g, "\n"));
-    //TODO:还要返回一份已选选项的列表(selected)
+    // console.log(objectToFormUrlEncoded(idObj).replace(/&/g, "\n"));
 
     /* ---------- 3. 返回 ---------- */
     return {
-        teachers,
         idObj,
+        teachers,
+        selected,
     };
 };
