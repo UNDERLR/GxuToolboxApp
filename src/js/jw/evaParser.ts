@@ -1,6 +1,5 @@
 import cheerio from "react-native-cheerio";
-import {defaultEvaReqIds, EvaluationIds, EvaReq, SelectedMap} from "@/type/eduEvaluation/evaReqForIds.ts";
-import {objectToFormUrlEncoded} from "@/js/http.ts";
+import {EvaluationIds, SelectedMap} from "@/type/eduEvaluation/evaReqForIds.ts";
 
 interface Category {
     name: string; // 大指标名，如“师德表现”
@@ -81,14 +80,6 @@ export const parseEvaluationHTML = (html: string) => {
                 const $tr = $(tr);
                 const title = $tr.find("td").first().text().trim();
                 const qzz = parseFloat($tr.attr("data-qzz") || "1");
-                // console.log(
-                //     "questionIds",
-                //     Object.fromEntries(
-                //         Object.entries($tr[0].attribs)
-                //             .filter(([key]) => key.endsWith("id"))
-                //             .map(([key, value]) => [key.replace("data-", ""), value]),
-                //     ),
-                // );
                 const question = {
                     optionIds: [],
                     pfId: $tr[0].attribs["data-pfdjdmb_id"],
@@ -110,7 +101,6 @@ export const parseEvaluationHTML = (html: string) => {
                         checked: input.is("[checked]"),
                     };
                     question.optionIds.push(opt.pfdjdmxmb_id);
-                    // console.log('optId', opt.pfdjdmxmb_id)
                     if (opt.checked) {
                         if (!selected[teacherIdx]) {
                             selected[teacherIdx] = {};
