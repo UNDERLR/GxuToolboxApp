@@ -25,6 +25,7 @@ export const evaluationApi = {
             }
         });
     },
+    // 获得具体的HTML页面
     getEvaluationDetail: (
         shaWord: string,
         classId: string,
@@ -75,25 +76,6 @@ export const evaluationApi = {
                 resolve(res.data);
             } else {
                 ToastAndroid.show("保存失败", ToastAndroid.SHORT);
-                reject(res);
-            }
-        });
-    },
-    refreshEvaStatus: (Param: Object) => {
-        return new Promise(async (resolve, reject) => {
-            if (!(await jwxt.testToken())) {
-                reject();
-                return;
-            }
-            const reqBody = objectToFormUrlEncoded({...Param});
-            console.log(reqBody);
-            const res = await http.post("/xspjgl/xspj_cxSftf.html?gnmkdm=N401605", reqBody);
-            console.log(res);
-            if (1) {
-                ToastAndroid.show("尝试刷新", ToastAndroid.SHORT);
-                resolve(res.data);
-            } else {
-                ToastAndroid.show("刷新失败", ToastAndroid.SHORT);
                 reject(res);
             }
         });

@@ -6,7 +6,7 @@ import {Color} from "@/js/color.ts";
 import {EvaPOST} from "@/type/eduEvaluation/evaDetail.ts";
 import {parseEvaluationHTML} from "@/js/jw/evaParser.ts";
 import {EvaCategory} from "@/components/tool/eduEvaluation/EvaCategory.tsx";
-import {EvaluationIds, EvaReq, EvaSelected} from "@/type/eduEvaluation/evaReqForIds.ts";
+import {EvaluationIds, EvaluationRequest} from "@/type/eduEvaluation/evaluation.type.ts";
 import {evaluationApi} from "@/js/jw/evaluation.ts";
 
 type RootStackParamList = {
@@ -43,7 +43,7 @@ interface Teacher {
     comment?: string; // 评语
 }
 
-export function EvaDetail({navigation}) {
+export function EvaluationDetail({navigation}) {
     const {theme} = useTheme();
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -51,7 +51,7 @@ export function EvaDetail({navigation}) {
     const [comment, setComment] = useState<string>("");
     const [ids, setIds] = useState<EvaluationIds>();
     const [selected, setSelected] = useState<SelectedMap>({});
-    const [defaultReq, setDefaultReq] = useState<EvaReq>();
+    const [defaultReq, setDefaultReq] = useState<EvaluationRequest>();
     const route = useRoute<RouteProp<RootStackParamList, "EvaDetail">>();
     const {evaluationItem} = route.params;
 
@@ -163,7 +163,7 @@ export function EvaDetail({navigation}) {
     const handleSubmit = async (submitSelected = selected, submitComment: string = comment) => {
         console.log("start-saving");
 
-        const reqToSend: EvaReq = JSON.parse(JSON.stringify(defaultReq));
+        const reqToSend: EvaluationRequest = JSON.parse(JSON.stringify(defaultReq));
 
         if (reqToSend.modelList[0]) {
             reqToSend.modelList[0].py = submitComment;
@@ -178,7 +178,6 @@ export function EvaDetail({navigation}) {
         }
         if (count === 16) {
             reqToSend.modelList[0].pjzt = "1";
-            console.log("jere");
         } else {
             reqToSend.modelList[0].pjzt = "0";
         }
@@ -193,7 +192,7 @@ export function EvaDetail({navigation}) {
 
                     const targetQuestion =
                         reqToSend.modelList?.[0]?.xspjList?.[categoryIndex]?.childXspjList?.[itemIndex];
-                    const optionId = ids.sections?.[categoryIndex]?.questions?.[itemIndex]?.optionIds?.[optionIdx];
+                    const optionId = ids!.sections?.[categoryIndex]?.questions?.[itemIndex]?.optionIds?.[optionIdx];
 
                     if (targetQuestion && optionId) {
                         targetQuestion.pfdjdmxmb_id = optionId;
@@ -226,7 +225,7 @@ export function EvaDetail({navigation}) {
             setSelected(selected || {});
             setIds(idObj);
             // console.log(idObj);
-            const k: EvaReq = {
+            const k: EvaluationRequest = {
                 jgh_id: evaluationItem.jgh_id,
                 jxb_id: evaluationItem.jxb_id,
                 kch_id: evaluationItem.kch_id,
@@ -236,7 +235,7 @@ export function EvaDetail({navigation}) {
                         pjdxdm: "01",
                         xspfb_id: idObj.formId,
                         fxzgf: null,
-                        pjzt: "",
+                        pjzt: "0",
                         py: "",
                         xspjList: [
                             {

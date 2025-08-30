@@ -1,5 +1,4 @@
 import {useCallback, useState} from "react";
-import {Evaluation} from "@/type/eduEvaluation/evaluation.ts";
 import {ScrollView, StyleSheet} from "react-native";
 import {Row, Table} from "react-native-reanimated-table";
 import {useFocusEffect, useNavigation} from "@react-navigation/native";
@@ -9,14 +8,15 @@ import Flex from "@/components/un-ui/Flex.tsx";
 import {EvaluationRow} from "@/components/tool/eduEvaluation/EvaluationRow.tsx";
 import {evaluationApi} from "@/js/jw/evaluation.ts";
 import {jwxt} from "@/js/jw/jwxt.ts";
+import {Evaluation} from "@/type/eduEvaluation/evaluation.type.ts";
 
-export function StuEvaluation() {
+export function EvaluationOverview() {
     const {theme} = useTheme();
     const [evaList, setEvaList] = useState<Evaluation[]>([]);
     const navigation = useNavigation();
     const colWidths = [9, 6, 5];
     const handleRowPress = (item: Evaluation) => {
-        navigation.navigate("EvaDetail", {evaluationItem: item});
+        navigation.navigate("EvaluationDetail", {evaluationItem: item});
     };
     const defaultColor = Color.mix(
         Color(theme.colors.primary),

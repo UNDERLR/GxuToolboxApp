@@ -13,7 +13,7 @@ type CommentRouteParams = {
 // 为 useRoute 指定类型
 type CommentScreenRouteProp = RouteProp<{params: CommentRouteParams}, "params">;
 
-export function EvaComment() {
+export function EvaluationComment() {
     const {theme} = useTheme();
     const navigation = useNavigation();
     const route = useRoute<CommentScreenRouteProp>();
@@ -42,7 +42,7 @@ export function EvaComment() {
     }, [navigation, text]);
 
     const handleSave = () => {
-        // 调用从 EvaDetail 传来的 onSave 函数
+        // 调用从 EvaluationDetail 传来的 onSave 函数
         onSave(text);
         // 返回上一页
         navigation.goBack();

@@ -1,5 +1,5 @@
-import {Evaluation} from "@/type/eduEvaluation/evaluation.ts";
 import {QueryResRoot} from "@/type/global.ts";
+import {Evaluation} from "@/type/eduEvaluation/evaluation.type.ts";
 
 /** 评价列表信息查询返回结果数据类型 */
 export interface EvaListQueryRes extends QueryResRoot<Evaluation> {}

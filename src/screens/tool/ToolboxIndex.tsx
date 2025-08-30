@@ -52,7 +52,7 @@ const toolList = [
             {
                 label: "期末学生评价",
                 icon: <Icon name="infocirlceo" size={iconSize} />,
-                navigation: "studentEvaluation",
+                navigation: "EvaluationOverview",
             },
         ],
     },

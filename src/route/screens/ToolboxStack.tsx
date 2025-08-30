@@ -5,11 +5,11 @@ import {ExamInfo} from "@/screens/tool/infoQuery/ExamInfo.tsx";
 import {ExamScore} from "@/screens/tool/infoQuery/ExamScore.tsx";
 import {Color} from "@/js/color.ts";
 import {ClassCourseSchedule} from "@/screens/tool/infoQuery/courseSchedule/ClassCourseSchedule.tsx";
-import {StuEvaluation} from "@/screens/tool/eduEvaluation/StuEvaluation.tsx";
-import {EvaDetail} from "@/screens/tool/eduEvaluation/EvaDetail.tsx";
+import {EvaluationOverview} from "@/screens/tool/eduEvaluation/EvaluationOverview.tsx";
+import {EvaluationDetail} from "@/screens/tool/eduEvaluation/EvaluationDetail.tsx";
 import {useTheme} from "@rneui/themed";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
-import {EvaComment} from "@/screens/tool/eduEvaluation/EvaComment.tsx";
+import {EvaluationComment} from "@/screens/tool/eduEvaluation/EvaluationComment.tsx";
 import {BuildingListScreen} from "@/screens/tool/mapNavigation/BuildingListScreen.tsx";
 import {CourseScheduleQuery} from "@/screens/tool/infoQuery/courseSchedule/CourseScheduleQuery.tsx";
 
@@ -63,9 +63,9 @@ export function ToolboxStack() {
             <Stack.Screen name="examInfo" component={ExamInfo} options={{title: "考试信息查询"}} />
             <Stack.Screen name="examScore" component={ExamScore} options={{title: "考试成绩查询"}} />
 
-            <Stack.Screen name="studentEvaluation" component={StuEvaluation} options={{title: "期末学生评价"}} />
-            <Stack.Screen name="EvaDetail" component={EvaDetail} options={{title: "学生评价细节"}} />
-            <Stack.Screen name="Comment" component={EvaComment} options={{title: "填写评语"}} />
+            <Stack.Screen name="EvaluationOverview" component={EvaluationOverview} options={{title: "期末学生评价"}} />
+            <Stack.Screen name="EvaluationDetail" component={EvaluationDetail} options={{title: "学生评价细节"}} />
+            <Stack.Screen name="EvaluationComment" component={EvaluationComment} options={{title: "填写评语"}} />
 
             <Stack.Screen name="PositionListScreen" component={BuildingListScreen} options={{title: "地图导航"}} />
         </Stack.Navigator>

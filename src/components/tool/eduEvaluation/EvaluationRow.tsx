@@ -1,9 +1,9 @@
 import {Row} from "react-native-reanimated-table";
 import {StyleSheet, TouchableOpacity} from "react-native";
-import {Evaluation} from "@/type/eduEvaluation/evaluation.ts";
 import {Color} from "@/js/color.ts";
 import {useTheme} from "@rneui/themed";
 import React from "react";
+import {Evaluation} from "@/type/eduEvaluation/evaluation.type.ts";
 
 interface EvaluationRowProps {
     item: Evaluation;
