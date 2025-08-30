@@ -70,16 +70,13 @@ export function EvaDetail({navigation}) {
     }, []);
 
     useEffect(() => {
-        console.log("Selected state updated:", selected[0]);
-        // for (const teacherIdx in selected) {
-        //     for (const categoryIdx in selected[teacherIdx]) {
-        //         for (const itemIdx in selected[teacherIdx][categoryIdx]) {
-        //             const optionIdx = selected[teacherIdx][categoryIdx][itemIdx];
-        //             console.log(`Teacher: ${teacherIdx}, Cat: ${categoryIdx}, Item: ${itemIdx}, Opt: ${optionIdx}`);
-        //             console.log(ids?.sections[categoryIdx].questions[itemIdx].optionIds[optionIdx]);
-        //         }
-        //     }
-        // }
+        let count = 0;
+        if (selected) {
+            for (const cat_key in selected[0]) {
+                count += Object.values(selected[0][cat_key]).length;
+            }
+        }
+        console.log(count);
     }, [selected]);
 
     useLayoutEffect(() => {
@@ -172,6 +169,20 @@ export function EvaDetail({navigation}) {
             reqToSend.modelList[0].py = submitComment;
         }
 
+        // 判断状态：已评完 或 未评完
+        let count: number = 0;
+        if (selected) {
+            for (const cat_key in submitSelected[0]) {
+                count += Object.values(submitSelected[0][cat_key]).length;
+            }
+        }
+        if (count === 16) {
+            reqToSend.modelList[0].pjzt = "1";
+            console.log("jere");
+        } else {
+            reqToSend.modelList[0].pjzt = "0";
+        }
+
         // 填充pfdjdmxmb_id
         for (const teacherIdx in submitSelected) {
             for (const categoryIdx in submitSelected[teacherIdx]) {
@@ -192,7 +203,6 @@ export function EvaDetail({navigation}) {
                 }
             }
         }
-
         const res = await evaluationApi.handleEvaResult(defaultReq, reqToSend);
         console.log(res);
         ToastAndroid.showWithGravity(res, ToastAndroid.SHORT, 5);
@@ -215,7 +225,7 @@ export function EvaDetail({navigation}) {
             setData({teachers});
             setSelected(selected || {});
             setIds(idObj);
-            console.log(idObj);
+            // console.log(idObj);
             const k: EvaReq = {
                 jgh_id: evaluationItem.jgh_id,
                 jxb_id: evaluationItem.jxb_id,
@@ -223,9 +233,10 @@ export function EvaDetail({navigation}) {
                 modelList: [
                     {
                         pjmbmcb_id: idObj.panelId,
-                        pjdxdm: "",
+                        pjdxdm: "01",
                         xspfb_id: idObj.formId,
                         fxzgf: null,
+                        pjzt: "",
                         py: "",
                         xspjList: [
                             {

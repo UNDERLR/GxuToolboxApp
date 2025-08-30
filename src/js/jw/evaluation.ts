@@ -60,13 +60,40 @@ export const evaluationApi = {
                 reject();
                 return;
             }
-            const reqBody = objectToFormUrlEncoded({...Params1, ...Params2});
+            // 可选项，目前发现不提交这些也能评价成功
+            const Params3 = {
+                jszdpjbl: "0",
+                xykzpjbl: "0",
+                "modelList[0].pjzt": "0",
+                tjzt: "0",
+            }
+            const reqBody = objectToFormUrlEncoded({...Params1,...Params2});
+            console.log(reqBody.replaceAll("&", "\n",));
             const res = await http.post("/xspjgl/xspj_bcXspj.html?gnmkdm=N401605", reqBody);
             if (typeof res.data === "string") {
                 ToastAndroid.show(res.data, ToastAndroid.SHORT);
                 resolve(res.data);
             } else {
                 ToastAndroid.show("保存失败", ToastAndroid.SHORT);
+                reject(res);
+            }
+        });
+    },
+    refreshEvaStatus: (Param: Object) => {
+        return new Promise(async (resolve, reject) => {
+            if (!(await jwxt.testToken())) {
+                reject();
+                return;
+            }
+            const reqBody = objectToFormUrlEncoded({...Param});
+            console.log(reqBody);
+            const res = await http.post("/xspjgl/xspj_cxSftf.html?gnmkdm=N401605", reqBody);
+            console.log(res);
+            if (1) {
+                ToastAndroid.show("尝试刷新", ToastAndroid.SHORT);
+                resolve(res.data);
+            } else {
+                ToastAndroid.show("刷新失败", ToastAndroid.SHORT);
                 reject(res);
             }
         });

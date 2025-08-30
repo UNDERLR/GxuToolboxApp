@@ -15,6 +15,12 @@ export interface EvaluationIds {
     sections: EvaSection[];
 }
 
+/**
+ * 教务系统完全不在后端做校验，仅靠前端传过去的这个数字标注状态——
+ * 0:“未评完" 1:“已评完”
+ **/
+type EvaStatus = "0" | "1";
+
 interface EvaSection {
     sectionId: string;
     questions: EvaQuestion[];
@@ -33,7 +39,7 @@ interface EvaReqModel {
     fxzgf: null;
     py: string;
     xspfb_id: string;
-
+    pjzt: EvaStatus;
     xspjList: EvaReqSection[];
 }
 
@@ -53,80 +59,9 @@ interface EvaReqProblem {
 
 export interface EvaSelected {
     modelList: [{
+        pjzt: string;
         xspjList: [{
             childXspjList: [pfdjdmxmb_id: string],
         }],
     }];
 }
-export const defaultEvaReqIds: EvaReq = {
-    ztpjbl: 0,
-    jxb_id: "",
-    jgh_id: "",
-    kch_id: "",
-    xsdm: "",
-
-    modelList: [
-        {
-            pjmbmcb_id: "",
-            pjdxdm: "",
-            fxzgf: null,
-            py: "",
-            xspfb_id: "",
-
-            xspjList: [
-                /* 第一部分 */
-                {
-                    pjzbxm_id: "",
-                    childXspjList: [
-                        /* 4 题 */
-                        {zsmbmcb_id: "", pjzbxm_id: "", pfdjdmb_id: "", pfdjdmxmb_id: ""},
-                        {zsmbmcb_id: "", pjzbxm_id: "", pfdjdmb_id: "", pfdjdmxmb_id: ""},
-                        {zsmbmcb_id: "", pjzbxm_id: "", pfdjdmb_id: "", pfdjdmxmb_id: ""},
-                        {zsmbmcb_id: "", pjzbxm_id: "", pfdjdmb_id: "", pfdjdmxmb_id: ""},
-                    ],
-                },
-
-                /* 第二部分 */
-                {
-                    pjzbxm_id: "",
-                    childXspjList: [
-                        /* 3 题 */
-                        {zsmbmcb_id: "", pjzbxm_id: "", pfdjdmb_id: "", pfdjdmxmb_id: ""},
-                        {zsmbmcb_id: "", pjzbxm_id: "", pfdjdmb_id: "", pfdjdmxmb_id: ""},
-                        {zsmbmcb_id: "", pjzbxm_id: "", pfdjdmb_id: "", pfdjdmxmb_id: ""},
-                    ],
-                },
-
-                /* 第三部分 */
-                {
-                    pjzbxm_id: "",
-                    childXspjList: [
-                        {zsmbmcb_id: "", pjzbxm_id: "", pfdjdmb_id: "", pfdjdmxmb_id: ""},
-                        {zsmbmcb_id: "", pjzbxm_id: "", pfdjdmb_id: "", pfdjdmxmb_id: ""},
-                        {zsmbmcb_id: "", pjzbxm_id: "", pfdjdmb_id: "", pfdjdmxmb_id: ""},
-                    ],
-                },
-
-                /* 第四部分 */
-                {
-                    pjzbxm_id: "",
-                    childXspjList: [
-                        {zsmbmcb_id: "", pjzbxm_id: "", pfdjdmb_id: "", pfdjdmxmb_id: ""},
-                        {zsmbmcb_id: "", pjzbxm_id: "", pfdjdmb_id: "", pfdjdmxmb_id: ""},
-                        {zsmbmcb_id: "", pjzbxm_id: "", pfdjdmb_id: "", pfdjdmxmb_id: ""},
-                    ],
-                },
-
-                /* 第五部分 */
-                {
-                    pjzbxm_id: "",
-                    childXspjList: [
-                        {zsmbmcb_id: "", pjzbxm_id: "", pfdjdmb_id: "", pfdjdmxmb_id: ""},
-                        {zsmbmcb_id: "", pjzbxm_id: "", pfdjdmb_id: "", pfdjdmxmb_id: ""},
-                        {zsmbmcb_id: "", pjzbxm_id: "", pfdjdmb_id: "", pfdjdmxmb_id: ""},
-                    ],
-                },
-            ],
-        },
-    ],
-};
