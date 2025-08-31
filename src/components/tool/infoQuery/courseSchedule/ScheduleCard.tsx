@@ -44,6 +44,7 @@ export function ScheduleCard() {
             marginHorizontal: 5,
             elevation: 0, // Android 去除阴影
             shadowOpacity: 0, // iOS 去除阴影
+            overflow: "hidden",
         },
         cardTitle: {
             paddingHorizontal: 15,
