@@ -8,6 +8,7 @@ import {UnSlider} from "@/components/un-ui/UnSlider.tsx";
 import {useContext} from "react";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 import {UnListSection, UnSectionList} from "@/components/un-ui/UnSectionList.tsx";
+import {ToastAndroid} from "react-native";
 
 export function SettingIndex() {
     const {userConfig, updateUserConfig} = useContext(UserConfigContext);
@@ -19,6 +20,7 @@ export function SettingIndex() {
             if (!res.didCancel && res.assets && res.assets.length > 0) {
                 userConfig.theme.bgUrl = res.assets[0].uri ?? "";
                 updateUserConfig(userConfig);
+                ToastAndroid.show("设置成功", ToastAndroid.SHORT);
             }
         });
     }
@@ -56,6 +58,23 @@ export function SettingIndex() {
                     ),
                 },
                 {
+                    label: "课程颜色",
+                    type: "any",
+                    value: (
+                        <Flex gap={10} inline>
+                            <Button
+                                onPress={() => {
+                                    userConfig.theme.course.courseColor = {};
+                                    updateUserConfig(userConfig);
+                                    ToastAndroid.show("清空成功", ToastAndroid.SHORT);
+                                }}
+                                size="sm">
+                                清空课程颜色缓存
+                            </Button>
+                        </Flex>
+                    ),
+                },
+                {
                     label: "背景图",
                     type: "any",
                     value: (
@@ -64,6 +83,7 @@ export function SettingIndex() {
                                 onPress={() => {
                                     userConfig.theme.bgUrl = "";
                                     updateUserConfig(userConfig);
+                                    ToastAndroid.show("清空成功", ToastAndroid.SHORT);
                                 }}
                                 size="sm">
                                 重置背景

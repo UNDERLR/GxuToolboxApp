@@ -2,7 +2,6 @@ import {createTheme, CreateThemeOptions} from "@rneui/themed";
 import {IUserConfig, IUserTheme} from "@/type/IUserConfig.ts";
 import {deepMerge} from "@/utils/objectUtils.ts";
 import {ColorSchemeName} from "react-native";
-import {Color} from "@/js/color.ts";
 
 export const theme = createTheme({
     components: {
@@ -40,6 +39,7 @@ export const DefaultUserTheme: IUserTheme = {
         weekdayHeight: 60,
         courseItemMargin: 2,
         courseItemBorderWidth: 0,
+        courseColor: {},
     },
     primaryColor: "#48A6EF",
 };

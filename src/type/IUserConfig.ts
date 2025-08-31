@@ -57,5 +57,7 @@ export interface IUserTheme {
         courseItemMargin: number;
         /** 课表课程元素边框宽度 */
         courseItemBorderWidth: number;
+        /** 课程元素颜色Map */
+        courseColor: Record<string, string>
     };
 }

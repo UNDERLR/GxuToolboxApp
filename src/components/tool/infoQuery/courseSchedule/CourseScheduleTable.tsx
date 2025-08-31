@@ -30,7 +30,7 @@ interface CourseItem extends Course {
 }
 
 export function CourseScheduleTable(props: Props) {
-    const {userConfig} = useContext(UserConfigContext);
+    const {userConfig, updateUserConfig} = useContext(UserConfigContext);
     const {courseScheduleData, courseScheduleStyle} = useContext(CourseScheduleContext)!;
     const {theme} = useTheme();
     const [courseSchedule, setCourseSchedule] = useState<CourseItem[][]>([[], [], [], [], [], [], []]);
@@ -137,8 +137,11 @@ export function CourseScheduleTable(props: Props) {
     }
 
     function randomCourseColor(courseList: CourseItem[]) {
+        if (!userConfig.theme.course.courseColor) {
+            userConfig.theme.course.courseColor = {};
+        }
         //使得相同课程的颜色相同
-        const courseColor: Record<string, string> = {};
+        const courseColor = userConfig.theme.course.courseColor;
         courseList.forEach((course: CourseItem) => {
             if (!courseColor[course.kcmc]) {
                 let randomNum = Math.floor(Math.random() * courseScheduleData.randomColor.length);
@@ -147,6 +150,7 @@ export function CourseScheduleTable(props: Props) {
                 course.backgroundColor = courseColor[course.kcmc];
             }
         });
+        updateUserConfig(userConfig);
     }
 
     function getCurrentTimeSpan() {
