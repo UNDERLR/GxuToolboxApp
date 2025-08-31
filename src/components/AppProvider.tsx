@@ -154,7 +154,7 @@ export function AppProvider(props: Omit<ProviderProps<IUserConfig>, "value">) {
     );
 
     async function init() {
-        const data = (await store.load({key: "userConfig"})) ?? defaultUserConfig;
+        const data: IUserConfig = (await store.load({key: "userConfig"})) ?? defaultUserConfig;
         updateUserConfig(deepMerge(defaultUserConfig, data));
     }
 
