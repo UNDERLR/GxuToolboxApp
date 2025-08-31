@@ -1,14 +1,11 @@
 import {ActivityIndicator, ScrollView, StyleSheet, ToastAndroid, TouchableOpacity, View} from "react-native";
 import {Button, Text, useTheme} from "@rneui/themed";
-import {useCallback, useEffect, useLayoutEffect, useReducer, useState} from "react";
+import {useCallback, useEffect, useLayoutEffect, useReducer} from "react";
 import {Color} from "@/js/color.ts";
-import {EvaPOST} from "@/type/eduEvaluation/evaDetail.ts";
 import {parseEvaluationHTML} from "@/js/jw/evaParser.ts";
 import {EvaCategory} from "@/components/tool/eduEvaluation/EvaCategory.tsx";
-import {EvaluationIds, EvaluationRequest} from "@/type/eduEvaluation/evaluation.type.ts";
+import {EvaluationRequest} from "@/type/eduEvaluation/evaluation.type.ts";
 import {evaluationApi} from "@/js/jw/evaluation.ts";
-
-import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import {evaluationReducer, initialState} from "@/reducer/EvaReducer.ts";
 
 export function EvaluationDetail({navigation, route}) {
@@ -110,10 +107,17 @@ export function EvaluationDetail({navigation, route}) {
             "不仅传授了我们前沿的知识，更点燃了我们对该领域的探索热情。是我们学术道路上当之无愧的引路人。" +
             "老师的悉心栽培令我们受益匪浅！";
         dispatch({type: "SET_COMMENT", payload: defaultComment});
-        handleSubmit(goodSelected, defaultComment);
+        handleSave(goodSelected, defaultComment);
     };
-    /** 点击提交按钮触发提交 */
-    const handleSubmit = async (submitSelected = selected, submitComment: string = comment) => {
+    /** 点击提交按钮触发提交
+     * @param submitSelected 提交的选项
+     * @param submitComment 提交的评语
+     *
+     * @description 两个参数都是可选项，如不填则应用屏幕上的
+     *
+     * 一般在适用快速评价（如一键评价、一键清空等）时传入特定的参数
+     * */
+    const handleSave = async (submitSelected = selected, submitComment: string = comment) => {
         console.log("start-saving");
 
         const reqToSend: EvaluationRequest = JSON.parse(JSON.stringify(defaultReq));
@@ -337,7 +341,7 @@ export function EvaluationDetail({navigation, route}) {
                     <TouchableOpacity onPress={FastSubmit} style={styles.submitButton}>
                         <Text style={styles.submitButtonText}>应用默认评价示例</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => handleSubmit()} style={styles.submitButton}>
+                    <TouchableOpacity onPress={() => handleSave()} style={styles.submitButton}>
                         <Text style={styles.submitButtonText}>保存</Text>
                     </TouchableOpacity>
                 </>
@@ -365,7 +369,7 @@ export function EvaluationDetail({navigation, route}) {
                 </TouchableOpacity>
             </View>
             {1 && (
-                <TouchableOpacity onPress={() => handleSubmit()} style={styles.submitButton}>
+                <TouchableOpacity onPress={() => handleSave()} style={styles.submitButton}>
                     <Text style={styles.submitButtonText}>保存</Text>
                 </TouchableOpacity>
             )}
