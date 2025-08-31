@@ -6191,6 +6191,11 @@ react-native-cheerio@^1.0.0-rc.4:
     lodash "^4.15.0"
     react-native-parse-html "^2.2.6"
 
+react-native-exception-handler@^2.10.10:
+  version "2.10.10"
+  resolved "https://registry.npmmirror.com/react-native-exception-handler/-/react-native-exception-handler-2.10.10.tgz#b6bfe2b7e6ea4a4deb1f518f48ce2ee1d4843497"
+  integrity sha512-otAXGoZDl1689OoUJWN/rXxVbdoZ3xcmyF1uq/CsizdLwwyZqVGd6d+p/vbYvnF996FfEyAEBnHrdFxulTn51w==
+
 react-native-html-parser@^0.1.0:
   version "0.1.0"
   resolved "https://registry.npmmirror.com/react-native-html-parser/-/react-native-html-parser-0.1.0.tgz#c35de1dc325562da26e68befa423bac34505ba48"
@@ -6201,10 +6206,10 @@ react-native-image-picker@^8.2.1:
   resolved "https://registry.npmmirror.com/react-native-image-picker/-/react-native-image-picker-8.2.1.tgz#1ac7826563cbaa5d5298d9f2acc53c69805e5393"
   integrity sha512-FBeGYJGFDjMdGCcyubDJgBAPCQ4L1D3hwLXyUU91jY9ahOZMTbluceVvRmrEKqnDPFJ0gF1NVhJ0nr1nROFLdg==
 
-react-native-pager-view@^6.7.1:
-  version "6.7.1"
-  resolved "https://registry.npmmirror.com/react-native-pager-view/-/react-native-pager-view-6.7.1.tgz#60d52dedbcc92ee7037a13287ebeed5f74e49df7"
-  integrity sha512-cBSr6xw4g5N7Kd3VGWcf+kmaH7iBWb0DXAf2bVo3bXkzBcBbTOmYSvc0LVLHhUPW8nEq5WjT9LCIYAzgF++EXw==
+react-native-pager-view@6.5.3:
+  version "6.5.3"
+  resolved "https://registry.npmmirror.com/react-native-pager-view/-/react-native-pager-view-6.5.3.tgz#1eee9f0161063ad9ff1ed48fe61c7260a38c9758"
+  integrity sha512-v/90BTiK4nCkR1aseq2BoshVXx3QuUX9CAOwoZddFh+SpfT5KE6HAGJgRRle/E2Y3o4eQTkqB7sfCzuCmOyIPQ==
 
 react-native-parse-html@^2.2.6:
   version "2.2.6"
