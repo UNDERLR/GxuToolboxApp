@@ -54,6 +54,7 @@ export function JWAccountScreen() {
                 onChangeText={v => setUsername(v)}
                 label="账号/学号"
                 placeholder="工具绑定的教务系统账号"
+                style={style.input}
             />
             <Input
                 value={password}
@@ -70,6 +71,7 @@ export function JWAccountScreen() {
                         onPress={() => setShowPwd(!showPwd)}
                     />
                 }
+                style={style.input}
             />
             <Button onPress={() => getToken(username, password)}>获取Token</Button>
             <Button
@@ -100,5 +102,8 @@ const style = StyleSheet.create({
     showPwdIcon: {
         paddingHorizontal: 5,
         cursor: "pointer",
+    },
+    input: {
+        height: 60,
     },
 });
