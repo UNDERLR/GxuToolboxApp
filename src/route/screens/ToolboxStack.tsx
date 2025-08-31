@@ -7,17 +7,32 @@ import {Color} from "@/js/color.ts";
 import {ClassCourseSchedule} from "@/screens/tool/infoQuery/courseSchedule/ClassCourseSchedule.tsx";
 import {EvaluationOverview} from "@/screens/tool/eduEvaluation/EvaluationOverview.tsx";
 import {EvaluationDetail} from "@/screens/tool/eduEvaluation/EvaluationDetail.tsx";
-import {useTheme} from "@rneui/themed";
+import {Button, useTheme} from "@rneui/themed";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 import {EvaluationComment} from "@/screens/tool/eduEvaluation/EvaluationComment.tsx";
 import {BuildingListScreen} from "@/screens/tool/mapNavigation/BuildingListScreen.tsx";
 import {CourseScheduleQuery} from "@/screens/tool/infoQuery/courseSchedule/CourseScheduleQuery.tsx";
+import {useNavigation} from "@react-navigation/native";
+import {jwxt} from "@/js/jw/jwxt.ts";
 
 const Stack = createNativeStackNavigator();
 
 export function ToolboxStack() {
     const {theme} = useTheme();
     const {userConfig} = useContext(UserConfigContext);
+    const navigation = useNavigation();
+    const headerRightEle = () => {
+        return (
+            <Button
+                type="clear"
+                containerStyle={{marginRight: 10}}
+                onPress={() => {
+                    jwxt.openPageInWebView("/xtgl/index_initMenu.html", navigation);
+                }}>
+                打开教务
+            </Button>
+        );
+    };
     return (
         <Stack.Navigator
             initialRouteName="toolboxIndex"
@@ -35,6 +50,7 @@ export function ToolboxStack() {
                 },
                 animation: "fade",
                 animationDuration: 100,
+                headerRight: headerRightEle,
             }}>
             <Stack.Screen
                 name="toolboxIndex"

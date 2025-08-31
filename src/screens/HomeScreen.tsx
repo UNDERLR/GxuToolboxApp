@@ -10,7 +10,6 @@ import {jwxt} from "@/js/jw/jwxt.ts";
 export function HomeScreen() {
     const {theme} = useTheme();
     const {userConfig} = useContext(UserConfigContext);
-    const navigation = useNavigation();
     // 滚动相关状态和引用
     const scrollViewRef = useRef<ScrollView>(null);
     const [scrollEnabled, setScrollEnabled] = useState(true);
@@ -87,24 +86,6 @@ export function HomeScreen() {
                 contentContainerStyle={{
                     paddingVertical: 10,
                 }}>
-                <Card
-                    containerStyle={{
-                        backgroundColor: Color(theme.colors.background).setAlpha(
-                            0.05 + ((theme.mode === "dark" ? 0.6 : 0.7) * userConfig.theme.bgOpacity) / 100,
-                        ).rgbaString,
-                        borderColor: Color.mix(theme.colors.primary, theme.colors.background, 0.7).rgbaString,
-                        borderRadius: 5,
-                        marginHorizontal: 5,
-                        elevation: 0, // Android 去除阴影
-                        shadowOpacity: 0, // iOS 去除阴影
-                    }}>
-                    <Button
-                        onPress={() => {
-                            jwxt.openPageInWebView("/xtgl/index_initMenu.html", navigation);
-                        }}>
-                        打开教务
-                    </Button>
-                </Card>
                 {/*<ComingExamCard />*/}
                 <ScheduleCard />
             </ScrollView>
