@@ -1,7 +1,6 @@
-import {RouteProp, useRoute} from "@react-navigation/native";
 import {ActivityIndicator, ScrollView, StyleSheet, ToastAndroid, TouchableOpacity, View} from "react-native";
 import {Button, Text, useTheme} from "@rneui/themed";
-import {useCallback, useEffect, useLayoutEffect, useState} from "react";
+import {useCallback, useEffect, useLayoutEffect, useReducer, useState} from "react";
 import {Color} from "@/js/color.ts";
 import {EvaPOST} from "@/type/eduEvaluation/evaDetail.ts";
 import {parseEvaluationHTML} from "@/js/jw/evaParser.ts";
@@ -9,64 +8,18 @@ import {EvaCategory} from "@/components/tool/eduEvaluation/EvaCategory.tsx";
 import {EvaluationIds, EvaluationRequest} from "@/type/eduEvaluation/evaluation.type.ts";
 import {evaluationApi} from "@/js/jw/evaluation.ts";
 
-type RootStackParamList = {
-    EvaDetail: {evaluationItem: EvaPOST};
-};
+import {NativeStackScreenProps} from "@react-navigation/native-stack";
+import {evaluationReducer, initialState} from "@/reducer/EvaReducer.ts";
 
-type SelectedMap = Record<number, Record<number, Record<number, number>>>;
-
-interface Option {
-    label: string; // 选项文字
-    score: number; // 对应分值
-    pfdjdmxmb_id: string; // 选项 ID
-    checked?: boolean; // 是否默认选中
-}
-
-interface Item {
-    title: string; // 指标标题
-    qzz: number; // 权重
-    options: Option[];
-    // 其它业务字段
-    pjzbxm_id: string;
-    pfdjdmb_id: string;
-}
-
-interface Category {
-    name: string; // 大指标名，如“师德表现”
-    qzz: number; // 大指标权重
-    items: Item[];
-}
-
-interface Teacher {
-    name: string; // 教师姓名
-    categories: Category[];
-    comment?: string; // 评语
-}
-
-export function EvaluationDetail({navigation}) {
+export function EvaluationDetail({navigation, route}) {
+    const [state, dispatch] = useReducer(evaluationReducer, initialState);
+    const {loading, error, teachers, comment, ids, selected, defaultReq} = state;
     const {theme} = useTheme();
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
-    const [data, setData] = useState<{teachers: Teacher[]}>();
-    const [comment, setComment] = useState<string>("");
-    const [ids, setIds] = useState<EvaluationIds>();
-    const [selected, setSelected] = useState<SelectedMap>({});
-    const [defaultReq, setDefaultReq] = useState<EvaluationRequest>();
-    const route = useRoute<RouteProp<RootStackParamList, "EvaDetail">>();
+
     const {evaluationItem} = route.params;
 
     const onSelect = useCallback((catIdx: number, itIdx: number, optIdx: number) => {
-        const teacherIdx = 0; // 一个老师，就定义成常量
-        setSelected(prev => ({
-            ...prev,
-            [teacherIdx]: {
-                ...(prev[teacherIdx] || {}),
-                [catIdx]: {
-                    ...(prev[teacherIdx]?.[catIdx] || {}),
-                    [itIdx]: optIdx,
-                },
-            },
-        }));
+        dispatch({type: "SELECT_OPTION", payload: {catIdx, itIdx, optIdx}});
     }, []);
 
     useEffect(() => {
@@ -150,13 +103,13 @@ export function EvaluationDetail({navigation}) {
                 4: {0: 0, 1: 0, 2: 0},
             },
         };
-        setSelected(goodSelected);
+        dispatch({type: "SET_SELECTED", payload: goodSelected});
         const defaultComment =
             "老师专业功底深厚，治学态度严谨。在教学中，您逻辑清晰，重点突出，" +
             "善于运用启发式教学引导我们独立思考，将理论与实践紧密结合。课堂富有感染力，" +
             "不仅传授了我们前沿的知识，更点燃了我们对该领域的探索热情。是我们学术道路上当之无愧的引路人。" +
             "老师的悉心栽培令我们受益匪浅！";
-        setComment(defaultComment);
+        dispatch({type: "SET_COMMENT", payload: defaultComment});
         handleSubmit(goodSelected, defaultComment);
     };
     /** 点击提交按钮触发提交 */
@@ -205,13 +158,13 @@ export function EvaluationDetail({navigation}) {
         const res = await evaluationApi.handleEvaResult(defaultReq, reqToSend);
         console.log(res);
         ToastAndroid.showWithGravity(res, ToastAndroid.SHORT, 5);
-        setSelected(submitSelected);
+        dispatch({type: "SET_SELECTED", payload: submitSelected});
         init();
     };
 
     // init，一点开页面就调用
     async function init() {
-        setLoading(true);
+        dispatch({type: "FETCH_START"});
         try {
             const HtmlText = await evaluationApi.getEvaluationDetail(
                 evaluationItem.jgh_id,
@@ -221,10 +174,6 @@ export function EvaluationDetail({navigation}) {
                 evaluationItem.pjmbmcb_id,
             );
             const {idObj, teachers, selected} = parseEvaluationHTML(HtmlText);
-            setData({teachers});
-            setSelected(selected || {});
-            setIds(idObj);
-            // console.log(idObj);
             const k: EvaluationRequest = {
                 jgh_id: evaluationItem.jgh_id,
                 jxb_id: evaluationItem.jxb_id,
@@ -232,6 +181,7 @@ export function EvaluationDetail({navigation}) {
                 modelList: [
                     {
                         pjmbmcb_id: idObj.panelId,
+                        // ↓这里写死才能向“未评”的提交评价
                         pjdxdm: "01",
                         xspfb_id: idObj.formId,
                         fxzgf: null,
@@ -349,11 +299,13 @@ export function EvaluationDetail({navigation}) {
                 xsdm: "01",
                 ztpjbl: 100,
             };
-            setDefaultReq(k);
+
+            dispatch({
+                type: "FETCH_SUCCESS",
+                payload: {teachers, selected: selected || {}, ids: idObj, defaultReq: k},
+            });
         } catch (e: any) {
-            setError(e.message);
-        } finally {
-            setLoading(false);
+            dispatch({type: "FETCH_ERROR", payload: e.message});
         }
     }
 
@@ -394,7 +346,7 @@ export function EvaluationDetail({navigation}) {
                 <Text style={styles.header}>
                     {evaluationItem.kcmc}——{evaluationItem.jzgmc}：{evaluationItem.tjztmc}
                 </Text>
-                {data!.teachers![0].categories.map((cat, catIdx) => (
+                {teachers![0].categories.map((cat, catIdx: number) => (
                     <EvaCategory key={cat.name + cat.qzz} cat={cat} catIdx={catIdx} onSelect={onSelect} />
                 ))}
             </View>
@@ -402,12 +354,13 @@ export function EvaluationDetail({navigation}) {
                 <Text style={[styles.categoryName, {paddingLeft: "3%"}]}>评语</Text>
                 <TouchableOpacity
                     style={styles.commentInput}
-                    onPress={() =>
-                        navigation.navigate("Comment", {
-                            initialComment: comment,
-                            onSave: setComment,
-                        })
-                    }>
+                    onPress={() => {
+                        console.log("awa");
+                        // navigation.navigate("EvaluationComment", {
+                        //     initialComment: comment,
+                        //     onSave: setComment,
+                        // })
+                    }}>
                     <Text style={{color: "#999"}}>{comment || "请输入评语"}</Text>
                 </TouchableOpacity>
             </View>

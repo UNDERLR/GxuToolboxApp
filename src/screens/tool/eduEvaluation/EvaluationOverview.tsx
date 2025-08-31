@@ -59,7 +59,7 @@ export function EvaluationOverview() {
 
     async function init() {
         const res = await evaluationApi.getEvaluationList();
-        res.items.sort((a, b) => statusList.indexOf(a.tjztmc) - statusList.indexOf(b.tjztmc));
+        res.items.sort((a, b) => statusList.indexOf(b.tjztmc) - statusList.indexOf(a.tjztmc));
         setEvaList(res.items);
     }
 
