@@ -1,6 +1,6 @@
 import {ActivityIndicator, ScrollView, StyleSheet, ToastAndroid, TouchableOpacity, View} from "react-native";
 import {Button, Text, useTheme} from "@rneui/themed";
-import {useCallback, useEffect, useLayoutEffect, useReducer} from "react";
+import {useCallback, useEffect, useLayoutEffect, useReducer, useRef} from "react";
 import {Color} from "@/js/color.ts";
 import {parseEvaluationHTML} from "@/js/jw/evaParser.ts";
 import {EvaCategory} from "@/components/tool/eduEvaluation/EvaCategory.tsx";
@@ -9,6 +9,7 @@ import {evaluationApi} from "@/js/jw/evaluation.ts";
 import {evaluationReducer, initialState} from "@/reducer/EvaReducer.ts";
 
 export function EvaluationDetail({navigation, route}) {
+    const scrollViewRef = useRef<ScrollView>(null);
     const [state, dispatch] = useReducer(evaluationReducer, initialState);
     const {loading, error, teachers, comment, ids, selected, defaultReq} = state;
     const {theme} = useTheme();
@@ -26,7 +27,6 @@ export function EvaluationDetail({navigation, route}) {
                 count += Object.values(selected[0][cat_key]).length;
             }
         }
-        console.log(count);
     }, [selected]);
 
     useLayoutEffect(() => {
@@ -113,7 +113,7 @@ export function EvaluationDetail({navigation, route}) {
      * @param submitSelected 提交的选项
      * @param submitComment 提交的评语
      *
-     * @description 两个参数都是可选项，如不填则应用屏幕上的
+     * @description 两个参数都是可选项，如不填则提交屏幕上的参数
      *
      * 一般在适用快速评价（如一键评价、一键清空等）时传入特定的参数
      * */
@@ -303,6 +303,7 @@ export function EvaluationDetail({navigation, route}) {
                 xsdm: "01",
                 ztpjbl: 100,
             };
+            console.log(teachers[0].comment);
 
             dispatch({
                 type: "FETCH_SUCCESS",
@@ -335,7 +336,7 @@ export function EvaluationDetail({navigation, route}) {
     }
 
     return (
-        <ScrollView>
+        <ScrollView ref={scrollViewRef}>
             {1 && (
                 <>
                     <TouchableOpacity onPress={FastSubmit} style={styles.submitButton}>
@@ -359,11 +360,13 @@ export function EvaluationDetail({navigation, route}) {
                 <TouchableOpacity
                     style={styles.commentInput}
                     onPress={() => {
-                        console.log("awa");
-                        // navigation.navigate("EvaluationComment", {
-                        //     initialComment: comment,
-                        //     onSave: setComment,
-                        // })
+                        navigation.navigate("EvaluationComment", {
+                            initialComment: comment,
+                            onSave: (newComment: string) => {
+                                dispatch({type: "SET_COMMENT", payload: newComment});
+                                setTimeout(() => scrollViewRef.current?.scrollToEnd({animated: true}), 100);
+                            },
+                        });
                     }}>
                     <Text style={{color: "#999"}}>{comment || "请输入评语"}</Text>
                 </TouchableOpacity>

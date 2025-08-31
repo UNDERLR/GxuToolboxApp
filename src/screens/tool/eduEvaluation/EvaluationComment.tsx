@@ -1,7 +1,7 @@
 import {Text, useTheme} from "@rneui/themed";
 import {Button, StyleSheet, TextInput, TouchableOpacity, View} from "react-native";
 import {useNavigation, useRoute, RouteProp} from "@react-navigation/native";
-import {useState, useLayoutEffect} from "react";
+import {useState, useLayoutEffect, useCallback} from "react";
 import Flex from "@/components/un-ui/Flex.tsx";
 
 // 定义路由参数的类型
@@ -24,6 +24,13 @@ export function EvaluationComment() {
     // 使用本地 state 来控制 TextInput
     const [text, setText] = useState(initialComment || "");
 
+    const handleSave = useCallback(() => {
+        // 调用从 EvaluationDetail 传来的 onSave 函数
+        onSave(text);
+        // 返回上一页
+        navigation.goBack();
+    }, [navigation, onSave, text]);
+
     // 在导航栏添加保存按钮
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -39,14 +46,7 @@ export function EvaluationComment() {
                     <Text>保存</Text>
                 </TouchableOpacity>,
         });
-    }, [navigation, text]);
-
-    const handleSave = () => {
-        // 调用从 EvaluationDetail 传来的 onSave 函数
-        onSave(text);
-        // 返回上一页
-        navigation.goBack();
-    };
+    }, [navigation, handleSave, theme.colors.background, theme.colors.primary]);
 
     const styles = StyleSheet.create({
         container: {

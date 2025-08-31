@@ -126,13 +126,9 @@ export const parseEvaluationHTML = (html: string) => {
         });
 
         /* 2.5 评语 */
-        const commentTextarea = $panel.nextAll("#pyDiv").find("textarea");
-        const comment = commentTextarea.attr("placeholder") || "";
-
+        const comment = $panel.find(".form-control").text() || "";
         teachers.push({name: teacherName, categories, comment});
     });
-    // console.log(objectToFormUrlEncoded(idObj).replace(/&/g, "\n"));
-
     /* ---------- 3. 返回 ---------- */
     return {
         idObj,

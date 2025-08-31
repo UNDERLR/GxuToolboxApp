@@ -56,6 +56,7 @@ export function evaluationReducer(state: EvaluationState, action: EvaluationActi
                 selected: action.payload.selected,
                 ids: action.payload.ids,
                 defaultReq: action.payload.defaultReq,
+                comment: action.payload.teachers[0].comment,
             };
         case "FETCH_ERROR":
             return {
