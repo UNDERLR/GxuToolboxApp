@@ -107,6 +107,12 @@ export function SettingIndex() {
                     url: "https://gitlab.unde.site/gxutool/gxu_tool_app",
                 },
                 {
+                    label: "软件文档",
+                    type: "link",
+                    value: "Docs",
+                    url: "https://acm.gxu.edu.cn/docs/",
+                },
+                {
                     label: "公测群",
                     type: "link",
                     value: "101974491",
