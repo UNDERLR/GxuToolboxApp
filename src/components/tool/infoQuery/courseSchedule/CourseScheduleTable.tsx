@@ -199,7 +199,7 @@ export function CourseScheduleTable(props: Props) {
                 <View style={courseScheduleStyle.weekdayItem}>
                     <Text style={courseScheduleStyle.weekdayText}>
                         {props.showDate
-                            ? moment(courseScheduleData.startDay).add(currentWeek, "w").month() + 1 + "月"
+                            ? moment(userConfig.jw.startDay).add(currentWeek, "w").month() + 1 + "月"
                             : `第${props.currentWeek}周`}
                     </Text>
                 </View>
@@ -230,7 +230,7 @@ export function CourseScheduleTable(props: Props) {
             {/*课表*/}
             {courseScheduleData.weekdayList.map((weekday, index) => {
                 // 判断是否为当天
-                const currentDay = moment(courseScheduleData.startDay).add({
+                const currentDay = moment(userConfig.jw.startDay).add({
                     week: currentWeek - 1,
                     day: index,
                 });

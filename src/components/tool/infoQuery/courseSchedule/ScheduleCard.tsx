@@ -8,7 +8,7 @@ import {PracticalCourseList} from "./PracticalCourseList.tsx";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {Icon} from "@/components/un-ui/Icon.tsx";
 import moment from "moment";
-import {SchoolTermValue} from "@/type/global.ts";
+import {Schools, SchoolTermValue} from "@/type/global.ts";
 import {Color} from "@/js/color.ts";
 import {usePagerView} from "react-native-pager-view";
 import {CourseCardSetting} from "@/components/tool/infoQuery/courseSchedule/CourseCardSetting.tsx";
@@ -18,9 +18,11 @@ import {ExamInfoQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 import {courseApi} from "@/js/jw/course.ts";
 import {examApi} from "@/js/jw/exam.ts";
+import {UserInfo} from "@/type/infoQuery/base.ts";
+import {userMgr} from "@/js/mgr/user.ts";
 
 export function ScheduleCard() {
-    const {userConfig} = useContext(UserConfigContext);
+    const {userConfig, updateUserConfig} = useContext(UserConfigContext);
     const {theme} = useTheme();
     const pagerView = usePagerView({pagesAmount: 20});
     const {...rest} = pagerView;
@@ -88,6 +90,33 @@ export function ScheduleCard() {
         }
     }
 
+    async function getStartDay() {
+        const userInfo = await store.load<UserInfo>({
+            key: "userInfo",
+        });
+        const {username} = await userMgr.getAccount();
+        if (!userInfo || !username) return;
+
+        const schoolId = Schools.filter(school => school[1] === userInfo.school)?.[0]?.[0];
+        if (!schoolId) return;
+        const data = await courseApi.getClassCourseSchedule(
+            year,
+            term,
+            schoolId,
+            userInfo.subject_id,
+            userInfo.grade,
+            username.slice(2, 8),
+        );
+
+        if (!Array.isArray(data?.weekNum) || data?.weekNum.length < 1) return;
+        const firstDay = data.weekNum[0].rq.split("/")[0];
+        if (userConfig.jw.startDay !== firstDay) {
+            userConfig.jw.startDay = firstDay;
+            updateUserConfig(userConfig);
+        }
+    }
+    console.log(userConfig.jw.startDay);
+
     async function init() {
         const courseData: CourseScheduleQueryRes = await store.load({key: "courseRes"});
         setApiRes(courseData);
@@ -99,6 +128,7 @@ export function ScheduleCard() {
     async function loadData() {
         await getCourseSchedule();
         await getExamList();
+        await getStartDay();
     }
 
     useEffect(() => {

@@ -128,7 +128,7 @@ export function CourseCardSetting(props: Props) {
                         <Text>课表起始日</Text>
                         <Flex justifyContent="flex-end">
                             <UnDateTimePicker
-                                value={moment(courseScheduleData.startDay).valueOf()}
+                                value={moment(userConfig.jw.startDay).valueOf()}
                                 onChange={v => {
                                     const startDay = moment(v).format("YYYY-MM-DD");
                                     updateCourseScheduleData({
