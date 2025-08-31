@@ -17,6 +17,7 @@ interface Props {
     onCoursePress?: (course: Course) => void;
     startDay: moment.MomentInput;
     showDate?: boolean;
+    showTimeSpanHighlight?: boolean;
     // 非课程类型
     examList?: ExamInfo[];
     onExamPress?: (examInfo: ExamInfo) => void;
@@ -45,7 +46,7 @@ export function CourseScheduleTable(props: Props) {
         }
 
         const now = moment();
-        const futureCourses: { course: Course; time: moment.Moment }[] = [];
+        const futureCourses: {course: Course; time: moment.Moment}[] = [];
         const startTimes = courseScheduleData.timeSpanList.map(span => span.split("\n")[0]);
 
         allCourses.forEach(course => {
@@ -54,7 +55,9 @@ export function CourseScheduleTable(props: Props) {
             const startSection = parseInt(course.jcs.split("-")[0], 10) - 1;
             const courseTime = startTimes[startSection];
 
-            if (!courseTime) {return;}
+            if (!courseTime) {
+                return;
+            }
 
             const [hour, minute] = courseTime.split(":").map(Number);
 
@@ -93,10 +96,12 @@ export function CourseScheduleTable(props: Props) {
     useEffect(() => {
         init();
         props.onNextCourseCalculated?.(nextCourse);
-        const id = setInterval(() => setCurrentTime(moment().format()), 1000);
-        return () => {
-            clearInterval(id);
-        };
+        if (props.showTimeSpanHighlight) {
+            const id = setInterval(() => setCurrentTime(moment().format()), 5000);
+            return () => {
+                clearInterval(id);
+            };
+        }
     }, [props, nextCourse]);
 
     useEffect(() => {
@@ -182,7 +187,7 @@ export function CourseScheduleTable(props: Props) {
     return (
         <View style={courseScheduleStyle.courseSchedule}>
             {/*时间段高亮*/}
-            {typeof currentTimeSpan === "number" && (
+            {typeof currentTimeSpan === "number" && props.showTimeSpanHighlight && (
                 <View style={[timeSpanHighLightTop, courseScheduleStyle.timeSpanHighLight]} />
             )}
             {/*时间表渲染*/}

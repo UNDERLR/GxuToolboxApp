@@ -133,6 +133,7 @@ export function ScheduleCard() {
             <CourseScheduleView
                 showDate
                 showNextCourse
+                showTimeSpanHighlight
                 startDay={startDay}
                 courseApiRes={apiRes}
                 pageView={pagerView}

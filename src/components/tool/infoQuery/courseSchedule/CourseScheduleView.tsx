@@ -20,6 +20,7 @@ interface Props {
     courseApiRes?: CourseScheduleQueryRes;
     showDate?: boolean;
     showNextCourse?: boolean;
+    showTimeSpanHighlight?: boolean;
 
     examList?: ExamInfo[];
     onExamPress?: (examInfo: ExamInfo) => void;
@@ -131,6 +132,7 @@ export function CourseScheduleView(props: Props) {
                                 )}
                                 <CourseScheduleTable
                                     showDate={props.showDate}
+                                    showTimeSpanHighlight={props.showTimeSpanHighlight}
                                     startDay={startDay}
                                     onCoursePress={showCourseDetail}
                                     courseList={props.courseApiRes?.kbList ?? []}
