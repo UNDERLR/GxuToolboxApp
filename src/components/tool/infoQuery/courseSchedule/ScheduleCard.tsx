@@ -58,11 +58,10 @@ export function ScheduleCard() {
         bottomSheetContainer: {
             backgroundColor: theme.colors.background,
             padding: "5%",
-            borderRadius: 8,
+            borderTopLeftRadius: 8,
+            borderTopRightRadius: 8,
             borderColor: Color.mix(theme.colors.primary, theme.colors.background, 0.8).rgbaString,
             borderWidth: 1,
-            marginHorizontal: "4%",
-            marginBottom: "5%",
         },
     });
 
