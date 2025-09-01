@@ -29,6 +29,7 @@
         "moment": "^2.30.1",
         "react": "19.0.0",
         "react-native": "0.79.1",
+        "react-native-android-widget": "^0.17.1",
         "react-native-blob-util": "^0.21.2",
         "react-native-cheerio": "^1.0.0-rc.4",
         "react-native-exception-handler": "^2.10.10",

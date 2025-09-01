@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:minWidth="340dp"
+                    android:minHeight="230dp"
+
+                    android:targetCellWidth="5"
+                    android:targetCellHeight="3"
+
+                    android:updatePeriodMillis="0"
+
+                    android:initialLayout="@layout/rn_widget"
+
+                    android:previewImage="@android:drawable/ic_dialog_alert"
+                    android:description="@string/widget_courseschedule_description"
+
+                    android:resizeMode="horizontal|vertical"
+                    android:widgetFeatures="reconfigurable"
+
+                    android:widgetCategory="home_screen">
+</appwidget-provider>
