@@ -1,9 +1,8 @@
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {ScrollView, StyleSheet, ToastAndroid, View} from "react-native";
-import {Button, Card, Divider, Text} from "@rneui/themed";
+import {Button, Card, Divider, Text, useTheme} from "@rneui/themed";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {PageModel, Schools, SchoolTerms, SchoolTermValue, SchoolValue, SchoolYears} from "@/type/global.ts";
-import {useUserTheme} from "@/js/theme.ts";
 import moment from "moment/moment";
 import {infoQuery} from "@/js/jw/infoQuery.ts";
 import {Class, UserInfo} from "@/type/infoQuery/base.ts";
@@ -15,20 +14,22 @@ import {PracticalCourseList} from "@/components/tool/infoQuery/courseSchedule/Pr
 import {UnSlider} from "@/components/un-ui/UnSlider.tsx";
 import {UnPicker} from "@/components/un-ui/UnPicker";
 import {Picker} from "@react-native-picker/picker";
+import {UserConfigContext} from "@/components/AppProvider.tsx";
+import {courseApi} from "@/js/jw/course.ts";
+import {jwxt} from "@/js/jw/jwxt.ts";
+import {useNavigation} from "@react-navigation/native";
 
 export function ClassCourseSchedule() {
-    const {theme} = useUserTheme();
+    const {userConfig} = useContext(UserConfigContext);
+    const navigation = useNavigation();
+    const {theme} = useTheme();
     const [userInfo, setUserInfo] = useState<UserInfo>();
     const [subjectList, setSubjectList] = useState<string[][]>([]);
     const [classList, setClassList] = useState<string[][]>([]);
     const pageView = usePagerView({pagesAmount: 20});
     // params
-    const [year, setYear] = useState(moment().isBefore(moment("8", "M"), "M") ? moment().year() - 1 : moment().year());
-    const [term, setTerm] = useState<SchoolTermValue>(
-        moment().isBetween(moment("02", "MM"), moment("08", "MM"), "month", "[]")
-            ? SchoolTerms[1][0]
-            : SchoolTerms[0][0],
-    );
+    const [year, setYear] = useState(+userConfig.jw.year);
+    const [term, setTerm] = useState<SchoolTermValue>(userConfig.jw.term);
     const [school, setSchool] = useState<SchoolValue>(
         Schools[Schools.findIndex(v => v[1] === (userInfo?.school ?? Schools[0][1]))][0],
     );
@@ -48,7 +49,7 @@ export function ClassCourseSchedule() {
 
     const queryClassCourseScheduleList = async (tip = false) => {
         if (tip) ToastAndroid.show("正在获取班级课表列表", ToastAndroid.SHORT);
-        const res = await infoQuery.getClassCourseScheduleList(year, term, school, subject, grade, classId);
+        const res = await courseApi.getClassCourseScheduleList(year, term, school, subject, grade, classId);
         setClassScheduleList(res.items);
         setClassScheduleIndex(0);
         queryClassCourseSchedule(res.items[0]);
@@ -61,7 +62,7 @@ export function ClassCourseSchedule() {
     const queryClassCourseSchedule = async (item = {}, tip = false) => {
         if (tip) ToastAndroid.show("正在获取班级课表", ToastAndroid.SHORT);
         const {xnm, xqm, njdm_id, jgdm, zyh_id, bh_id} = {...classScheduleList[classScheduleIndex ?? 0], ...item};
-        const res = await infoQuery.getClassCourseSchedule(+xnm, xqm, jgdm, zyh_id, +njdm_id, bh_id);
+        const res = await courseApi.getClassCourseSchedule(+xnm, xqm, jgdm, zyh_id, +njdm_id, bh_id);
         setClassScheduleApiRes(res);
     };
 
@@ -198,9 +199,20 @@ export function ClassCourseSchedule() {
                             </UnPicker>
                         </View>
                     </Flex>
-                    <View style={{width: "100%"}}>
-                        <Button onPress={() => queryClassCourseScheduleList(true)}>查询课表</Button>
-                    </View>
+                    <Flex gap={10}>
+                        <Button containerStyle={{flex: 1}} onPress={() => queryClassCourseScheduleList(true)}>
+                            查询课表
+                        </Button>
+                        <Button
+                            onPress={() =>
+                                jwxt.openPageInWebView(
+                                    "/kbdy/bjkbdy_cxBjkbdyIndex.html?gnmkdm=N214505&layout=default",
+                                    navigation,
+                                )
+                            }>
+                            前往教务查询
+                        </Button>
+                    </Flex>
                 </Flex>
                 <Divider />
                 <Text h4>课表查询结果</Text>

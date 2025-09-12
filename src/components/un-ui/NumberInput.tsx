@@ -1,9 +1,10 @@
-import {GestureResponderEvent, Pressable, StyleSheet, TextInput, View} from "react-native";
+import {Pressable, StyleSheet, TextInput, View} from "react-native";
 import Flex from "./Flex.tsx";
 import {Icon} from "./Icon.tsx";
-import {useUserTheme} from "@/js/theme.ts";
 import {Color} from "@/js/color.ts";
-import {useRef} from "react";
+import {useContext, useRef} from "react";
+import {useTheme} from "@rneui/themed";
+import {UserConfigContext} from "@/components/AppProvider.tsx";
 
 interface Props {
     value: number;
@@ -17,7 +18,8 @@ interface Props {
 }
 
 export function NumberInput(props: Props) {
-    const {userTheme, theme} = useUserTheme();
+    const {theme} = useTheme();
+    const {userConfig} = useContext(UserConfigContext);
     const style = StyleSheet.create({
         container: {
             borderColor: theme.colors.grey4,
@@ -68,7 +70,7 @@ export function NumberInput(props: Props) {
     return (
         <Flex style={style.container} inline>
             <Pressable
-                android_ripple={userTheme.ripple}
+                android_ripple={userConfig.theme.ripple}
                 onPressIn={e => e.stopPropagation()}
                 onPress={minus}
                 disabled={props.value <= (props.min ?? Number.MIN_SAFE_INTEGER)}>
@@ -101,7 +103,7 @@ export function NumberInput(props: Props) {
                 />
             </View>
             <Pressable
-                android_ripple={userTheme.ripple}
+                android_ripple={userConfig.theme.ripple}
                 onPress={plus}
                 disabled={props.value >= (props.max ?? Number.MAX_SAFE_INTEGER)}>
                 <Flex style={style.rightIcon} inline justifyContent="center">

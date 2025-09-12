@@ -1,5 +1,14 @@
 This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
+## 常用文档
+- [RN doc](https://reactnative.dev/docs/components-and-apis)
+- [react native elements ui](https://reactnativeelements.com/docs/customizing)
+- [icon](https://oblador.github.io/react-native-vector-icons/)
+- [react navigation](https://reactnavigation.org/docs/getting-started/)
+- [RN库市场](https://reactnative.directory/)
+- [moment](https://momentjs.com/docs/)
+- []()
+
 # Getting Started
 
 > **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.

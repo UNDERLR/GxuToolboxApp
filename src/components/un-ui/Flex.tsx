@@ -18,9 +18,8 @@ export default function Flex(props: Partial<Props & ViewProps>) {
             justifyContent: props.justifyContent ?? "flex-start",
         },
     });
-    const flexStyle = props.style ? StyleSheet.compose(props.style, style.unUiFlex) : style.unUiFlex;
     return (
-        <View {...props} style={flexStyle}>
+        <View {...props} style={[props.style, style.unUiFlex]}>
             {props.children}
         </View>
     );

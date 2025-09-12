@@ -1,8 +1,7 @@
 import {SliderProps} from "@rneui/base";
-import {Slider, Text} from "@rneui/themed";
-import {Pressable, StyleProp, StyleSheet, ViewStyle} from "react-native";
+import {Slider, Text, useTheme} from "@rneui/themed";
+import {StyleProp, StyleSheet, ViewStyle} from "react-native";
 import Flex from "./Flex.tsx";
-import {useUserTheme} from "@/js/theme.ts";
 import {Color} from "@/js/color.ts";
 import {useState} from "react";
 import {NumberInput} from "@/components/un-ui/NumberInput.tsx";
@@ -14,7 +13,7 @@ interface Props {
 }
 
 export function UnSlider(props: Props & SliderProps) {
-    const {theme} = useUserTheme();
+    const {theme} = useTheme();
     const [inputMode, setInputMode] = useState(props.inputMode);
 
     const style = StyleSheet.create({
@@ -24,14 +23,20 @@ export function UnSlider(props: Props & SliderProps) {
             paddingVertical: 6,
             borderRadius: 4,
         },
+        track: {
+            marginTop: -5,
+        },
+        thumb: {
+            marginTop: -5,
+        },
     });
 
-    const onValueChange = (vo: string) => {
+    const onValueChange = (vo: number) => {
         const v = +vo ?? 0;
         let res = v;
-        if (props.maximumValue && v > props.maximumValue) {
+        if (!Number.isNaN(props.maximumValue) && props.maximumValue !== undefined && v > props.maximumValue) {
             res = props.maximumValue;
-        } else if (props.minimumValue && v < props.minimumValue) {
+        } else if (!Number.isNaN(props.minimumValue) && props.minimumValue !== undefined && v < props.minimumValue) {
             res = props.minimumValue;
         }
         props.onValueChange?.(res);
@@ -42,11 +47,11 @@ export function UnSlider(props: Props & SliderProps) {
             {inputMode ? (
                 <NumberInput
                     value={props.value ?? 0}
-                    onChange={props.onValueChange}
+                    onChange={onValueChange}
                     max={props.maximumValue}
                     min={props.minimumValue}
                     step={props.step}
-                    onBlur={()=>setInputMode(false)}
+                    onBlur={() => setInputMode(false)}
                     autoFocus
                 />
             ) : (
@@ -58,8 +63,9 @@ export function UnSlider(props: Props & SliderProps) {
                 <Slider
                     {...props}
                     containerStyle={props.sliderContainerStyle}
-                    trackStyle={{marginTop: -5}}
-                    thumbStyle={{marginTop: -5}}
+                    minimumTrackTintColor={Color.mix(theme.colors.primary, theme.colors.grey2).rgbaString}
+                    trackStyle={style.track}
+                    thumbStyle={style.thumb}
                 />
             </Flex>
         </Flex>

@@ -24,6 +24,7 @@ export const SchoolYears = [
     ["2006", "2006-2007"],
     ["2005", "2005-2006"],
 ] as const;
+export type SchoolYearsType = typeof SchoolYears;
 export type SchoolYearValue = typeof SchoolYears[number][0];
 export type SchoolYearLabel = typeof SchoolYears[number][1];
 
@@ -32,6 +33,7 @@ export const SchoolTerms = [
     ["12", "春季学期"],
     ["16", "3"],
 ]as const;
+export type SchoolTermsType = typeof SchoolTerms;
 export type SchoolTermValue = typeof SchoolTerms[number][0];
 export type SchoolTermLabel = typeof SchoolTerms[number][1];
 

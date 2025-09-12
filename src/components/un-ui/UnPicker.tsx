@@ -1,10 +1,16 @@
 import React from "react";
 import {Picker, PickerProps} from "@react-native-picker/picker";
-import {useUserTheme} from "@/js/theme.ts";
+import {useTheme} from "@rneui/themed";
 
 export function UnPicker<T>(props: PickerProps<T>) {
-    const {theme} = useUserTheme();
-    return <Picker {...props} style={{
-        color: theme.colors.black,
-    }}/>;
+    const {theme} = useTheme();
+    return (
+        <Picker
+            {...props}
+            mode="dropdown"
+            style={{
+                color: theme.colors.black,
+            }}
+        />
+    );
 }

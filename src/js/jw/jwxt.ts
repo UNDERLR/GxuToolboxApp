@@ -8,6 +8,9 @@ import {ToastAndroid} from "react-native";
 import {UserInfo} from "@/type/infoQuery/base.ts";
 import {store} from "@/js/store.ts";
 import moment from "moment/moment";
+import {WebViewSource} from "react-native-webview/lib/WebViewTypes";
+import type {NavigationProp} from "@react-navigation/core/src/types.tsx";
+import type {NavigationState} from "@react-navigation/routers";
 
 export const jwxt = {
     getPublicKey: (): Promise<{modulus: string; exponent: string}> => {
@@ -114,5 +117,19 @@ export const jwxt = {
             return info;
         }
         return;
+    },
+    openPageInWebView: (
+        url: string,
+        navigation: Omit<NavigationProp<ReactNavigation.RootParamList>, "getState"> & {
+            getState(): NavigationState | undefined;
+        },
+        title?: string,
+    ) => {
+        navigation.navigate("webViewScreen", {
+            title,
+            source: {
+                uri: "https://jwxt2018.gxu.edu.cn/jwglxt" + url,
+            } as WebViewSource,
+        });
     },
 };

@@ -66,31 +66,33 @@ export function PracticalCourseList(props: Props) {
     return (
         <View>
             <Text style={{textAlign: "center"}}>实践课</Text>
-            {courseList.map((course: PracticalCourseItem) => {
+            {courseList.map((course: PracticalCourseItem, index) => {
                 const itemStyle = StyleSheet.create({
                     course: {
                         backgroundColor: Color(course.backgroundColor).setAlpha(theme.mode === "light" ? 0.3 : 0.1)
                             .rgbaString,
-                        borderColor: Color.mix(Color(course.backgroundColor), Color(theme.colors.grey4), 0.8)
-                            .rgbaString,
+                        borderColor: Color.mix(course.backgroundColor, theme.colors.grey4, 0.8).rgbaString,
+                    },
+                    text: {
+                        color: Color.mix(course.backgroundColor, theme.colors.black, 0.5).rgbaString,
                     },
                 });
                 return (
                     <View
-                        key={`${course.kcmc}`}
+                        key={`${course.qtkcgs}-${index}`}
                         style={[
                             itemStyle.course,
-                            courseScheduleStyle.courseItem,
                             courseScheduleStyle.practicalCourseItem,
+                            courseScheduleStyle.courseItem,
                         ]}>
-                        <Text>{course.qtkcgs}</Text>
+                        <Text style={itemStyle.text}>{course.qtkcgs}</Text>
                         <Flex gap={5}>
-                            <Icon name="clockcircleo" />
-                            <Text>{course.qsjsz}</Text>
+                            <Icon name="clockcircleo" style={itemStyle.text} />
+                            <Text style={itemStyle.text}>{course.qsjsz}</Text>
                         </Flex>
                         <Flex gap={5}>
-                            <Icon name="user" />
-                            <Text>{course.jsxm}</Text>
+                            <Icon name="user" style={itemStyle.text} />
+                            <Text style={itemStyle.text}>{course.jsxm}</Text>
                         </Flex>
                     </View>
                 );

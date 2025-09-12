@@ -1,28 +1,27 @@
 import {ScrollView, StyleSheet, ToastAndroid, View} from "react-native";
-import {Button, Divider, Text} from "@rneui/themed";
-import {useEffect, useState} from "react";
-import moment from "moment/moment";
+import {Button, Divider, Text, useTheme} from "@rneui/themed";
+import {useContext, useEffect, useState} from "react";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {Picker} from "@react-native-picker/picker";
-import {SchoolTerms, SchoolYears} from "@/type/global.ts";
-import {infoQuery} from "@/js/jw/infoQuery.ts";
+import {SchoolTerms, SchoolTermValue, SchoolYears} from "@/type/global.ts";
 import {NumberInput} from "@/components/un-ui/NumberInput.tsx";
 import {Row, Rows, Table} from "react-native-reanimated-table";
-import {useUserTheme} from "@/js/theme.ts";
 import {ExamInfoQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
 import {store} from "@/js/store.ts";
 import {Color} from "@/js/color.ts";
 import {UnPicker} from "@/components/un-ui/UnPicker.tsx";
+import {UserConfigContext} from "@/components/AppProvider.tsx";
+import {examApi} from "@/js/jw/exam.ts";
+import {jwxt} from "@/js/jw/jwxt.ts";
+import {useNavigation} from "@react-navigation/native";
 
 export function ExamInfo() {
-    const {theme} = useUserTheme();
+    const {theme} = useTheme();
+    const {userConfig} = useContext(UserConfigContext);
+    const navigation = useNavigation();
     const [apiRes, setApiRes] = useState<ExamInfoQueryRes>({} as ExamInfoQueryRes);
-    const [year, setYear] = useState(moment().isBefore(moment("8", "M"), "M") ? moment().year() - 1 : moment().year());
-    const [term, setTerm] = useState<string>(
-        moment().isBetween(moment("02", "MM"), moment("08", "MM"), "month", "[]")
-            ? SchoolTerms[1][0]
-            : SchoolTerms[0][0],
-    );
+    const [year, setYear] = useState(+userConfig.jw.year);
+    const [term, setTerm] = useState<SchoolTermValue>(userConfig.jw.term);
     const [page, setPage] = useState(1);
     const [tableData, setTableData] = useState({
         header: ["课程名称", "考试时间", "考试校区", "考试地点", "考试座号", "学年", "学期", "教学班", "考试名称"],
@@ -39,16 +38,13 @@ export function ExamInfo() {
         container: {
             padding: "5%",
         },
-        table: {
-            width: "100%",
-        },
         tableText: {
             color: theme.colors.black,
             margin: 5,
         },
         tableBorder: {
             borderWidth: 2,
-            borderColor: Color.mix(Color(theme.colors.primary), Color(theme.colors.grey4), 0.4).rgbaString,
+            borderColor: Color.mix(theme.colors.primary, theme.colors.grey4, 0.4).rgbaString,
         },
         tableHeader: {
             backgroundColor: Color.mix(
@@ -66,8 +62,9 @@ export function ExamInfo() {
         });
     }
 
-    function query() {
-        infoQuery.getExamInfo(year, term, page).then(res => {
+    async function query() {
+        const res = await examApi.getExamInfo(year, term, page);
+        if (res) {
             const tableBody = res.items.map(item => [
                 item.kcmc,
                 item.kssj,
@@ -85,8 +82,8 @@ export function ExamInfo() {
                 body: tableBody,
             });
             setApiRes(res);
-            store.save({key: "examInfo", data: res});
-        });
+            await store.save({key: "examInfo", data: res});
+        }
     }
 
     useEffect(() => {
@@ -116,9 +113,15 @@ export function ExamInfo() {
                             </UnPicker>
                         </View>
                     </Flex>
-                    <View style={{width: "100%"}}>
-                        <Button onPress={query}>查询</Button>
-                    </View>
+                    <Flex gap={10}>
+                        <Button containerStyle={{flex: 1}} onPress={query}>查询</Button>
+                        <Button
+                            onPress={() => {
+                                jwxt.openPageInWebView("/kwgl/kscx_cxXsksxxIndex.html?gnmkdm=N358105&layout=default", navigation);
+                            }}>
+                            前往教务查询
+                        </Button>
+                    </Flex>
                 </Flex>
                 <Divider />
                 <Flex direction="column" gap={15} alignItems="flex-start">
@@ -136,7 +139,7 @@ export function ExamInfo() {
                         <Text>每页15条记录</Text>
                     </Flex>
                     <ScrollView horizontal>
-                        <Table style={style.table} borderStyle={style.tableBorder}>
+                        <Table borderStyle={style.tableBorder}>
                             <Row
                                 data={tableData.header}
                                 widthArr={tableData.width}
@@ -145,7 +148,7 @@ export function ExamInfo() {
                                 height={50}
                             />
                             <Rows
-                                heightArr={new Array(tableData.body.length).map(() => 50)}
+                                heightArr={new Array(tableData.body.length).fill(50)}
                                 data={tableData.body}
                                 widthArr={tableData.width}
                                 textStyle={style.tableText}

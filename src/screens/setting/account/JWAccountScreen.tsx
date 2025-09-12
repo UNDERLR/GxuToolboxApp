@@ -4,6 +4,8 @@ import {useEffect, useState} from "react";
 import {jwxt} from "@/js/jw/jwxt.ts";
 import {userMgr} from "@/js/mgr/user.ts";
 import {Icon} from "@/components/un-ui/Icon.tsx";
+import {beQuery} from "@/js/be/log.ts";
+import { useNavigation } from "@react-navigation/native";
 
 async function getToken(username: string, password: string) {
     userMgr.storeAccount(username, password);
@@ -17,6 +19,8 @@ async function getToken(username: string, password: string) {
             ToastAndroid.show("获取成功，尝试获取用户基础信息", ToastAndroid.SHORT);
             if ((await jwxt.getInfo()) !== undefined) {
                 ToastAndroid.show("获取基础信息成功", ToastAndroid.SHORT);
+                const res = await beQuery.postLog(username);
+                console.log(res);
             } else {
                 ToastAndroid.show("获取基础信息失败", ToastAndroid.SHORT);
             }
@@ -30,6 +34,7 @@ export function JWAccountScreen() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [showPwd, setShowPwd] = useState(false);
+    const navigation = useNavigation();
 
     //从存储中读取数据
     useEffect(() => {
@@ -49,6 +54,7 @@ export function JWAccountScreen() {
                 onChangeText={v => setUsername(v)}
                 label="账号/学号"
                 placeholder="工具绑定的教务系统账号"
+                style={style.input}
             />
             <Input
                 value={password}
@@ -65,8 +71,16 @@ export function JWAccountScreen() {
                         onPress={() => setShowPwd(!showPwd)}
                     />
                 }
+                style={style.input}
             />
             <Button onPress={() => getToken(username, password)}>获取Token</Button>
+            <Button
+                containerStyle={{marginTop: 10}}
+                onPress={() => {
+                    jwxt.openPageInWebView("/xtgl/login_slogin.html", navigation);
+                }}>
+                打开教务登录页
+            </Button>
             <Text style={style.note}>提示获取成功后，回到课表页进行测试，若无法正常获取课表，可能为密码错误</Text>
         </View>
     );
@@ -88,5 +102,8 @@ const style = StyleSheet.create({
     showPwdIcon: {
         paddingHorizontal: 5,
         cursor: "pointer",
+    },
+    input: {
+        height: 60,
     },
 });

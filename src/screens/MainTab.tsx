@@ -1,16 +1,33 @@
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import {HomeScreen} from "./HomeScreen.tsx";
-import {HomeHeaderRight} from "@/components/header/HomeHeaderRight.tsx";
 import {Icon} from "@/components/un-ui/Icon.tsx";
 import {SettingStack} from "@/route/screens/SettingStack.tsx";
 import {ToolboxStack} from "@/route/screens/ToolboxStack.tsx";
-import {useUserTheme} from "@/js/theme.ts";
 import {Color} from "@/js/color.ts";
+import {Button, useTheme} from "@rneui/themed";
+import {useContext} from "react";
+import {UserConfigContext} from "@/components/AppProvider.tsx";
+import {useNavigation} from "@react-navigation/native";
+import {jwxt} from "@/js/jw/jwxt.ts";
 
 const Tab = createBottomTabNavigator();
 
 export function MainTab() {
-    const {theme, userTheme} = useUserTheme();
+    const {theme} = useTheme();
+    const {userConfig} = useContext(UserConfigContext);
+    const navigation = useNavigation();
+    const headerRightEle = () => {
+        return (
+            <Button
+                type="clear"
+                containerStyle={{marginRight: 10}}
+                onPress={() => {
+                    jwxt.openPageInWebView("/xtgl/index_initMenu.html", navigation);
+                }}>
+                打开教务
+            </Button>
+        );
+    };
     return (
         <Tab.Navigator
             screenOptions={{
@@ -18,27 +35,27 @@ export function MainTab() {
                 tabBarActiveTintColor: theme.colors.primary,
                 headerStyle: {
                     backgroundColor: Color(theme.colors.background).setAlpha(
-                        ((theme.mode === "dark" ? 0.5 : 0.4) * userTheme.bgOpacity) / 100,
+                        ((theme.mode === "dark" ? 0.5 : 0.4) * userConfig.theme.bgOpacity) / 100,
                     ).rgbaString,
                 },
                 sceneStyle: {
                     backgroundColor: Color(theme.colors.background).setAlpha(
-                        ((theme.mode === "dark" ? 0.8 : 0.4) * userTheme.bgOpacity) / 100,
+                        ((theme.mode === "dark" ? 0.8 : 0.4) * userConfig.theme.bgOpacity) / 100,
                     ).rgbaString,
                 },
                 tabBarStyle: {
                     backgroundColor: Color(theme.colors.background).setAlpha(
-                        ((theme.mode === "dark" ? 0.9 : 0.75) * userTheme.bgOpacity) / 100,
+                        ((theme.mode === "dark" ? 0.9 : 0.75) * userConfig.theme.bgOpacity) / 100,
                     ).rgbaString,
-                    elevation: 0,           // Android 去除阴影
-                    shadowOpacity: 0,       // iOS 去除阴影
+                    elevation: 0, // Android 去除阴影
+                    shadowOpacity: 0, // iOS 去除阴影
                 },
+                headerRight: headerRightEle,
             }}>
             <Tab.Screen
                 name="home"
                 options={{
                     title: "首页",
-                    headerRight: HomeHeaderRight,
                     tabBarIcon: props => Icon({name: "home", ...props}),
                 }}
                 component={HomeScreen}

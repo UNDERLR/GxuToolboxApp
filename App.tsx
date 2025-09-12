@@ -12,6 +12,7 @@ import {
     requestStoragePermission,
 } from "@/js/permission.ts";
 import {jwxt} from "@/js/jw/jwxt.ts";
+import {AppProvider} from "@/components/AppProvider.tsx";
 
 function App(): React.JSX.Element {
     const colorScheme = useColorScheme();
@@ -22,8 +23,6 @@ function App(): React.JSX.Element {
         }),
         [colorScheme],
     );
-
-    const appRef = useRef<View>(null);
 
     const handleRequestPermission = async () => {
         // 首先检查权限状态
@@ -73,9 +72,11 @@ function App(): React.JSX.Element {
 
     return (
         <ThemeProvider theme={currentTheme}>
-            <SafeAreaProvider>
-                <Root ref={appRef} />
-            </SafeAreaProvider>
+            <AppProvider>
+                <SafeAreaProvider>
+                    <Root/>
+                </SafeAreaProvider>
+            </AppProvider>
         </ThemeProvider>
     );
 }

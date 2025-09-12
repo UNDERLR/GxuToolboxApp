@@ -371,11 +371,14 @@ export namespace Color {
      * @param color2 第二个颜色
      * @param ratio 比例，0-1，越小越接近第一个颜色，反之接近第二颜色
      */
-    export function mix(color1: IColor, color2: IColor, ratio: number): IColor {
-        const r = (1 - ratio) * color1.rgba[0] + ratio * color2.rgba[0];
-        const g = (1 - ratio) * color1.rgba[1] + ratio * color2.rgba[1];
-        const b = (1 - ratio) * color1.rgba[2] + ratio * color2.rgba[2];
-        const a = (1 - ratio) * color1.rgba[3] + ratio * color2.rgba[3];
+    export function mix(color1: IColor | string, color2: IColor | string, ratio: number = 0.5): IColor {
+        const c1 = typeof color1 === "string" ? Color(color1) : color1;
+        const c2 = typeof color2 === "string" ? Color(color2) : color2;
+
+        const r = (1 - ratio) * c1.rgba[0] + ratio * c2.rgba[0];
+        const g = (1 - ratio) * c1.rgba[1] + ratio * c2.rgba[1];
+        const b = (1 - ratio) * c1.rgba[2] + ratio * c2.rgba[2];
+        const a = (1 - ratio) * c1.rgba[3] + ratio * c2.rgba[3];
         return Color(r, g, b, a);
     }
 }

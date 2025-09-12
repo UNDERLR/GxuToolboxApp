@@ -4,12 +4,13 @@ import {CheckBox, ListItem, Text} from "@rneui/themed";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {UnSlider} from "@/components/un-ui/UnSlider.tsx";
 import {Picker} from "@react-native-picker/picker";
-import {SchoolTerms, SchoolTermValue, SchoolYears} from "@/type/global.ts";
+import {SchoolTerms, SchoolTermValue, SchoolYears, SchoolYearValue} from "@/type/global.ts";
 import {usePagerView} from "react-native-pager-view";
 import {UnDateTimePicker} from "@/components/un-ui/UnDateTimePicker.tsx";
 import moment from "moment/moment";
 import {CourseScheduleContext} from "@/js/jw/course.ts";
 import {UnPicker} from "@/components/un-ui/UnPicker.tsx";
+import {UserConfigContext} from "@/components/AppProvider.tsx";
 
 interface Props {
     containerStyle?: StyleProp<ViewStyle>;
@@ -22,6 +23,7 @@ interface Props {
 }
 
 export function CourseCardSetting(props: Props) {
+    const {userConfig, updateUserConfig} = useContext(UserConfigContext);
     const {courseScheduleData, updateCourseScheduleData} = useContext(CourseScheduleContext)!;
 
     const infoVisibleOptions: Record<keyof typeof courseScheduleData.courseInfoVisible, string> = {
@@ -36,6 +38,18 @@ export function CourseCardSetting(props: Props) {
             ...courseScheduleData,
             courseInfoVisible: newCourseInfoVisible,
         });
+    };
+
+    const onYearChange = (v: number) => {
+        userConfig.jw.year = (v + "") as SchoolYearValue;
+        updateUserConfig(userConfig);
+        props.onYearChange?.(v);
+    };
+
+    const onTermChange = (v: SchoolTermValue) => {
+        userConfig.jw.term = v;
+        updateUserConfig(userConfig);
+        props.onTermChange?.(v);
     };
 
     return (
@@ -55,6 +69,7 @@ export function CourseCardSetting(props: Props) {
                                 const value = courseScheduleData.courseInfoVisible[key];
                                 return (
                                     <CheckBox
+                                        key={`infoVisibleOption-${index}`}
                                         containerStyle={{padding: 0}}
                                         title={infoVisibleOptions[key]}
                                         checked={value}
@@ -79,13 +94,11 @@ export function CourseCardSetting(props: Props) {
                         minimumValue={5}
                         maximumValue={100}
                         allowTouchTrack
-                        value={courseScheduleData.style.timeSpanHeight}
-                        onValueChange={v =>
-                            updateCourseScheduleData({
-                                ...courseScheduleData,
-                                style: {...courseScheduleData.style, timeSpanHeight: v},
-                            })
-                        }
+                        value={userConfig.theme.course.timeSpanHeight}
+                        onValueChange={v => {
+                            userConfig.theme.course.timeSpanHeight = v;
+                            updateUserConfig(userConfig);
+                        }}
                     />
                 </Flex>
             </ListItem>
@@ -97,14 +110,14 @@ export function CourseCardSetting(props: Props) {
                     <Flex gap={10}>
                         <Text>学期</Text>
                         <View style={{flex: 1}}>
-                            <UnPicker selectedValue={props.year} onValueChange={props.onYearChange}>
+                            <UnPicker selectedValue={props.year} onValueChange={onYearChange}>
                                 {SchoolYears.map(value => {
                                     return <Picker.Item value={+value[0]} label={value[1]} key={value[0]} />;
                                 })}
                             </UnPicker>
                         </View>
                         <View style={{flex: 1}}>
-                            <UnPicker selectedValue={props.term} onValueChange={props.onTermChange}>
+                            <UnPicker selectedValue={props.term} onValueChange={onTermChange}>
                                 {SchoolTerms.map(value => {
                                     return <Picker.Item value={value[0]} label={value[1]} key={value[0]} />;
                                 })}
@@ -115,12 +128,15 @@ export function CourseCardSetting(props: Props) {
                         <Text>课表起始日</Text>
                         <Flex justifyContent="flex-end">
                             <UnDateTimePicker
-                                value={moment(courseScheduleData.startDay).valueOf()}
+                                value={moment(userConfig.jw.startDay).valueOf()}
                                 onChange={v => {
+                                    const startDay = moment(v).format("YYYY-MM-DD");
                                     updateCourseScheduleData({
                                         ...courseScheduleData,
-                                        startDay: moment(v).format("YYYY-MM-DD"),
+                                        startDay,
                                     });
+                                    userConfig.jw.startDay = startDay;
+                                    updateUserConfig(userConfig);
                                 }}
                                 mode="single"
                                 onlyDate

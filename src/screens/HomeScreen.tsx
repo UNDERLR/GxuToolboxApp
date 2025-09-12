@@ -1,8 +1,15 @@
 import {GestureResponderEvent, PanResponder, PanResponderGestureState, ScrollView, View} from "react-native";
 import {ScheduleCard} from "@/components/tool/infoQuery/courseSchedule/ScheduleCard.tsx";
-import {useRef, useState} from "react";
+import {useContext, useRef, useState} from "react";
+import {Button, Card, useTheme} from "@rneui/themed";
+import {Color} from "@/js/color.ts";
+import {UserConfigContext} from "@/components/AppProvider.tsx";
+import {useNavigation} from "@react-navigation/native";
+import {jwxt} from "@/js/jw/jwxt.ts";
 
 export function HomeScreen() {
+    const {theme} = useTheme();
+    const {userConfig} = useContext(UserConfigContext);
     // 滚动相关状态和引用
     const scrollViewRef = useRef<ScrollView>(null);
     const [scrollEnabled, setScrollEnabled] = useState(true);

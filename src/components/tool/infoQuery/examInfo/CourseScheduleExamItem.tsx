@@ -2,12 +2,12 @@ import React, {useContext, useMemo} from "react";
 import {Pressable, StyleSheet} from "react-native";
 import {Color} from "@/js/color.ts";
 import Flex from "@/components/un-ui/Flex.tsx";
-import {Text} from "@rneui/themed";
+import {Text, useTheme} from "@rneui/themed";
 import {Icon} from "@/components/un-ui/Icon.tsx";
-import {useUserTheme} from "@/js/theme.ts";
 import {CourseScheduleContext} from "@/js/jw/course.ts";
 import {ExamInfo} from "@/type/infoQuery/exam/examInfo.ts";
 import moment from "moment/moment";
+import {UserConfigContext} from "@/components/AppProvider.tsx";
 
 interface Props {
     examInfo: ExamInfo;
@@ -15,8 +15,9 @@ interface Props {
 }
 
 export function CourseScheduleExamItem(props: Props) {
+    const {userConfig} = useContext(UserConfigContext);
     const {courseScheduleData, courseScheduleStyle} = useContext(CourseScheduleContext)!;
-    const {theme, userTheme} = useUserTheme();
+    const {theme} = useTheme();
     const {examInfo} = props;
 
     function timeToTimeSpan(time: string, endTime: boolean = false): number {
@@ -43,28 +44,29 @@ export function CourseScheduleExamItem(props: Props) {
 
     const examTime = examInfo.kssj.match(/(?<=\().*?(?=\))/g)?.[0].split("-") as [string, string];
     const y = timeToTimeSpan(examTime[0]);
-    const span = timeToTimeSpan(examTime[1], true) - y +1;
+    const span = timeToTimeSpan(examTime[1], true) - y + 1;
     const color = courseScheduleData.randomColor[Math.floor(Math.random() * courseScheduleData.randomColor.length)];
     const itemStyle = useMemo(() => {
         return StyleSheet.create({
             course: {
-                height: span * courseScheduleData.style.timeSpanHeight - courseScheduleData.style.courseItemMargin * 2,
+                height: span * userConfig.theme.course.timeSpanHeight - userConfig.theme.course.courseItemMargin * 2,
                 position: "absolute",
                 backgroundColor: Color(color).setAlpha(theme.mode === "light" ? 0.3 : 0.1).rgbaString,
-                borderColor: Color.mix(Color(color), Color(theme.colors.grey4), 0.7).rgbaString,
+                borderColor: Color.mix(color, theme.colors.grey4, 0.7).rgbaString,
                 top:
-                    courseScheduleData.style.weekdayHeight +
-                    y * courseScheduleData.style.timeSpanHeight +
-                    courseScheduleData.style.courseItemMargin,
+                    userConfig.theme.course.weekdayHeight +
+                    y * userConfig.theme.course.timeSpanHeight +
+                    userConfig.theme.course.courseItemMargin,
             },
             text: {
                 textAlign: "center",
+                color: Color.mix(color, theme.colors.black, 0.5).rgbaString,
             },
         });
     }, [
-        courseScheduleData.style.courseItemMargin,
-        courseScheduleData.style.timeSpanHeight,
-        courseScheduleData.style.weekdayHeight,
+        userConfig.theme.course.courseItemMargin,
+        userConfig.theme.course.timeSpanHeight,
+        userConfig.theme.course.weekdayHeight,
         span,
         theme.colors.grey4,
         theme.mode,
@@ -77,13 +79,13 @@ export function CourseScheduleExamItem(props: Props) {
             onPress={e => {
                 props.onPress?.(examInfo);
             }}
-            android_ripple={userTheme.ripple}
+            android_ripple={userConfig.theme.ripple}
             style={[itemStyle.course, courseScheduleStyle.courseItem]}>
             <Flex direction="column" gap={5}>
                 <Text style={itemStyle.text}>考试</Text>
                 <Text style={itemStyle.text}>{examInfo.kcmc}</Text>
                 <Text style={itemStyle.text}>
-                    <Icon type="fontawesome" name="map-marker" />
+                    <Icon type="fontawesome" name="map-marker" style={itemStyle.text} />
                     {"\n" + examInfo.cdmc.replace("-", "\n")}
                 </Text>
                 <Text style={itemStyle.text}>{`<${examInfo.zwh}>`}</Text>

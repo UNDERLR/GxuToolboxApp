@@ -1,0 +1,78 @@
+import {SchoolTerms, SchoolTermValue, SchoolYears} from "@/type/global.ts";
+import {ExamInfoQueryRes, ExamScoreQueryRes, UsualScoreQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
+import {jwxt} from "@/js/jw/jwxt.ts";
+import {http, objectToFormUrlEncoded} from "@/js/http.ts";
+import {ToastAndroid} from "react-native";
+import {defaultYear} from "@/js/jw/infoQuery.ts";
+
+export const examApi = {
+    getExamInfo: async (year: number, term: SchoolTermValue, page: number = 1): Promise<ExamInfoQueryRes | null> => {
+        const yearIndex = SchoolYears.findIndex(v => +v[0] === year);
+        if (!(await jwxt.testToken())) {
+            return null;
+        }
+        const reqBody = objectToFormUrlEncoded({
+            xnm: SchoolYears[yearIndex ?? SchoolYears.findIndex(v => +v[0] === defaultYear)][0],
+            xqm: term ?? SchoolTerms[0][0],
+            queryModel: {
+                showCount: 15,
+                currentPage: page > 0 ? page : 1,
+                sortName: "",
+                sortOrder: "asc",
+            },
+        });
+        const res = await http.post("/kwgl/kscx_cxXsksxxIndex.html?doType=query", reqBody);
+        if (typeof res.data === "object") {
+            return res.data;
+        } else {
+            ToastAndroid.show("获取考试信息失败", ToastAndroid.SHORT);
+            return null;
+        }
+    },
+    getExamScore: async (year: number, term: SchoolTermValue, page: number = 1): Promise<ExamScoreQueryRes | null> => {
+        const yearIndex = SchoolYears.findIndex(v => +v[0] === year);
+        if (!(await jwxt.testToken())) {
+            return null;
+        }
+        const reqBody = objectToFormUrlEncoded({
+            xnm: SchoolYears[yearIndex ?? SchoolYears.findIndex(v => +v[0] === defaultYear)][0],
+            xqm: term ?? SchoolTerms[0][0],
+            queryModel: {
+                showCount: 15,
+                currentPage: page > 0 ? page : 1,
+                sortName: "cjbdsj",
+                sortOrder: "desc",
+            },
+        });
+        const res = await http.post("/cjcx/cjcx_cxXsgrcj.html?doType=query", reqBody);
+        if (typeof res.data === "object") {
+            return res.data;
+        } else {
+            ToastAndroid.show("获取考试成绩信息失败", ToastAndroid.SHORT);
+            return null;
+        }
+    },
+    // 获得平时分
+    getUsualScore: (year: number, term: SchoolTermValue, id: string): Promise<UsualScoreQueryRes> => {
+        const yearIndex = SchoolYears.findIndex(v => +v[0] === year);
+        return new Promise(async (resolve, reject) => {
+            if (!(await jwxt.testToken())) {
+                reject();
+                return;
+            }
+            const reqBody = objectToFormUrlEncoded({
+                xnm: SchoolYears[yearIndex ?? SchoolYears.findIndex(v => +v[0] === defaultYear)][0],
+                xqm: term ?? SchoolTerms[0][0],
+                jxb_id: id,
+            });
+            const res = await http.post("/cjcx/cjcx_cxXsXmcjList.html?doType=query", reqBody);
+            if (typeof res.data === "object") {
+                console.log(reqBody);
+                resolve(res.data);
+            } else {
+                ToastAndroid.show("获取平时成绩信息失败", ToastAndroid.SHORT);
+                reject(res);
+            }
+        });
+    },
+};

@@ -2,14 +2,14 @@ import {Course} from "@/type/infoQuery/course/course.ts";
 import {StyleProp, StyleSheet, TextStyle, View, ViewStyle} from "react-native";
 import moment from "moment/moment";
 import {Color} from "@/js/color.ts";
-import {Text} from "@rneui/themed";
-import {useContext, useEffect, useState} from "react";
+import {Text, useTheme} from "@rneui/themed";
+import {useContext, useEffect, useMemo, useState} from "react";
 import Flex from "@/components/un-ui/Flex.tsx";
-import {useUserTheme} from "@/js/theme.ts";
 import {CourseItem} from "@/components/tool/infoQuery/courseSchedule/CourseItem.tsx";
 import {CourseScheduleContext} from "@/js/jw/course.ts";
 import {ExamInfo} from "@/type/infoQuery/exam/examInfo.ts";
 import {CourseScheduleExamItem} from "@/components/tool/infoQuery/examInfo/CourseScheduleExamItem.tsx";
+import {UserConfigContext} from "@/components/AppProvider.tsx";
 
 interface Props {
     courseList: Course[];
@@ -17,9 +17,11 @@ interface Props {
     onCoursePress?: (course: Course) => void;
     startDay: moment.MomentInput;
     showDate?: boolean;
+    showTimeSpanHighlight?: boolean;
     // 非课程类型
     examList?: ExamInfo[];
     onExamPress?: (examInfo: ExamInfo) => void;
+    onNextCourseCalculated?: (course?: Course) => void;
 }
 
 interface CourseItem extends Course {
@@ -28,13 +30,64 @@ interface CourseItem extends Course {
 }
 
 export function CourseScheduleTable(props: Props) {
+    const {userConfig, updateUserConfig} = useContext(UserConfigContext);
     const {courseScheduleData, courseScheduleStyle} = useContext(CourseScheduleContext)!;
-    const {theme} = useUserTheme();
+    const {theme} = useTheme();
     const [courseSchedule, setCourseSchedule] = useState<CourseItem[][]>([[], [], [], [], [], [], []]);
     const startDay = moment(props.startDay);
     const [currentTime, setCurrentTime] = useState(moment().format());
     const currentWeek = props.currentWeek ?? Math.ceil(moment.duration(moment().diff(startDay)).asWeeks());
     const currentTimeSpan = getCurrentTimeSpan();
+
+    const nextCourse = useMemo(() => {
+        const allCourses = props.courseList;
+        if (!allCourses || allCourses.length === 0) {
+            return;
+        }
+
+        const now = moment();
+        const futureCourses: {course: Course; time: moment.Moment}[] = [];
+        const startTimes = courseScheduleData.timeSpanList.map(span => span.split("\n")[0]);
+
+        allCourses.forEach(course => {
+            const weekSpans = course.zcd.split(",");
+            const dayOfWeek = parseInt(course.xqj, 10);
+            const startSection = parseInt(course.jcs.split("-")[0], 10) - 1;
+            const courseTime = startTimes[startSection];
+
+            if (!courseTime) {
+                return;
+            }
+
+            const [hour, minute] = courseTime.split(":").map(Number);
+
+            weekSpans.forEach(weekSpan => {
+                const weeks = weekSpan.replace("周", "").split("-").map(Number);
+                const startWeek = weeks[0];
+                const endWeek = weeks.length > 1 ? weeks[1] : startWeek;
+
+                for (let week = startWeek; week <= endWeek; week++) {
+                    const courseDate = moment(userConfig.jw.startDay)
+                        .add(week - 1, "weeks")
+                        .day(dayOfWeek)
+                        .hour(hour)
+                        .minute(minute)
+                        .second(0);
+
+                    if (courseDate.isAfter(now)) {
+                        futureCourses.push({course, time: courseDate});
+                    }
+                }
+            });
+        });
+
+        if (futureCourses.length === 0) {
+            return;
+        }
+
+        futureCourses.sort((a, b) => a.time.diff(b.time));
+        return futureCourses[0]?.course;
+    }, [props.courseList, courseScheduleData.timeSpanList, userConfig.jw.startDay]);
 
     function init() {
         parseCourses(props.courseList as CourseItem[]);
@@ -42,11 +95,14 @@ export function CourseScheduleTable(props: Props) {
 
     useEffect(() => {
         init();
-        const id = setInterval(() => setCurrentTime(moment().format()), 1000);
-        return () => {
-            clearInterval(id);
-        };
-    }, [props]);
+        props.onNextCourseCalculated?.(nextCourse);
+        if (props.showTimeSpanHighlight) {
+            const id = setInterval(() => setCurrentTime(moment().format()), 5000);
+            return () => {
+                clearInterval(id);
+            };
+        }
+    }, [props, nextCourse]);
 
     useEffect(() => {
         randomCourseColor(props.courseList as CourseItem[]);
@@ -81,8 +137,11 @@ export function CourseScheduleTable(props: Props) {
     }
 
     function randomCourseColor(courseList: CourseItem[]) {
+        if (!userConfig.theme.course.courseColor) {
+            userConfig.theme.course.courseColor = {};
+        }
         //使得相同课程的颜色相同
-        const courseColor: Record<string, string> = {};
+        const courseColor = userConfig.theme.course.courseColor;
         courseList.forEach((course: CourseItem) => {
             if (!courseColor[course.kcmc]) {
                 let randomNum = Math.floor(Math.random() * courseScheduleData.randomColor.length);
@@ -91,6 +150,7 @@ export function CourseScheduleTable(props: Props) {
                 course.backgroundColor = courseColor[course.kcmc];
             }
         });
+        updateUserConfig(userConfig);
     }
 
     function getCurrentTimeSpan() {
@@ -110,8 +170,8 @@ export function CourseScheduleTable(props: Props) {
 
     const timeSpanHighLightTop = {
         top:
-            courseScheduleData.style.weekdayHeight +
-            (currentTimeSpan ?? 1) * courseScheduleData.style.timeSpanHeight +
+            userConfig.theme.course.weekdayHeight +
+            (currentTimeSpan ?? 1) * userConfig.theme.course.timeSpanHeight +
             10,
     };
 
@@ -131,7 +191,7 @@ export function CourseScheduleTable(props: Props) {
     return (
         <View style={courseScheduleStyle.courseSchedule}>
             {/*时间段高亮*/}
-            {typeof currentTimeSpan === "number" && (
+            {typeof currentTimeSpan === "number" && props.showTimeSpanHighlight && (
                 <View style={[timeSpanHighLightTop, courseScheduleStyle.timeSpanHighLight]} />
             )}
             {/*时间表渲染*/}
@@ -139,12 +199,12 @@ export function CourseScheduleTable(props: Props) {
                 <View style={courseScheduleStyle.weekdayItem}>
                     <Text style={courseScheduleStyle.weekdayText}>
                         {props.showDate
-                            ? moment(courseScheduleData.startDay).add(currentWeek, "w").month() + 1 + "月"
+                            ? moment(userConfig.jw.startDay).add(currentWeek, "w").month() + 1 + "月"
                             : `第${props.currentWeek}周`}
                     </Text>
                 </View>
                 {/*时间段*/}
-                {courseScheduleData.style.timeSpanHeight > 40
+                {userConfig.theme.course.timeSpanHeight > 40
                     ? courseScheduleData.timeSpanList.map((time, index) => (
                           <Flex
                               inline
@@ -160,7 +220,7 @@ export function CourseScheduleTable(props: Props) {
                               key={`timespan-${index}`}
                               style={[
                                   courseScheduleStyle.timeSpanItem,
-                                  {height: courseScheduleData.style.timeSpanHeight * 2},
+                                  {height: userConfig.theme.course.timeSpanHeight * 2},
                               ]}
                               justifyContent="center">
                               <Text style={courseScheduleStyle.timeSpanText}>{`${value[0]}\n${value[1]}`}</Text>
@@ -170,7 +230,7 @@ export function CourseScheduleTable(props: Props) {
             {/*课表*/}
             {courseScheduleData.weekdayList.map((weekday, index) => {
                 // 判断是否为当天
-                const currentDay = moment(courseScheduleData.startDay).add({
+                const currentDay = moment(userConfig.jw.startDay).add({
                     week: currentWeek - 1,
                     day: index,
                 });
@@ -205,7 +265,7 @@ export function CourseScheduleTable(props: Props) {
                         {courseSchedule[index].map((course, i) => (
                             <CourseItem
                                 onCoursePress={props.onCoursePress}
-                                key={`day${index}-${course.kcmc}-${course.jc}-${course.jxb_id}`}
+                                key={`day${index}-${course.jxb_id}-${i}`}
                                 course={course}
                                 index={i}
                             />
