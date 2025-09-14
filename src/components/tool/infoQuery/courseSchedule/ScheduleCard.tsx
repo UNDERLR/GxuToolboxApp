@@ -1,9 +1,8 @@
 import {BottomSheet, Card, Text, useTheme} from "@rneui/themed";
-import {infoQuery} from "@/js/jw/infoQuery.ts";
 import {Pressable, StyleSheet, ToastAndroid} from "react-native";
 import {store} from "@/js/store.ts";
 import {CourseScheduleQueryRes} from "@/type/api/infoQuery/classScheduleAPI.ts";
-import {useContext, useEffect, useState} from "react";
+import {useCallback, useContext, useEffect, useState} from "react";
 import {PracticalCourseList} from "./PracticalCourseList.tsx";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {Icon} from "@/components/un-ui/Icon.tsx";
@@ -89,7 +88,7 @@ export function ScheduleCard() {
         }
     }
 
-    async function getStartDay() {
+    const getStartDay = useCallback(async () => {
         const userInfo = await store.load<UserInfo>({
             key: "userInfo",
         });
@@ -107,21 +106,20 @@ export function ScheduleCard() {
             username.slice(2, 8),
         );
 
-        if (!Array.isArray(data?.weekNum) || data?.weekNum.length < 1) return;
-        const firstDay = data.weekNum[0].rq.split("/")[0];
-        if (userConfig.jw.startDay !== firstDay) {
+        if (!Array.isArray(data?.weekNum) || (data?.weekNum.length ?? 0) < 1) return;
+        const firstDay = data?.weekNum[0].rq.split("/")[0];
+        if (userConfig.jw.startDay !== firstDay && typeof firstDay === "string") {
             userConfig.jw.startDay = firstDay;
             updateUserConfig(userConfig);
         }
-    }
-    console.log(userConfig.jw.startDay);
+    }, [year, term]);
 
     async function init() {
         const courseData: CourseScheduleQueryRes = await store.load({key: "courseRes"});
         setApiRes(courseData);
         const examData: ExamInfoQueryRes = await store.load({key: "examInfo"});
         setExamList(examData.items);
-        await loadData();
+        loadData();
     }
 
     async function loadData() {

@@ -180,11 +180,11 @@ export function Color(...args: legalColorType): IColor {
     /**
      * hex字符串，初始化生成
      */
-    let hex: string;
+    let hex: string = "000000";
     /**
      * 颜色rgba对应的值，rgb：0-255，a：0-100
      */
-    let rgba: number[];
+    let rgba: number[] = [0, 0, 0, 0];
 
     if (args.length === 1 && typeof args[0] === "string" && BaseColor[args[0]]) {
         // 转换基础色名称
@@ -218,7 +218,7 @@ export function Color(...args: legalColorType): IColor {
             } else {
                 throw new Error("Invalid rgb/rgba format");
             }
-        } else {
+        } else if (args.length === 1 && typeof args[0] === "string") {
             // 转换 hex 颜色
             const hexColor = args[0].startsWith("#") ? args[0] : "#" + args[0];
             hex = hexColor;
