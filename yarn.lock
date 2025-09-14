@@ -6206,10 +6206,10 @@ react-native-image-picker@^8.2.1:
   resolved "https://registry.npmmirror.com/react-native-image-picker/-/react-native-image-picker-8.2.1.tgz#1ac7826563cbaa5d5298d9f2acc53c69805e5393"
   integrity sha512-FBeGYJGFDjMdGCcyubDJgBAPCQ4L1D3hwLXyUU91jY9ahOZMTbluceVvRmrEKqnDPFJ0gF1NVhJ0nr1nROFLdg==
 
-react-native-pager-view@6.5.3:
-  version "6.5.3"
-  resolved "https://registry.npmmirror.com/react-native-pager-view/-/react-native-pager-view-6.5.3.tgz#1eee9f0161063ad9ff1ed48fe61c7260a38c9758"
-  integrity sha512-v/90BTiK4nCkR1aseq2BoshVXx3QuUX9CAOwoZddFh+SpfT5KE6HAGJgRRle/E2Y3o4eQTkqB7sfCzuCmOyIPQ==
+react-native-pager-view@^6.9.1:
+  version "6.9.1"
+  resolved "https://registry.npmmirror.com/react-native-pager-view/-/react-native-pager-view-6.9.1.tgz#a9e6d9323935cc2ae1d46d7816b66f76dc3eff8e"
+  integrity sha512-uUT0MMMbNtoSbxe9pRvdJJKEi9snjuJ3fXlZhG8F2vVMOBJVt/AFtqMPUHu9yMflmqOr08PewKzj9EPl/Yj+Gw==
 
 react-native-parse-html@^2.2.6:
   version "2.2.6"
