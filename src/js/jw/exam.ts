@@ -29,7 +29,7 @@ export const examApi = {
             return null;
         }
     },
-    getExamScore: async (year: number, term: SchoolTermValue, page: number = 1): Promise<ExamScoreQueryRes | null> => {
+    getExamScore: async (year: number, term: SchoolTermValue, page: number = 1, limit: number = 15): Promise<ExamScoreQueryRes | null> => {
         const yearIndex = SchoolYears.findIndex(v => +v[0] === year);
         if (!(await jwxt.testToken())) {
             return null;
@@ -38,7 +38,7 @@ export const examApi = {
             xnm: SchoolYears[yearIndex ?? SchoolYears.findIndex(v => +v[0] === defaultYear)][0],
             xqm: term ?? SchoolTerms[0][0],
             queryModel: {
-                showCount: 15,
+                showCount: limit,
                 currentPage: page > 0 ? page : 1,
                 sortName: "cjbdsj",
                 sortOrder: "desc",

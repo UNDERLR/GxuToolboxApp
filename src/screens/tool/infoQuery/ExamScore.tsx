@@ -1,4 +1,4 @@
-import {ScrollView, StyleSheet, ToastAndroid, View} from "react-native";
+import {ScrollView, StyleSheet, ToastAndroid, TouchableOpacity, View} from "react-native";
 import {Button, Divider, Text, useTheme} from "@rneui/themed";
 import {useContext, useEffect, useState} from "react";
 import Flex from "@/components/un-ui/Flex.tsx";
@@ -135,10 +135,15 @@ export function ExamScore() {
                         </View>
                     </Flex>
                     <Flex gap={10}>
-                        <Button containerStyle={{flex: 1}} onPress={query}>查询</Button>
+                        <Button containerStyle={{flex: 1}} onPress={query}>
+                            查询
+                        </Button>
                         <Button
                             onPress={() => {
-                                jwxt.openPageInWebView("/cjcx/cjcx_cxDgXscj.html?gnmkdm=N305005&layout=default", navigation);
+                                jwxt.openPageInWebView(
+                                    "/cjcx/cjcx_cxDgXscj.html?gnmkdm=N305005&layout=default",
+                                    navigation,
+                                );
                             }}>
                             前往教务查询
                         </Button>
@@ -152,38 +157,20 @@ export function ExamScore() {
                             apiRes.totalCount ?? 0
                         }条结果`}</Text>
                     </Flex>
-                    <Flex gap={10}>
-                        <Text>页数</Text>
-                        <Flex inline>
+                    <Flex gap={10} justifyContent="space-between" alignItems="center">
+                        <Flex gap={10} alignItems="center">
+                            <Text>页数</Text>
                             <NumberInput value={page} onChange={setPage} min={1} max={apiRes.totalPage ?? 1} />
+                            <Text>每页15条记录</Text>
                         </Flex>
-                        <Text>每页15条记录</Text>
+                        <Button onPress={() => navigation.navigate("gpaCalculator")}>绩点计算器</Button>
                     </Flex>
-                    {/*<ScrollView horizontal>*/}
-                    {/*    <Table style={style.table} borderStyle={style.tableBorder}>*/}
-                    {/*        <Row*/}
-                    {/*            data={tableData.header}*/}
-                    {/*            widthArr={tableData.width}*/}
-                    {/*            textStyle={style.tableText}*/}
-                    {/*            style={style.tableHeader}*/}
-                    {/*            height={50}*/}
-                    {/*        />*/}
-                    {/*        <Rows*/}
-                    {/*            heightArr={new Array(tableData.body.length).map(() => 50)}*/}
-                    {/*            data={tableData.body}*/}
-                    {/*            widthArr={tableData.width}*/}
-                    {/*            textStyle={style.tableText}*/}
-                    {/*        />*/}
-                    {/*    </Table>*/}
-                    {/*</ScrollView>*/}
                     <Flex>
                         <ExamScoreTable data={apiRes.items ?? []} year={year} term={term} />
                     </Flex>
-                    <Flex gap={10}>
+                    <Flex gap={10} alignItems="center">
                         <Text>页数</Text>
-                        <Flex inline>
-                            <NumberInput value={page} onChange={setPage} min={1} max={apiRes.totalPage ?? 1} />
-                        </Flex>
+                        <NumberInput value={page} onChange={setPage} min={1} max={apiRes.totalPage ?? 1} />
                         <Text>每页15条记录</Text>
                     </Flex>
                 </Flex>
