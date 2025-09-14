@@ -1,6 +1,8 @@
 import {SchoolTermValue, SchoolValue} from "@/type/global.ts";
 
 export interface Course {
+    /** 在课程表中显示的背景颜色 */
+    backgroundColor: string;
     /** ？ */
     bklxdjmc: string;
     /** 场地ID */
@@ -176,6 +178,8 @@ interface IQueryModel {
 }
 
 export interface PracticalCourse {
+    /** 在课程表中显示的背景颜色 */
+    backgroundColor: string;
     dateDigit: string;
     dateDigitSeparator: string;
     day: string;

@@ -8,15 +8,10 @@ import {Course} from "@/type/infoQuery/course/course.ts";
 import {CourseScheduleContext} from "@/js/jw/course.ts";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 
-interface CourseItem extends Course {
-    // 在课程表中显示的背景颜色
-    backgroundColor: string;
-}
-
 interface Props {
-    course: CourseItem;
+    course: Course;
     index: number;
-    onCoursePress?: (course: CourseItem) => void;
+    onCoursePress?: (course: Course) => void;
 }
 
 export function CourseItem(props: Props) {
@@ -31,7 +26,9 @@ export function CourseItem(props: Props) {
             course: {
                 height: span * userConfig.theme.course.timeSpanHeight - userConfig.theme.course.courseItemMargin * 2,
                 position: "absolute",
-                backgroundColor: Color(course.backgroundColor).setAlpha(theme.mode === "light" ? 0.3 : 0.1).rgbaString,
+                backgroundColor: Color(course.backgroundColor ?? theme.colors.primary).setAlpha(
+                    theme.mode === "light" ? 0.3 : 0.1,
+                ).rgbaString,
                 top:
                     userConfig.theme.course.weekdayHeight +
                     y * userConfig.theme.course.timeSpanHeight +
@@ -39,7 +36,7 @@ export function CourseItem(props: Props) {
             },
             text: {
                 textAlign: "center",
-                color: Color.mix(course.backgroundColor, theme.colors.black, 0.5).rgbaString,
+                color: Color.mix(course.backgroundColor ?? theme.colors.primary, theme.colors.black, 0.5).rgbaString,
             },
         });
     }, [

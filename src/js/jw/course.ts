@@ -2,7 +2,7 @@ import {BaseColor, Color} from "@/js/color.ts";
 import {createContext, useCallback, useEffect, useState} from "react";
 import {StyleSheet, ToastAndroid} from "react-native";
 import {store} from "@/js/store.ts";
-import {IUserConfig} from "@/type/IUserConfig.ts";
+import {defaultUserConfig, IUserConfig} from "@/type/IUserConfig.ts";
 import {SchoolTerms, SchoolTermValue, SchoolValue, SchoolYears} from "@/type/global.ts";
 import {
     ClassScheduleQueryRes,
@@ -12,6 +12,7 @@ import {
 import {jwxt} from "@/js/jw/jwxt.ts";
 import {http, objectToFormUrlEncoded} from "@/js/http.ts";
 import {defaultYear} from "@/js/jw/infoQuery.ts";
+import {Course, PracticalCourse} from "@/type/infoQuery/course/course.ts";
 
 const CourseScheduleData = {
     courseInfoVisible: {
@@ -158,6 +159,31 @@ export const CourseScheduleContext = createContext<{
     updateCourseScheduleData: (data: Partial<typeof CourseScheduleData>) => void;
 } | null>(null);
 
+async function randomCourseColor(courseList: (Course | PracticalCourse)[]) {
+    const userConfig: IUserConfig = (await store.load({key: "userConfig"})) ?? defaultUserConfig;
+    if (!userConfig.theme.course.courseColor) {
+        userConfig.theme.course.courseColor = {};
+    }
+    //使得相同课程的颜色相同
+    const courseColor = userConfig.theme.course.courseColor;
+    let hasChange = false;
+    courseList.forEach(course => {
+        if (!courseColor[course.kcmc]) {
+            let randomNum = Math.floor(Math.random() * CourseScheduleData.randomColor.length);
+            course.backgroundColor = courseColor[course.kcmc] = CourseScheduleData.randomColor[randomNum];
+            hasChange = true;
+        } else {
+            course.backgroundColor = courseColor[course.kcmc];
+        }
+    });
+    if (hasChange) {
+        await store.save({
+            key: "userConfig",
+            data: userConfig,
+        });
+    }
+}
+
 export const courseApi = {
     getCourseSchedule: async (year: number, term: SchoolTermValue): Promise<CourseScheduleQueryRes | null> => {
         const yearIndex = SchoolYears.findIndex(v => +v[0] === year);
@@ -168,8 +194,10 @@ export const courseApi = {
             xnm: SchoolYears[yearIndex ?? SchoolYears.findIndex(v => +v[0] === defaultYear)][0],
             xqm: term ?? SchoolTerms[0][0],
         });
-        const res = await http.post("/kbcx/xskbcx_cxXsgrkb.html", reqBody);
+        const res = await http.post<CourseScheduleQueryRes>("/kbcx/xskbcx_cxXsgrkb.html", reqBody);
         if (typeof res.data === "object") {
+            await randomCourseColor(res.data.kbList);
+            await randomCourseColor(res.data.sjkList);
             return res.data;
         } else {
             ToastAndroid.show("获取课表信息失败", ToastAndroid.SHORT);
@@ -205,7 +233,7 @@ export const courseApi = {
         subjectId: string,
         grade: number,
         classId: string,
-    ): Promise<ClassScheduleQueryRes> => {
+    ): Promise<ClassScheduleQueryRes | null> => {
         const reqBody = objectToFormUrlEncoded({
             xnm: year,
             xqm: term,
@@ -217,7 +245,14 @@ export const courseApi = {
             tjkbzdm: 1,
             tjkbzxsdm: 0,
         });
-        const res = await http.post("/kbdy/bjkbdy_cxBjKb.html", reqBody);
-        return res.data;
+        const res = await http.post<ClassScheduleQueryRes>("/kbdy/bjkbdy_cxBjKb.html", reqBody);
+        if (typeof res.data === "object") {
+            await randomCourseColor(res.data.kbList);
+            await randomCourseColor(res.data.sjkList);
+            return res.data;
+        } else {
+            ToastAndroid.show("获取课表信息失败", ToastAndroid.SHORT);
+            return null;
+        }
     },
 };

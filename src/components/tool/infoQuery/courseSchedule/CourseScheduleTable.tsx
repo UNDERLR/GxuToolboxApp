@@ -24,16 +24,11 @@ interface Props {
     onNextCourseCalculated?: (course?: Course) => void;
 }
 
-interface CourseItem extends Course {
-    // 在课程表中显示的背景颜色
-    backgroundColor: string;
-}
-
 export function CourseScheduleTable(props: Props) {
-    const {userConfig, updateUserConfig} = useContext(UserConfigContext);
+    const {userConfig} = useContext(UserConfigContext);
     const {courseScheduleData, courseScheduleStyle} = useContext(CourseScheduleContext)!;
     const {theme} = useTheme();
-    const [courseSchedule, setCourseSchedule] = useState<CourseItem[][]>([[], [], [], [], [], [], []]);
+    const [courseSchedule, setCourseSchedule] = useState<Course[][]>([[], [], [], [], [], [], []]);
     const startDay = moment(props.startDay);
     const [currentTime, setCurrentTime] = useState(moment().format());
     const currentWeek = props.currentWeek ?? Math.ceil(moment.duration(moment().diff(startDay)).asWeeks());
@@ -90,7 +85,7 @@ export function CourseScheduleTable(props: Props) {
     }, [props.courseList, courseScheduleData.timeSpanList, userConfig.jw.startDay]);
 
     function init() {
-        parseCourses(props.courseList as CourseItem[]);
+        parseCourses(props.courseList as Course[]);
     }
 
     useEffect(() => {
@@ -104,14 +99,10 @@ export function CourseScheduleTable(props: Props) {
         }
     }, [props, nextCourse]);
 
-    useEffect(() => {
-        randomCourseColor(props.courseList as CourseItem[]);
-    }, [props.courseList]);
-
-    function parseCourses(courseList: CourseItem[]) {
-        const res = [[], [], [], [], [], [], []] as CourseItem[][];
+    function parseCourses(courseList: Course[]) {
+        const res = [[], [], [], [], [], [], []] as Course[][];
         if (courseList) {
-            courseList.forEach((course: CourseItem) => {
+            courseList.forEach((course: Course) => {
                 if (testCourseWeek(course, currentWeek)) {
                     res[parseInt(course.xqj, 10) - 1].push(course);
                 }
@@ -120,7 +111,7 @@ export function CourseScheduleTable(props: Props) {
         setCourseSchedule(res);
     }
 
-    function testCourseWeek(course: CourseItem, week: number = currentWeek): boolean {
+    function testCourseWeek(course: Course, week: number = currentWeek): boolean {
         const weekSpans = course.zcd.split(",");
         let res = false;
         weekSpans.forEach(weekSpan => {
@@ -134,23 +125,6 @@ export function CourseScheduleTable(props: Props) {
             }
         });
         return res;
-    }
-
-    function randomCourseColor(courseList: CourseItem[]) {
-        if (!userConfig.theme.course.courseColor) {
-            userConfig.theme.course.courseColor = {};
-        }
-        //使得相同课程的颜色相同
-        const courseColor = userConfig.theme.course.courseColor;
-        courseList.forEach((course: CourseItem) => {
-            if (!courseColor[course.kcmc]) {
-                let randomNum = Math.floor(Math.random() * courseScheduleData.randomColor.length);
-                course.backgroundColor = courseColor[course.kcmc] = courseScheduleData.randomColor[randomNum];
-            } else {
-                course.backgroundColor = courseColor[course.kcmc];
-            }
-        });
-        updateUserConfig(userConfig);
     }
 
     function getCurrentTimeSpan() {
@@ -236,18 +210,15 @@ export function CourseScheduleTable(props: Props) {
                 });
                 const itemStyle = StyleSheet.create({
                     activeContainer: {
-                        ...courseScheduleStyle.weekdayContainer,
                         backgroundColor: Color(theme.colors.primary).setAlpha(0.2).rgbaString,
                     },
-                    activeText: {
-                        ...courseScheduleStyle.weekdayText,
-                    },
+                    activeText: {},
                 });
                 const weekdayContainerStyle: StyleProp<ViewStyle> = [courseScheduleStyle.weekdayContainer];
                 const weekdayTextStyle: StyleProp<TextStyle> = [courseScheduleStyle.weekdayText];
                 if (currentDay.isSame(moment(), "day")) {
-                    weekdayContainerStyle[0] = itemStyle.activeContainer;
-                    weekdayTextStyle[0] = itemStyle.activeText;
+                    weekdayContainerStyle.push(itemStyle.activeContainer);
+                    weekdayTextStyle.push(itemStyle.activeText);
                 }
                 const currentDayExamList = (props.examList ?? []).filter(examInfo =>
                     moment(examInfo.kssj.replace(/\(.*?\)/, "")).isSame(currentDay, "d"),
