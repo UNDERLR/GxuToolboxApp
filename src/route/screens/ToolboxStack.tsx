@@ -14,6 +14,8 @@ import {BuildingListScreen} from "@/screens/tool/mapNavigation/BuildingListScree
 import {CourseScheduleQuery} from "@/screens/tool/infoQuery/courseSchedule/CourseScheduleQuery.tsx";
 import {useNavigation} from "@react-navigation/native";
 import {jwxt} from "@/js/jw/jwxt.ts";
+import {WidgetPreviewScreen} from "@/screens/tool/widgetPreview/WidgetPreviewScreen.tsx";
+import {GPAcalculator} from "@/screens/tool/GPAcalculator/GPAcalculator.tsx";
 
 const Stack = createNativeStackNavigator();
 
@@ -78,6 +80,8 @@ export function ToolboxStack() {
 
             <Stack.Screen name="examInfo" component={ExamInfo} options={{title: "考试信息查询"}} />
             <Stack.Screen name="examScore" component={ExamScore} options={{title: "考试成绩查询"}} />
+            <Stack.Screen name="gpaCalculator" component={GPAcalculator} options={{title: "GPA计算器"}} />
+            <Stack.Screen name="WidgetPreviewScreen" component={WidgetPreviewScreen} options={{title: "小部件预览"}} />
 
             <Stack.Screen name="EvaluationOverview" component={EvaluationOverview} options={{title: "期末学生评价"}} />
             <Stack.Screen name="EvaluationDetail" component={EvaluationDetail} options={{title: "学生评价细节"}} />

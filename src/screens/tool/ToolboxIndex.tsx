@@ -64,6 +64,11 @@ const toolList = [
                 icon: <Icon type="Ionicon" name="compass-outline" size={iconSize} />,
                 navigation: "PositionListScreen",
             },
+            {
+                label: "小部件预览",
+                icon: <Icon type="Ionicon" name="compass-outline" size={iconSize} />,
+                navigation: "WidgetPreviewScreen",
+            }
         ],
     },
 ] as settingSection[];
