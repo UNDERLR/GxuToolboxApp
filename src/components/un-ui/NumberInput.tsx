@@ -9,6 +9,7 @@ import {UserConfigContext} from "@/components/AppProvider.tsx";
 interface Props {
     value: number;
     onChange?: (value: number) => void;
+    onSubmit?: (value: number) => void;
     onBlur?: () => void;
     min?: number;
     max?: number;
@@ -88,6 +89,13 @@ export function NumberInput(props: Props) {
             </Pressable>
             <View>
                 <TextInput
+                    blurOnSubmit={true}
+                    onSubmitEditing={v => {
+                        const num = parseFloat(v.nativeEvent.text);
+                        if (!isNaN(num)) {
+                            props.onSubmit?.(num);
+                        }
+                    }}
                     value={props.value.toString()}
                     ref={inputRef}
                     inputMode="numeric"
