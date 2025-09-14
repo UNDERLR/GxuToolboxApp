@@ -1,7 +1,7 @@
 {
     "name": "gxu_tool_app",
-    "version": "beta 1.4.5",
-    "versionCode": 10405,
+    "version": "beta 1.5.0",
+    "versionCode": 10500,
     "private": true,
     "scripts": {
         "android": "react-native run-android",
@@ -32,7 +32,6 @@
         "react-native-android-widget": "^0.17.1",
         "react-native-blob-util": "^0.21.2",
         "react-native-cheerio": "^1.0.0-rc.4",
-        "react-native-exception-handler": "^2.10.10",
         "react-native-html-parser": "^0.1.0",
         "react-native-image-picker": "^8.2.1",
         "react-native-pager-view": "6.5.3",
