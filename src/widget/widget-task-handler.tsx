@@ -13,7 +13,7 @@ export async function widgetTaskHandler(props: WidgetTaskHandlerProps) {
 
     switch (props.widgetAction) {
         case "WIDGET_ADDED":
-            props.renderWidget(<Widget title={""} course={[]} />);
+            props.renderWidget(<Widget todayCourse={[]} tomorrowCourse={[]} />);
             break;
 
         case "WIDGET_UPDATE":

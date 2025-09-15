@@ -1,7 +1,6 @@
 import React from "react";
 import { FlexWidget, TextWidget } from "react-native-android-widget";
 import {CourseItem} from "@/widget/CourseItem.tsx";
-import {getColorForCourse} from "@/widget/widgetData.ts";
 
 interface CourseScheduleWidgetProps {
     todayCourse?: {

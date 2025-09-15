@@ -5,10 +5,10 @@ import {WidgetPreview} from "react-native-android-widget";
 import {CourseScheduleWidget} from "@/widget/CourseScheduleWidget.tsx";
 import {Text} from "@rneui/themed";
 
-import { useWidgetTitle } from "@/widget/widgetData";
+import { useWidgetInfo } from "@/widget/widgetData";
 
 export function WidgetPreviewScreen() {
-    const {todayCourse,tomorrowCourse} = useWidgetTitle();
+    const {todayCourse,tomorrowCourse} = useWidgetInfo();
     return (
         <View style={styles.container}>
             <WidgetPreview
