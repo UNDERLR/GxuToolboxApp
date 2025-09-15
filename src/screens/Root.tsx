@@ -2,7 +2,7 @@ import {ImageBackground, StatusBar, StyleSheet, useColorScheme, View, ViewProps}
 import {DarkTheme, DefaultTheme, NavigationContainer} from "@react-navigation/native";
 import {RootStack} from "@/route/RootStack.tsx";
 import React, {useCallback, useContext, useEffect, useMemo, useState} from "react";
-import {CheckUpdate} from "@/components/CheckUpdate.tsx";
+import {UpdateCard} from "@/components/UpdateCard.tsx";
 import {CourseScheduleContext, generateCourseScheduleStyle, useCourseScheduleData} from "@/js/jw/course.ts";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 import {useTheme} from "@rneui/themed";
@@ -59,7 +59,6 @@ export function Root(props: ViewProps) {
                     loadingIndicatorSource={{uri: userConfig.theme.bgUrl}}
                     resizeMode="cover">
                     <StatusBar barStyle={colorScheme === "light" ? "dark-content" : "light-content"} />
-                    <CheckUpdate />
                     <NavigationContainer theme={navigationTheme}>
                         <RootStack />
                     </NavigationContainer>

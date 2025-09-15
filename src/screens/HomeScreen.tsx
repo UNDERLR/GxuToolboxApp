@@ -1,11 +1,9 @@
 import {GestureResponderEvent, PanResponder, PanResponderGestureState, ScrollView, View} from "react-native";
 import {ScheduleCard} from "@/components/tool/infoQuery/courseSchedule/ScheduleCard.tsx";
-import {useContext, useRef, useState} from "react";
-import {Button, Card, useTheme} from "@rneui/themed";
-import {Color} from "@/js/color.ts";
+import React, {useContext, useRef, useState} from "react";
+import {useTheme} from "@rneui/themed";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
-import {useNavigation} from "@react-navigation/native";
-import {jwxt} from "@/js/jw/jwxt.ts";
+import {UpdateCard} from "@/components/UpdateCard.tsx";
 
 export function HomeScreen() {
     const {theme} = useTheme();
@@ -86,6 +84,7 @@ export function HomeScreen() {
                 contentContainerStyle={{
                     paddingVertical: 10,
                 }}>
+                <UpdateCard />
                 {/*<ComingExamCard />*/}
                 <ScheduleCard />
             </ScrollView>
