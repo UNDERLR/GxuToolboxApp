@@ -1,4 +1,4 @@
-// src/widget/useWidgetTitle.ts
+// src/widget/useWidgetInfo.ts
 import {useContext, useEffect, useState} from "react";
 import moment from "moment";
 import {store} from "@/js/store";
@@ -23,6 +23,7 @@ interface CourseInShow {
     teacher: string;
     room: string;
 }
+
 const PRESET_COLORS = [
     "#007AFF", // Blue
     "#34C759", // Green
@@ -33,7 +34,8 @@ const PRESET_COLORS = [
     "#FF2D55", // Pink
     "#00C7BE", // Teal
 ];
-export function useWidgetTitle() {
+
+export function useWidgetInfo() {
     const [title, setTitle] = useState<Course | undefined>(undefined);
     const [nextCourse, setNextCourse] = useState<NextCourse[] | undefined>(undefined);
     const {courseScheduleData} = useContext(CourseScheduleContext)!;
@@ -44,27 +46,33 @@ export function useWidgetTitle() {
 
     useEffect(() => {
         (async () => {
-            const courseList = await store.load<CourseScheduleQueryRes>({key: "courseRes"});
-            const list = courseList.kbList;
+            const courseList = await store.load<CourseScheduleQueryRes>({key: "courseRes"}).catch(e => {
+                console.warn(e);
+                return null;
+            });
+            const list = courseList?.kbList;
             if (!list) {
                 return;
             }
 
             setTitle(list); // 保存完整课表
 
-            const now = moment("2025-09-24 13:00");
+            const now = moment();
             const tmr = now.clone().add(1, "day");
 
             const today: any[] = [];
             const tomorrow: any[] = [];
             const future: {course: Course; time: moment.Moment}[] = [];
             const startTimes = courseScheduleData.timeSpanList.map(span => span.split("\n")[0]);
+            const endTimes = courseScheduleData.timeSpanList.map(span => span.split("\n")[1]);
             console.log("now", now.format("YYYY-MM-DD HH:mm:ss"));
-
+            console.log(list[0]);
             list.forEach(course => {
                 const dayOfWeek = parseInt(course.xqj, 10);
                 const startSection = parseInt(course.jcs.split("-")[0], 10) - 1;
+                const endSection = parseInt(course.jcs.split("-")[1], 10) - 1;
                 const courseTime = startTimes[startSection];
+                const courseEndTime = endTimes[endSection];
                 if (!courseTime) {
                     return;
                 }
@@ -78,6 +86,12 @@ export function useWidgetTitle() {
                         .hour(hour)
                         .minute(minute)
                         .second(0);
+                    const courseEndDate = moment(userConfig.jw.startDay)
+                        .add(week - 1, "weeks")
+                        .day(dayOfWeek)
+                        .hour(Number(courseEndTime.split(":")[0]))
+                        .minute(Number(courseEndTime.split(":")[1]))
+                        .second(0);
 
                     // 判断今天还有什么课
                     if (courseDate.isSame(now, "day") && courseDate.isAfter(now)) {
@@ -85,8 +99,8 @@ export function useWidgetTitle() {
                         today.push({
                             name: course.kcmc,
                             beginTime: courseDate.format("HH:mm"),
-                            endTime: courseDate.format("HH:mm"),
-                            index: course.xqj,
+                            endTime: courseEndDate.format("HH:mm"),
+                            index: course.jcs,
                             teacher: course.xm,
                             room: course.cdmc,
                         });
@@ -96,8 +110,8 @@ export function useWidgetTitle() {
                         tomorrow.push({
                             name: course.kcmc,
                             beginTime: courseDate.format("HH:mm"),
-                            endTime: courseDate.format("HH:mm"),
-                            index: course.xqj,
+                            endTime: courseEndDate.format("HH:mm"),
+                            index: course.jcs,
                             teacher: course.xm,
                             room: course.cdmc,
                         });
@@ -109,7 +123,7 @@ export function useWidgetTitle() {
             setNextCourse(future);
             setTodayCourse(today);
             setTomorrowCourse(tomorrow);
-            console.log("today", today,today.length);
+            console.log("today", today, today.length);
         })();
     }, []);
 
@@ -152,6 +166,7 @@ export function parseWeeks(weekStr: string): number[] {
     // 去重并升序
     return Array.from(new Set(result)).sort((a, b) => a - b);
 }
+
 function getHashCode(str) {
     let hash = 0;
     if (str.length === 0) {
@@ -159,12 +174,13 @@ function getHashCode(str) {
     }
     for (let i = 0; i < str.length; i++) {
         const char = str.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
+        hash = (hash << 5) - hash + char;
         hash |= 0; // Convert to 32bit integer
     }
     // 确保结果是正数
     return Math.abs(hash);
 }
+
 /**
  * 根据课程名称，从预设颜色数组中稳定地选择一个颜色。
  * @param {string} courseName 课程名称
