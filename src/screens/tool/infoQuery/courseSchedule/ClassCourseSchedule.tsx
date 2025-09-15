@@ -18,6 +18,7 @@ import {UserConfigContext} from "@/components/AppProvider.tsx";
 import {courseApi} from "@/js/jw/course.ts";
 import {jwxt} from "@/js/jw/jwxt.ts";
 import {useNavigation} from "@react-navigation/native";
+import {UnTermSelector} from "@/components/un-ui/UnTermSelector.tsx";
 
 export function ClassCourseSchedule() {
     const {userConfig} = useContext(UserConfigContext);
@@ -140,18 +141,14 @@ export function ClassCourseSchedule() {
                     <Flex gap={10}>
                         <Text>学期</Text>
                         <View style={{flex: 1}}>
-                            <UnPicker selectedValue={year} onValueChange={setYear}>
-                                {SchoolYears.map(value => {
-                                    return <Picker.Item value={+value[0]} label={value[1]} key={value[0]} />;
-                                })}
-                            </UnPicker>
-                        </View>
-                        <View style={{flex: 1}}>
-                            <UnPicker selectedValue={term} onValueChange={setTerm}>
-                                {SchoolTerms.map(value => {
-                                    return <Picker.Item value={value[0]} label={value[1]} key={value[0]} />;
-                                })}
-                            </UnPicker>
+                            <UnTermSelector
+                                year={year}
+                                term={term}
+                                onChange={(year, term) => {
+                                    setYear(+year);
+                                    setTerm(term);
+                                }}
+                            />
                         </View>
                     </Flex>
                     <Flex gap={10}>

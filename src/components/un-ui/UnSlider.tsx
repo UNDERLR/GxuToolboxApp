@@ -14,6 +14,7 @@ interface Props {
 
 export function UnSlider(props: Props & SliderProps) {
     const {theme} = useTheme();
+    const [value, setValue] = useState(props.value ?? 0);
     const [inputMode, setInputMode] = useState(props.inputMode);
 
     const style = StyleSheet.create({
@@ -39,6 +40,7 @@ export function UnSlider(props: Props & SliderProps) {
         } else if (!Number.isNaN(props.minimumValue) && props.minimumValue !== undefined && v < props.minimumValue) {
             res = props.minimumValue;
         }
+        setValue(v);
         props.onValueChange?.(res);
     };
 
@@ -46,8 +48,9 @@ export function UnSlider(props: Props & SliderProps) {
         <Flex gap={10} inline justifyContent="flex-end" style={props.containerStyle}>
             {inputMode ? (
                 <NumberInput
-                    value={props.value ?? 0}
-                    onChange={onValueChange}
+                    value={value}
+                    onSubmit={onValueChange}
+                    onChange={setValue}
                     max={props.maximumValue}
                     min={props.minimumValue}
                     step={props.step}
@@ -56,12 +59,15 @@ export function UnSlider(props: Props & SliderProps) {
                 />
             ) : (
                 <Text style={style.valuePreviewText} onPress={() => setInputMode(true)}>
-                    {props.value}
+                    {value}
                 </Text>
             )}
             <Flex style={{marginBottom: -5}}>
                 <Slider
                     {...props}
+                    onValueChange={setValue}
+                    onSlidingComplete={onValueChange}
+                    value={value}
                     containerStyle={props.sliderContainerStyle}
                     minimumTrackTintColor={Color.mix(theme.colors.primary, theme.colors.grey2).rgbaString}
                     trackStyle={style.track}

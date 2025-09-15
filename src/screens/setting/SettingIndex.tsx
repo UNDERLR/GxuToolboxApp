@@ -1,6 +1,6 @@
 import {Button} from "@rneui/themed";
 import Flex from "@/components/un-ui/Flex.tsx";
-import packageJson from "../../../package.json";
+import packageJson from "@/../package.json";
 import moment from "moment/moment";
 import {ColorPicker} from "@/components/un-ui/ColorPicker.tsx";
 import {launchImageLibrary} from "react-native-image-picker";

@@ -34,7 +34,7 @@
         "react-native-cheerio": "^1.0.0-rc.4",
         "react-native-html-parser": "^0.1.0",
         "react-native-image-picker": "^8.2.1",
-        "react-native-pager-view": "6.5.3",
+        "react-native-pager-view": "^6.9.1",
         "react-native-reanimated-table": "^0.0.2",
         "react-native-safe-area-context": "^5.4.0",
         "react-native-screens": "^4.10.0",

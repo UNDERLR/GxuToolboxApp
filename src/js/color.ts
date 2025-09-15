@@ -158,6 +158,7 @@ export interface IColor {
     rgba: number[];
 
     setAlpha(alpha: number): IColor;
+    setLevel(level: number): IColor;
 
     hexString: (alpha?: boolean) => string;
     readonly rgbString: string;
@@ -296,6 +297,10 @@ export function Color(...args: legalColorType): IColor {
             return hex;
         },
 
+        setLevel(level: number): IColor {
+            return Color.level(this, level);
+        },
+
         /**
          * rgb字符串
          */
@@ -380,5 +385,17 @@ export namespace Color {
         const b = (1 - ratio) * c1.rgba[2] + ratio * c2.rgba[2];
         const a = (1 - ratio) * c1.rgba[3] + ratio * c2.rgba[3];
         return Color(r, g, b, a);
+    }
+
+    /**
+     * 获取不同色重，500为原色，1000为黑色，0为白色
+     */
+    export function level(color: string | IColor, level: number) {
+        const colorV = typeof color === "string" ? Color(color) : color;
+        if (level > 500) {
+            return Color.mix(colorV, "#000000", (level - 500) / 500);
+        } else {
+            return Color.mix(colorV, "#ffffff", (500 - level) / 500);
+        }
     }
 }

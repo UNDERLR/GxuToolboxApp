@@ -1,0 +1,47 @@
+import {SchoolTerms, SchoolTermValue, SchoolYears, SchoolYearValue} from "@/type/global.ts";
+import {UnPicker} from "@/components/un-ui/UnPicker.tsx";
+import {useContext, useEffect, useState} from "react";
+import {Picker, PickerItemProps} from "@react-native-picker/picker";
+import {UserConfigContext} from "@/components/AppProvider.tsx";
+
+interface Props {
+    year?: SchoolYearValue | number;
+    term?: SchoolTermValue;
+    thirdTerm?: boolean;
+    onChange?: (year: SchoolYearValue | number, term: SchoolTermValue) => void;
+}
+
+export function UnTermSelector(props: Props) {
+    const {userConfig} = useContext(UserConfigContext);
+    const [optionList, setOptionList] = useState<PickerItemProps<string>[]>([]);
+
+    useEffect(() => {
+        const newOptionList: PickerItemProps<string>[] = [];
+        SchoolYears.forEach(schoolYear => {
+            Array.from(SchoolTerms)
+                .reverse()
+                .forEach((term, index) => {
+                    if (!props.thirdTerm && index === 0) return;
+                    newOptionList.push({
+                        label: `${schoolYear[1]}学年${term[1]}`,
+                        value: `${schoolYear[0]}-${term[0]}`,
+                        color: index === 2 ? "#e1cd4c" : "#4ded5a",
+                    });
+                });
+        });
+        setOptionList(newOptionList);
+    }, []);
+
+    return (
+        <UnPicker<string>
+            selectedValue={`${props.year ?? userConfig.jw.year}-${props.term ?? userConfig.jw.term}`}
+            onValueChange={v => {
+                const [year, term] = v.split("-");
+                props.onChange?.(+year, term as SchoolTermValue);
+            }}>
+            {optionList.map(option => (
+                <Picker.Item {...option} />
+            ))}
+        </UnPicker>
+    );
+}
