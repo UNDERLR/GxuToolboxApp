@@ -60,7 +60,7 @@ export function ExamInfo() {
     function init() {
         store.load({key: "examInfo"}).then(data => {
             setApiRes(data);
-        });
+        }).catch(console.warn);
     }
 
     async function query() {

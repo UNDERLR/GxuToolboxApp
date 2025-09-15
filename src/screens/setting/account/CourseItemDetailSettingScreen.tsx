@@ -9,6 +9,7 @@ import {Picker} from "@react-native-picker/picker";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 import {Row, Rows, Table} from "react-native-reanimated-table";
 import {Color} from "@/js/color.ts";
+import {defaultUserConfig} from "@/type/IUserConfig.ts";
 
 type CourseKeysType = keyof Omit<Course, "queryModel" | "userModel">;
 
@@ -88,6 +89,9 @@ export function CourseItemDetailSettingScreen() {
     async function init() {
         const courseRes = await store.load({
             key: "courseRes",
+        }).catch(e => {
+            console.warn(e);
+            return {};
         });
         setCourseList(courseRes?.kbList ?? []);
     }

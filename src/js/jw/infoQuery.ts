@@ -8,10 +8,15 @@ import {GetClassListRes, GetSubjectListRes} from "@/type/api/base.ts";
 export const defaultYear = moment().isBefore(moment("8", "M"), "M") ? moment().year() - 1 : moment().year();
 
 export const infoQuery = {
-    getUserInfo: async (): Promise<UserInfo> => {
-        return await store.load<UserInfo>({
-            key: "userInfo",
-        });
+    getUserInfo: async (): Promise<UserInfo | null> => {
+        return await store
+            .load<UserInfo>({
+                key: "userInfo",
+            })
+            .catch(e => {
+                console.warn(e);
+                return null;
+            });
     },
     getSubjectList: async (schoolId: SchoolValue): Promise<GetSubjectListRes> => {
         const res = await http.get(

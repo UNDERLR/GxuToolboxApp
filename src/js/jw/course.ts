@@ -160,7 +160,11 @@ export const CourseScheduleContext = createContext<{
 } | null>(null);
 
 async function randomCourseColor(courseList: (Course | PracticalCourse)[]) {
-    const userConfig: IUserConfig = (await store.load({key: "userConfig"})) ?? defaultUserConfig;
+    const userConfig: IUserConfig = await store.load({key: "userConfig"}).catch(e => {
+        console.warn(e);
+        return defaultUserConfig;
+    });
+    console.log(userConfig);
     if (!userConfig.theme.course.courseColor) {
         userConfig.theme.course.courseColor = {};
     }

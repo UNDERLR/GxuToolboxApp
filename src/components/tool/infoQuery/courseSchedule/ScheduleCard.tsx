@@ -89,9 +89,11 @@ export function ScheduleCard() {
     }
 
     const getStartDay = useCallback(async () => {
-        const userInfo = await store.load<UserInfo>({
-            key: "userInfo",
-        });
+        const userInfo = await store
+            .load<UserInfo>({
+                key: "userInfo",
+            })
+            .catch(console.warn);
         const {username} = await userMgr.getAccount();
         if (!userInfo || !username) return;
 
@@ -115,9 +117,15 @@ export function ScheduleCard() {
     }, [year, term]);
 
     async function init() {
-        const courseData: CourseScheduleQueryRes = await store.load({key: "courseRes"});
+        const courseData: CourseScheduleQueryRes = await store.load({key: "courseRes"}).catch(e => {
+            console.warn(e);
+            return {};
+        });
         setApiRes(courseData);
-        const examData: ExamInfoQueryRes = await store.load({key: "examInfo"});
+        const examData: ExamInfoQueryRes = await store.load({key: "examInfo"}).catch(e => {
+            console.warn(e);
+            return {};
+        });
         setExamList(examData.items);
         loadData();
     }

@@ -88,6 +88,9 @@ export function ExamItemDetailSettingScreen() {
     async function init() {
         const examRes = await store.load({
             key: "examInfo",
+        }).catch(e => {
+            console.warn(e);
+            return {};
         });
         setExamList(examRes?.items ?? []);
     }

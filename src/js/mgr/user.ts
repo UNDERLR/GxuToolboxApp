@@ -17,9 +17,14 @@ export const userMgr = {
         });
     },
     getAccount: () => {
-        return store.load<{username: string; password: string}>({
-            key: "userAccount",
-        });
+        return store
+            .load<{username: string; password: string}>({
+                key: "userAccount",
+            })
+            .catch(e => {
+                console.warn(e);
+                return null;
+            });
     },
     getToken: () => {
         return store.load<string>({

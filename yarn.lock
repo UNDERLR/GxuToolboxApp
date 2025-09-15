@@ -6172,7 +6172,7 @@ react-is@^19.0.0, react-is@^19.1.0:
 
 react-native-android-widget@^0.17.1:
   version "0.17.1"
-  resolved "https://registry.npmmirror.com/react-native-android-widget/-/react-native-android-widget-0.17.1.tgz#73b567046f537894866c034acfd4581af0b7a0c0"
+  resolved "https://registry.yarnpkg.com/react-native-android-widget/-/react-native-android-widget-0.17.1.tgz#73b567046f537894866c034acfd4581af0b7a0c0"
   integrity sha512-VWq+rHzJsRmLZK1qwMeD18N9Br6E0UdamztVnbu/5xJKp21lRMDljk1llCnTSPJPyyzqhCprU3mmPu/WWCqFLA==
 
 react-native-blob-util@^0.21.2:

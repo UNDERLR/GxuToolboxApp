@@ -62,7 +62,10 @@ export function ExamScore() {
     });
 
     async function init() {
-        const data = await store.load<ExamScoreQueryRes>({key: "examScore"});
+        const data = await store.load<ExamScoreQueryRes>({key: "examScore"}).catch(e => {
+            console.warn(e);
+            return null;
+        });
         if (data) {
             setApiRes(data);
             setTableData({

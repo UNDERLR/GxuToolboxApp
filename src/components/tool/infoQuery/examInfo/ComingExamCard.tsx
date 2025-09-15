@@ -22,7 +22,7 @@ export function ComingExamCard() {
         store.load({key: "examInfo"}).then((data: ExamInfoQueryRes) => {
             setApiRes(data);
             format(data.items);
-        });
+        }).catch(console.warn);
     }
 
     function format(examList: ExamInfo[]) {
