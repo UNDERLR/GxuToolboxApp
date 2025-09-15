@@ -1,6 +1,6 @@
 import {ScrollView, StyleSheet, ToastAndroid, View} from "react-native";
 import {Button, Divider, Text, useTheme} from "@rneui/themed";
-import {useContext, useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {Picker} from "@react-native-picker/picker";
 import {SchoolTerms, SchoolTermValue, SchoolYears} from "@/type/global.ts";
@@ -14,6 +14,7 @@ import {UserConfigContext} from "@/components/AppProvider.tsx";
 import {examApi} from "@/js/jw/exam.ts";
 import {jwxt} from "@/js/jw/jwxt.ts";
 import {useNavigation} from "@react-navigation/native";
+import {UnTermSelector} from "@/components/un-ui/UnTermSelector.tsx";
 
 export function ExamInfo() {
     const {theme} = useTheme();
@@ -99,18 +100,14 @@ export function ExamInfo() {
                     <Flex gap={10}>
                         <Text>学期</Text>
                         <View style={{flex: 1}}>
-                            <UnPicker selectedValue={year} onValueChange={setYear}>
-                                {data.schoolYear.map(value => {
-                                    return <Picker.Item value={+value[0]} label={value[1]} key={value[0]} />;
-                                })}
-                            </UnPicker>
-                        </View>
-                        <View style={{flex: 1}}>
-                            <UnPicker selectedValue={term} onValueChange={setTerm}>
-                                {data.schoolTerm.map(value => {
-                                    return <Picker.Item value={value[0]} label={value[1]} key={value[0]} />;
-                                })}
-                            </UnPicker>
+                            <UnTermSelector
+                                year={year}
+                                term={term}
+                                onChange={(year, term) => {
+                                    setYear(+year);
+                                    setTerm(term);
+                                }}
+                            />
                         </View>
                     </Flex>
                     <Flex gap={10}>

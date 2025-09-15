@@ -3,18 +3,17 @@ import {StyleProp, View, ViewStyle} from "react-native";
 import {CheckBox, ListItem, Text} from "@rneui/themed";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {UnSlider} from "@/components/un-ui/UnSlider.tsx";
-import {Picker} from "@react-native-picker/picker";
-import {SchoolTerms, SchoolTermValue, SchoolYears, SchoolYearValue} from "@/type/global.ts";
+import {SchoolTermValue, SchoolYearValue} from "@/type/global.ts";
 import {usePagerView} from "react-native-pager-view";
 import {UnDateTimePicker} from "@/components/un-ui/UnDateTimePicker.tsx";
 import moment from "moment/moment";
 import {CourseScheduleContext} from "@/js/jw/course.ts";
-import {UnPicker} from "@/components/un-ui/UnPicker.tsx";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
+import {UnTermSelector} from "@/components/un-ui/UnTermSelector.tsx";
 
 interface Props {
     containerStyle?: StyleProp<ViewStyle>;
-    year?: number;
+    year?: SchoolYearValue;
     term?: SchoolTermValue;
     onYearChange?: (year: number) => void;
     onTermChange?: (term: SchoolTermValue) => void;
@@ -110,18 +109,14 @@ export function CourseCardSetting(props: Props) {
                     <Flex gap={10}>
                         <Text>学期</Text>
                         <View style={{flex: 1}}>
-                            <UnPicker selectedValue={props.year} onValueChange={onYearChange}>
-                                {SchoolYears.map(value => {
-                                    return <Picker.Item value={+value[0]} label={value[1]} key={value[0]} />;
-                                })}
-                            </UnPicker>
-                        </View>
-                        <View style={{flex: 1}}>
-                            <UnPicker selectedValue={props.term} onValueChange={onTermChange}>
-                                {SchoolTerms.map(value => {
-                                    return <Picker.Item value={value[0]} label={value[1]} key={value[0]} />;
-                                })}
-                            </UnPicker>
+                            <UnTermSelector
+                                year={props.year}
+                                term={props.term}
+                                onChange={(year, term) => {
+                                    onYearChange(+year);
+                                    onTermChange(term);
+                                }}
+                            />
                         </View>
                     </Flex>
                     <Flex gap={10}>
