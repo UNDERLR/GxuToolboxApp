@@ -17,7 +17,7 @@ export interface IUserConfig {
 /** 用户教务配置 */
 export interface IUserJwConfig {
     /** 学年 */
-    year: SchoolYearValue;
+    year: SchoolYearValue | number;
     /** 学期 */
     term: SchoolTermValue;
     /** 当前课表起始 */

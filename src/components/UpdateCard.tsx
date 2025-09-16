@@ -68,7 +68,6 @@ export function UpdateCard() {
         } else {
             // ToastAndroid.show("需要权限进行更新", ToastAndroid.SHORT);
         }
-        console.log(granted);
     }
 
     const [downloading, setDownloading] = useState(false);

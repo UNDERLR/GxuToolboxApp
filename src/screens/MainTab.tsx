@@ -9,6 +9,7 @@ import {useContext} from "react";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 import {useNavigation} from "@react-navigation/native";
 import {jwxt} from "@/js/jw/jwxt.ts";
+import {HomeStack} from "@/route/screens/HomeStack.tsx";
 
 const Tab = createBottomTabNavigator();
 
@@ -55,10 +56,11 @@ export function MainTab() {
             <Tab.Screen
                 name="home"
                 options={{
+                    headerShown: false,
                     title: "首页",
                     tabBarIcon: props => Icon({name: "home", ...props}),
                 }}
-                component={HomeScreen}
+                component={HomeStack}
             />
             <Tab.Screen
                 name="tool"

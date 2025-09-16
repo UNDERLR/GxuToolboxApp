@@ -13,7 +13,7 @@ import {UnTermSelector} from "@/components/un-ui/UnTermSelector.tsx";
 
 interface Props {
     containerStyle?: StyleProp<ViewStyle>;
-    year?: SchoolYearValue;
+    year?: SchoolYearValue | number;
     term?: SchoolTermValue;
     onYearChange?: (year: number) => void;
     onTermChange?: (term: SchoolTermValue) => void;

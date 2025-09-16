@@ -3,7 +3,7 @@ import {createContext, useCallback, useEffect, useState} from "react";
 import {StyleSheet, ToastAndroid} from "react-native";
 import {store} from "@/js/store.ts";
 import {defaultUserConfig, IUserConfig} from "@/type/IUserConfig.ts";
-import {SchoolTerms, SchoolTermValue, SchoolValue, SchoolYears} from "@/type/global.ts";
+import {SchoolTerms, SchoolTermValue, SchoolValue, SchoolYears, SchoolYearValue} from "@/type/global.ts";
 import {
     ClassScheduleQueryRes,
     CourseScheduleQueryRes,
@@ -164,7 +164,6 @@ async function randomCourseColor(courseList: (Course | PracticalCourse)[]) {
         console.warn(e);
         return defaultUserConfig;
     });
-    console.log(userConfig);
     if (!userConfig.theme.course.courseColor) {
         userConfig.theme.course.courseColor = {};
     }
@@ -189,13 +188,17 @@ async function randomCourseColor(courseList: (Course | PracticalCourse)[]) {
 }
 
 export const courseApi = {
-    getCourseSchedule: async (year: number, term: SchoolTermValue): Promise<CourseScheduleQueryRes | null> => {
-        const yearIndex = SchoolYears.findIndex(v => +v[0] === year);
+    getCourseSchedule: async (
+        year: number | SchoolYearValue,
+        term: SchoolTermValue,
+    ): Promise<CourseScheduleQueryRes | undefined> => {
+        const schoolYear = SchoolYears.find(v => +v[0] === year) ?? SchoolYears.find(v => +v[0] === defaultYear)!;
         if (!(await jwxt.testToken())) {
-            return null;
+            return;
         }
+        console.log(schoolYear);
         const reqBody = objectToFormUrlEncoded({
-            xnm: SchoolYears[yearIndex ?? SchoolYears.findIndex(v => +v[0] === defaultYear)][0],
+            xnm: schoolYear[0],
             xqm: term ?? SchoolTerms[0][0],
         });
         const res = await http.post<CourseScheduleQueryRes>("/kbcx/xskbcx_cxXsgrkb.html", reqBody);
@@ -205,7 +208,7 @@ export const courseApi = {
             return res.data;
         } else {
             ToastAndroid.show("获取课表信息失败", ToastAndroid.SHORT);
-            return null;
+            return;
         }
     },
     getClassCourseScheduleList: async (

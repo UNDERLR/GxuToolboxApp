@@ -19,9 +19,11 @@ import {courseApi} from "@/js/jw/course.ts";
 import {examApi} from "@/js/jw/exam.ts";
 import {UserInfo} from "@/type/infoQuery/base.ts";
 import {userMgr} from "@/js/mgr/user.ts";
+import {useNavigation} from "@react-navigation/native";
 
 export function ScheduleCard() {
     const {userConfig, updateUserConfig} = useContext(UserConfigContext);
+    const navigation = useNavigation();
     const {theme} = useTheme();
     const pagerView = usePagerView({pagesAmount: 20});
     const {...rest} = pagerView;
@@ -154,6 +156,9 @@ export function ScheduleCard() {
                                 <Icon name="back" size={24} />
                             </Pressable>
                         )}
+                        <Pressable android_ripple={userConfig.theme.ripple} onPress={()=>navigation.navigate('ScheduleEdit')}>
+                            <Icon name="edit" size={24} />
+                        </Pressable>
                         <Pressable
                             android_ripple={userConfig.theme.ripple}
                             onPress={() => setCourseScheduleSettingVisible(true)}>

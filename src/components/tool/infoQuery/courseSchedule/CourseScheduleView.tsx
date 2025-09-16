@@ -14,7 +14,7 @@ import {UserConfigContext} from "@/components/AppProvider.tsx";
 import {Color} from "@/js/color.ts";
 
 interface Props {
-    startDay: moment.MomentInput;
+    startDay?: moment.MomentInput;
     onCoursePress?: (course: Course) => void;
     pageView: ReturnType<typeof usePagerView>;
     courseApiRes?: CourseScheduleQueryRes;
@@ -88,7 +88,7 @@ export function CourseScheduleView(props: Props) {
         "[]",
     );
     return (
-        <View>
+        <View style={{width: "100%"}}>
             {nextCourse && props.showNextCourse && (
                 <View style={style.nextCourse}>
                     <Text style={{fontSize: 13}}>
