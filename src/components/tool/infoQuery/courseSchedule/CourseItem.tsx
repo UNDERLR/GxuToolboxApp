@@ -1,5 +1,5 @@
 import React, {useContext, useMemo} from "react";
-import {Pressable, StyleSheet} from "react-native";
+import {Pressable, StyleSheet, ViewStyle} from "react-native";
 import {Color} from "@/js/color.ts";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {Text, useTheme} from "@rneui/themed";
@@ -9,6 +9,7 @@ import {CourseScheduleContext} from "@/js/jw/course.ts";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 
 interface Props {
+    style?: ViewStyle;
     course: Course;
     index: number;
     onCoursePress?: (course: Course) => void;
@@ -56,7 +57,7 @@ export function CourseItem(props: Props) {
                 props.onCoursePress?.(course);
             }}
             android_ripple={userConfig.theme.ripple}
-            style={[itemStyle.course, courseScheduleStyle.courseItem]}>
+            style={[props.style,itemStyle.course, courseScheduleStyle.courseItem]}>
             <Flex direction="column" gap={5}>
                 {courseScheduleData.courseInfoVisible.name && course.jxbsftkbj === "1" && (
                     <Text style={itemStyle.text}>调</Text>

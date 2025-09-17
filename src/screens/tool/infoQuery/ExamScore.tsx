@@ -1,15 +1,12 @@
-import {ScrollView, StyleSheet, ToastAndroid, TouchableOpacity, View} from "react-native";
+import {ScrollView, StyleSheet, ToastAndroid, View} from "react-native";
 import {Button, Divider, Text, useTheme} from "@rneui/themed";
 import React, {useContext, useEffect, useState} from "react";
 import Flex from "@/components/un-ui/Flex.tsx";
-import {Picker} from "@react-native-picker/picker";
 import {SchoolTerms, SchoolTermValue, SchoolYears} from "@/type/global.ts";
-import {infoQuery} from "@/js/jw/infoQuery.ts";
 import {NumberInput} from "@/components/un-ui/NumberInput.tsx";
 import {ExamScoreQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
 import {store} from "@/js/store.ts";
 import {Color} from "@/js/color.ts";
-import {UnPicker} from "@/components/un-ui/UnPicker.tsx";
 import {ExamScoreTable} from "@/screens/tool/infoQuery/ExamScoreTable.tsx";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 import {examApi} from "@/js/jw/exam.ts";

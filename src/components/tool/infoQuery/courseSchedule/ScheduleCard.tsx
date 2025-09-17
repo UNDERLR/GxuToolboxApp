@@ -20,6 +20,8 @@ import {examApi} from "@/js/jw/exam.ts";
 import {UserInfo} from "@/type/infoQuery/base.ts";
 import {userMgr} from "@/js/mgr/user.ts";
 import {useNavigation} from "@react-navigation/native";
+import {CourseScheduleExamItem} from "@/components/tool/infoQuery/examInfo/CourseScheduleExamItem.tsx";
+import {ExamDetail} from "@/components/tool/infoQuery/examInfo/ExamDetail.tsx";
 
 export function ScheduleCard() {
     const {userConfig, updateUserConfig} = useContext(UserConfigContext);
@@ -96,8 +98,8 @@ export function ScheduleCard() {
                 key: "userInfo",
             })
             .catch(console.warn);
-        const {username} = await userMgr.getAccount();
-        if (!userInfo || !username) return;
+        const account = await userMgr.getAccount();
+        if (!userInfo || !account) return;
 
         const schoolId = Schools.filter(school => school[1] === userInfo.school)?.[0]?.[0];
         if (!schoolId) return;
@@ -107,7 +109,7 @@ export function ScheduleCard() {
             schoolId,
             userInfo.subject_id,
             userInfo.grade,
-            username.slice(2, 8),
+            account.username.slice(2, 8),
         );
 
         if (!Array.isArray(data?.weekNum) || (data?.weekNum.length ?? 0) < 1) return;
@@ -156,7 +158,9 @@ export function ScheduleCard() {
                                 <Icon name="back" size={24} />
                             </Pressable>
                         )}
-                        <Pressable android_ripple={userConfig.theme.ripple} onPress={()=>navigation.navigate('ScheduleEdit')}>
+                        <Pressable
+                            android_ripple={userConfig.theme.ripple}
+                            onPress={() => navigation.navigate("ScheduleEdit")}>
                             <Icon name="edit" size={24} />
                         </Pressable>
                         <Pressable
@@ -171,14 +175,22 @@ export function ScheduleCard() {
                 </Flex>
             </Card.Title>
             <Card.Divider />
-            <CourseScheduleView
+            <CourseScheduleView<ExamInfo>
                 showDate
                 showNextCourse
                 showTimeSpanHighlight
                 startDay={startDay}
                 courseApiRes={apiRes}
                 pageView={pagerView}
-                examList={examList}
+                itemList={examList}
+                itemRender={(item, onPressHook) =>
+                    CourseScheduleExamItem({
+                        examInfo: item,
+                        onPress: onPressHook,
+                    })
+                }
+                itemDetailRender={item => ExamDetail({examInfo: item})}
+                isItemShow={(item, day) => moment(item.kssj.replace(/\(.*?\)/, "")).isSame(day, "d")}
             />
             {apiRes?.sjkList && (
                 <>

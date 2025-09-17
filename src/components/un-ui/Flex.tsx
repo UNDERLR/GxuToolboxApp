@@ -8,7 +8,8 @@ interface Props {
     justifyContent: "center" | "flex-start" | "flex-end" | "space-between" | "space-around" | "space-evenly";
 }
 
-export default function Flex(props: Partial<Props & ViewProps>) {
+export type FlexProps = Partial<Props & ViewProps>;
+export default function Flex(props: FlexProps) {
     const style = StyleSheet.create({
         unUiFlex: {
             flex: !props.inline ? 1 : undefined,

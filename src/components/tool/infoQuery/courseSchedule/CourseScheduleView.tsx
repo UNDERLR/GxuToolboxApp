@@ -1,36 +1,37 @@
-import React, {useContext, useMemo, useState} from "react";
+import React, {ReactNode, useContext, useMemo, useState} from "react";
 import {StyleSheet, View} from "react-native";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {BottomSheet, Text, useTheme} from "@rneui/themed";
-import {CourseScheduleTable} from "@/components/tool/infoQuery/courseSchedule/CourseScheduleTable.tsx";
+import {
+    CourseScheduleTable,
+    CourseScheduleTableProps,
+} from "@/components/tool/infoQuery/courseSchedule/CourseScheduleTable.tsx";
 import {usePagerView} from "react-native-pager-view";
 import moment from "moment/moment";
 import {Course} from "@/type/infoQuery/course/course.ts";
 import {CourseDetail} from "@/components/tool/infoQuery/courseSchedule/CourseDetail.tsx";
 import {CourseScheduleQueryRes} from "@/type/api/infoQuery/classScheduleAPI.ts";
-import {ExamInfo} from "@/type/infoQuery/exam/examInfo.ts";
-import {ExamDetail} from "@/components/tool/infoQuery/examInfo/ExamDetail.tsx";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 import {Color} from "@/js/color.ts";
 
-interface Props {
-    startDay?: moment.MomentInput;
-    onCoursePress?: (course: Course) => void;
+export interface CourseScheduleViewProps<T> extends Omit<CourseScheduleTableProps<T>, "courseList"> {
+    /** 横向滚动使用的PageView对象 */
     pageView: ReturnType<typeof usePagerView>;
+    /** 进行解析的课表返回体 */
     courseApiRes?: CourseScheduleQueryRes;
-    showDate?: boolean;
-    showNextCourse?: boolean;
-    showTimeSpanHighlight?: boolean;
 
-    examList?: ExamInfo[];
-    onExamPress?: (examInfo: ExamInfo) => void;
+    /** 是否显示下一节课 */
+    showNextCourse?: boolean;
+
+    /** 自定义元素详情渲染函数 */
+    itemDetailRender?: (item: T) => ReactNode;
 }
 
-export function CourseScheduleView(props: Props) {
+export function CourseScheduleView<T = any>(props: CourseScheduleViewProps<T>) {
     const {userConfig} = useContext(UserConfigContext);
     const {theme} = useTheme();
     const {AnimatedPagerView, ref, ...rest} = props.pageView;
-    const [startDay, setStartDay] = useState(props.startDay);
+    const startDay = props.startDay ?? userConfig.jw.startDay;
     const realCurrentWeek = Math.ceil(moment.duration(moment().diff(startDay)).asWeeks());
 
     const [courseDetailVisible, setCourseDetailVisible] = useState(false);
@@ -72,16 +73,16 @@ export function CourseScheduleView(props: Props) {
         props.onCoursePress?.(course);
     }
 
-    const [examDetailVisible, setExamDetailVisible] = useState(false);
-    const [activeExam, setActiveExam] = useState<ExamInfo>({} as ExamInfo);
+    const [itemDetailVisible, setItemDetailVisible] = useState(false);
+    const [activeItem, setActiveItem] = useState<T>({} as T);
 
-    function showExamDetail(examInfo: ExamInfo) {
-        setActiveExam(examInfo);
-        setExamDetailVisible(true);
-        props.onExamPress?.(examInfo);
+    function showItemDetail(item: T) {
+        setActiveItem(item);
+        setItemDetailVisible(true);
+        props.onItemPress?.(item);
     }
 
-    const isAtThisTerm = moment().isBetween(
+    const isCurrentTerm = moment().isBetween(
         userConfig.jw.startDay,
         moment(userConfig.jw.startDay).add(20, "w"),
         "d",
@@ -97,7 +98,7 @@ export function CourseScheduleView(props: Props) {
                 </View>
             )}
             <AnimatedPagerView
-                testID="pager-view"
+                testID="course-schedule-tabel-pager-view"
                 ref={ref}
                 style={style.pagerView}
                 initialPage={realCurrentWeek - 1}
@@ -114,30 +115,27 @@ export function CourseScheduleView(props: Props) {
                     () =>
                         rest.pages.map((_, index) => (
                             <View testID="pager-view-content" key={index} collapsable={false}>
-                                {props.showDate && (
-                                    <Flex inline justifyContent="center" gap={5}>
+                                <Flex inline justifyContent="center" gap={5}>
+                                    {props.showDate && (
                                         <Text>
                                             {moment().isBefore(userConfig.jw.startDay) && "当前学期未开始"}
                                             {moment().isAfter(moment(userConfig.jw.startDay).add(20, "w")) &&
                                                 "当前学期已结束"}
-                                            {isAtThisTerm &&
+                                            {isCurrentTerm &&
                                                 (index + 1 === realCurrentWeek
                                                     ? `（第${index + 1}周）`
                                                     : `（第${index + 1}周，目前为第${realCurrentWeek}周）`)}
-                                            {!isAtThisTerm && `（第${index + 1}周）`}
+                                            {!isCurrentTerm && `（第${index + 1}周）`}
                                         </Text>
-                                        <Text>点击课程查看详情</Text>
-                                    </Flex>
-                                )}
-                                <CourseScheduleTable
-                                    showDate={props.showDate}
-                                    showTimeSpanHighlight={props.showTimeSpanHighlight}
-                                    startDay={startDay}
+                                    )}
+                                    <Text>点击元素查看详情</Text>
+                                </Flex>
+                                <CourseScheduleTable<T>
+                                    {...props}
+                                    courseList={props.courseApiRes?.kbList}
                                     onCoursePress={showCourseDetail}
-                                    courseList={props.courseApiRes?.kbList ?? []}
                                     currentWeek={index + 1}
-                                    examList={props.examList}
-                                    onExamPress={showExamDetail}
+                                    onItemPress={showItemDetail}
                                     onNextCourseCalculated={setNextCourse}
                                 />
                             </View>
@@ -151,11 +149,9 @@ export function CourseScheduleView(props: Props) {
                     <CourseDetail course={activeCourse} />
                 </View>
             </BottomSheet>
-            {/* 考试信息 */}
-            <BottomSheet isVisible={examDetailVisible} onBackdropPress={() => setExamDetailVisible(false)}>
-                <View style={style.bottomSheetContainer}>
-                    <ExamDetail examInfo={activeExam} />
-                </View>
+            {/* 自定义元素详情 */}
+            <BottomSheet isVisible={itemDetailVisible} onBackdropPress={() => setItemDetailVisible(false)}>
+                <View style={style.bottomSheetContainer}>{props.itemDetailRender?.(activeItem)}</View>
             </BottomSheet>
         </View>
     );
