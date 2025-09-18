@@ -1,37 +1,130 @@
 import Flex from "@/components/un-ui/Flex";
-import {ScrollView, View} from "react-native";
-import {Divider, Text} from "@rneui/themed";
+import {Pressable, ScrollView, StyleSheet, ToastAndroid, View} from "react-native";
+import {BottomSheet, Divider, Input, Text, useTheme} from "@rneui/themed";
 import {UnTermSelector} from "@/components/un-ui/UnTermSelector.tsx";
 import React, {useContext, useEffect, useState} from "react";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 import {CourseScheduleQueryRes} from "@/type/api/infoQuery/classScheduleAPI.ts";
-import {courseApi} from "@/js/jw/course.ts";
+import {courseApi, CourseScheduleContext} from "@/js/jw/course.ts";
 import {CourseScheduleView} from "@/components/tool/infoQuery/courseSchedule/CourseScheduleView.tsx";
 import {usePagerView} from "react-native-pager-view";
 import {UnSlider} from "@/components/un-ui/UnSlider.tsx";
+import {IActivity} from "@/type/app/activity.ts";
+import {Icon} from "@/components/un-ui/Icon.tsx";
+import {Color} from "@/js/color.ts";
+import {ActivityItem} from "@/components/app/activity/ActivityItem.tsx";
+import {NumberInput} from "@/components/un-ui/NumberInput.tsx";
+import {Picker} from "@react-native-picker/picker";
+import {ColorPicker} from "@/components/un-ui/ColorPicker.tsx";
 
 export function ScheduleEdit() {
-    const {userConfig} = useContext(UserConfigContext);
+    const {userConfig, updateUserConfig} = useContext(UserConfigContext);
+    const {theme} = useTheme();
+    const {courseScheduleData} = useContext(CourseScheduleContext)!;
     const pageView = usePagerView({pagesAmount: 20});
 
     const [year, setYear] = useState(userConfig.jw.year);
     const [term, setTerm] = useState(userConfig.jw.term);
 
     const [courseRes, setCourseRes] = useState<CourseScheduleQueryRes>();
+    // 用户数据中的Index
+    const [activityListIndex, setActivityListIndex] = useState(-1);
+    const [activityList, setActivityList] = useState<IActivity[]>([]);
+
+    function addActivity() {
+        const color =
+            courseScheduleData.randomColor[Math.fround(Math.random() * courseScheduleData.randomColor.length)];
+        activityList.unshift({
+            color,
+            name: "新活动",
+            timeSpan: [1, 2],
+            weekSpan: [pageView.activePage + 1, pageView.activePage + 1],
+            desc: "活动描述",
+            weekday: 0,
+        });
+        setActivityList(activityList);
+    }
+
+    function editActivity(item: IActivity, index: number) {
+        setEditModalOpen(true);
+        setSelectedActivity(item);
+        setSelectedIndex(index);
+    }
+
+    function deleteActivity(index: number) {
+        activityList.splice(index, 1);
+        setActivityList(activityList);
+    }
+
+    const [editModalOpen, setEditModalOpen] = useState(false);
+    const [selectedIndex, setSelectedIndex] = useState(0);
+    const [selectedActivity, setSelectedActivity] = useState<IActivity>();
+    function closeEditModal() {
+        activityList[selectedIndex] = selectedActivity!;
+        setActivityList(activityList);
+        save();
+    }
 
     async function getCourses() {
-        const res = await courseApi.getCourseSchedule(year, term)
-        console.log(res);
+        const res = await courseApi.getCourseSchedule(year, term);
         setCourseRes(res);
+    }
+
+    function save() {
+        if (activityList.length === 0 && activityListIndex > -1) {
+            // 日程为空就删除
+            userConfig.activity.data.splice(activityListIndex, 1);
+        } else if (activityListIndex > -1) {
+            // 替换
+            userConfig.activity.data[activityListIndex].list = activityList;
+        } else {
+            // 不存在就新建
+            userConfig.activity.data.push({
+                year,
+                term,
+                list: activityList,
+            });
+        }
+        updateUserConfig(userConfig);
+        ToastAndroid.show("保存日程成功", ToastAndroid.SHORT);
     }
 
     async function init() {
         await getCourses();
+        const activityDataIndex = userConfig.activity.data.findIndex(item => item.year === year && item.term === term);
+        if (activityDataIndex > -1) {
+            setActivityList(userConfig.activity.data[activityDataIndex].list);
+            setActivityListIndex(activityDataIndex);
+        } else {
+            setActivityList([]);
+        }
     }
 
     useEffect(() => {
         init();
-    }, []);
+    }, [year, term]);
+
+    const style = StyleSheet.create({
+        activityListItem: {
+            paddingHorizontal: "3%",
+            paddingVertical: 20,
+            borderRadius: 8,
+            borderWidth: 2,
+            borderColor: Color.mix(theme.colors.primary, theme.colors.white, 0.2).rgbaString,
+        },
+        activityListItemText: {
+            fontSize: 14,
+            fontWeight: "bold",
+        },
+        bottomSheetContainer: {
+            backgroundColor: theme.colors.background,
+            borderTopLeftRadius: 8,
+            borderTopRightRadius: 8,
+            borderColor: Color.mix(theme.colors.primary, theme.colors.background, 0.8).rgbaString,
+            borderWidth: 1,
+            padding: "2.5%",
+        },
+    });
 
     return (
         <ScrollView contentContainerStyle={{padding: "5%"}}>
@@ -50,7 +143,7 @@ export function ScheduleEdit() {
                     </View>
                 </Flex>
                 <Divider />
-                <Text h4>日程预览</Text>
+                <Text h4>日程表预览</Text>
                 <Flex style={{padding: 10}}>
                     <UnSlider
                         step={1}
@@ -61,8 +154,144 @@ export function ScheduleEdit() {
                         onValueChange={v => pageView.setPage(v - 1)}
                     />
                 </Flex>
-                <CourseScheduleView pageView={pageView} courseApiRes={courseRes} />
+                <CourseScheduleView<IActivity>
+                    pageView={pageView}
+                    courseApiRes={courseRes}
+                    courseStyle={{opacity: 0.25}}
+                    itemList={activityList}
+                    isItemShow={(item, day, week) =>
+                        item.weekday === day.weekday() && week >= item.weekSpan[0] && week <= item.weekSpan[1]
+                    }
+                    itemRender={(item, onPressHook) => <ActivityItem item={item} onPress={onPressHook} />}
+                />
+                <Divider />
+                <Flex justifyContent="space-between">
+                    <Text h4>日程列表</Text>
+                    <Flex gap={5} justifyContent="flex-end">
+                        <Pressable onPress={addActivity} android_ripple={userConfig.theme.ripple} style={{padding: 5}}>
+                            <Icon name="plus" size={24} />
+                        </Pressable>
+                    </Flex>
+                </Flex>
+                <Flex justifyContent="center">
+                    {activityList.length > 0 ? (
+                        activityList.map((activity, index) => (
+                            <Flex
+                                key={index}
+                                style={[
+                                    {
+                                        backgroundColor: Color(activity.color ?? theme.colors.primary).setAlpha(0.1)
+                                            .rgbaString,
+                                    },
+                                    style.activityListItem,
+                                ]}>
+                                <Text
+                                    style={[
+                                        {
+                                            color: Color.mix(
+                                                activity.color ?? theme.colors.primary,
+                                                theme.colors.black,
+                                                0.5,
+                                            ).rgbaString,
+                                        },
+                                        style.activityListItemText,
+                                    ]}>
+                                    {activity.name}
+                                </Text>
+                                <Flex gap={5} justifyContent="flex-end">
+                                    <Pressable
+                                        onPress={() => editActivity(activity, index)}
+                                        android_ripple={userConfig.theme.ripple}
+                                        style={{padding: 5}}>
+                                        <Icon name="edit" size={22} />
+                                    </Pressable>
+                                    <Pressable
+                                        onPress={() => deleteActivity(index)}
+                                        android_ripple={userConfig.theme.ripple}
+                                        style={{padding: 5}}>
+                                        <Icon name="delete" color={theme.colors.error} size={22} />
+                                    </Pressable>
+                                </Flex>
+                            </Flex>
+                        ))
+                    ) : (
+                        <Text style={{fontSize: 16}}>
+                            当前学期没有日程，点击上方
+                            <Icon name="plus" size={18} />
+                            添加日程
+                        </Text>
+                    )}
+                </Flex>
             </Flex>
+            {/* 日程编辑 */}
+            <BottomSheet isVisible={editModalOpen} onBackdropPress={() => closeEditModal()}>
+                <Flex direction="column" alignItems="flex-start" style={style.bottomSheetContainer} gap={10}>
+                    <Text>活动名称</Text>
+                    <Input
+                        value={selectedActivity?.name}
+                        onEndEditing={e => (selectedActivity!.name = e.nativeEvent.text)}
+                    />
+                    <Flex justifyContent="space-between">
+                        <Text>节次长度（1-13）</Text>
+                        <Flex gap={10} justifyContent="flex-end">
+                            <NumberInput
+                                value={selectedActivity?.timeSpan[0] ?? 1}
+                                onSubmit={v => (selectedActivity!.timeSpan[0] = v)}
+                            />
+                            <Text>至</Text>
+                            <NumberInput
+                                value={selectedActivity?.timeSpan[1] ?? 1}
+                                onSubmit={v => (selectedActivity!.timeSpan[1] = v)}
+                            />
+                        </Flex>
+                    </Flex>
+                    <Flex justifyContent="space-between">
+                        <Text>周跨度（1-20）</Text>
+                        <Flex gap={10} justifyContent="flex-end">
+                            <NumberInput
+                                value={selectedActivity?.weekSpan[0] ?? pageView.activePage + 1}
+                                onSubmit={v => (selectedActivity!.weekSpan[0] = v)}
+                            />
+                            <Text>至</Text>
+                            <NumberInput
+                                value={selectedActivity?.weekSpan[1] ?? pageView.activePage + 1}
+                                onSubmit={v => (selectedActivity!.weekSpan[1] = v)}
+                            />
+                        </Flex>
+                    </Flex>
+                    <Flex>
+                        <Text>所在星期</Text>
+                        <Flex justifyContent="flex-end">
+                            <Picker<number>
+                                onValueChange={v => (selectedActivity!.weekday = v)}
+                                selectedValue={selectedActivity?.weekday ?? 0}
+                                style={{width: "50%"}}>
+                                {courseScheduleData.weekdayList.slice(0, 6).map((text, index) => (
+                                    <Picker.Item key={index} label={"星期" + text} value={index + 1} />
+                                ))}
+                                <Picker.Item label="星期日" value={0} />
+                            </Picker>
+                        </Flex>
+                    </Flex>
+                    <Flex>
+                        <Text>颜色</Text>
+                        <Flex justifyContent="flex-end">
+                            <ColorPicker
+                                color={selectedActivity?.color ?? theme.colors.primary}
+                                onColorChange={v => (selectedActivity!.color = v)}
+                            />
+                        </Flex>
+                    </Flex>
+                    <Text>活动描述</Text>
+                    <Input
+                        multiline
+                        textAlignVertical="top"
+                        style={{height: 200}}
+                        value={selectedActivity?.name}
+                        onEndEditing={e => (selectedActivity!.name = e.nativeEvent.text)}
+                    />
+                </Flex>
+            </BottomSheet>
         </ScrollView>
     );
 }

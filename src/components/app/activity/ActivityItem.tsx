@@ -1,0 +1,66 @@
+import {Pressable, PressableProps, StyleSheet, ViewStyle} from "react-native";
+import {IActivity} from "@/type/app/activity.ts";
+import React, {useContext, useMemo} from "react";
+import {UserConfigContext} from "@/components/AppProvider.tsx";
+import {CourseScheduleContext} from "@/js/jw/course.ts";
+import {Text, useTheme} from "@rneui/themed";
+import {Color} from "@/js/color.ts";
+import Flex from "@/components/un-ui/Flex.tsx";
+
+interface ActivityItemProps extends Omit<PressableProps, "onPress" | "android_ripple"> {
+    style?: ViewStyle;
+    item: IActivity;
+    onPress?: (item: IActivity) => void;
+}
+
+export function ActivityItem(props: ActivityItemProps) {
+    const {userConfig} = useContext(UserConfigContext);
+    const {courseScheduleStyle} = useContext(CourseScheduleContext)!;
+    const {theme} = useTheme();
+    const {item} = props;
+    const span = item.timeSpan.reduceRight((pv, cv) => pv - cv) + 1;
+    const y = item.timeSpan[0] - 1;
+    const itemStyle = useMemo(() => {
+        return StyleSheet.create({
+            item: {
+                height: span * userConfig.theme.course.timeSpanHeight - userConfig.theme.course.courseItemMargin * 2,
+                position: "absolute",
+                backgroundColor: Color(item.color ?? theme.colors.primary).setAlpha(theme.mode === "light" ? 0.3 : 0.1)
+                    .rgbaString,
+                top:
+                    userConfig.theme.course.weekdayHeight +
+                    y * userConfig.theme.course.timeSpanHeight +
+                    userConfig.theme.course.courseItemMargin,
+                borderWidth: 2,
+                borderColor: Color.mix(theme.colors.primary, theme.colors.white, 0.2).rgbaString,
+            },
+            text: {
+                textAlign: "center",
+                color: Color.mix(item.color ?? theme.colors.primary, theme.colors.black, 0.5).rgbaString,
+            },
+        });
+    }, [
+        item.color,
+        userConfig.theme.course.courseItemMargin,
+        userConfig.theme.course.timeSpanHeight,
+        userConfig.theme.course.weekdayHeight,
+        span,
+        theme.colors.grey4,
+        theme.mode,
+        y,
+    ]);
+    return (
+        // 课程元素
+        <Pressable
+            onPress={e => {
+                props.onPress?.(item);
+            }}
+            android_ripple={userConfig.theme.ripple}
+            style={[props.style, courseScheduleStyle.courseItem, itemStyle.item]}>
+            <Flex direction="column" gap={5}>
+                <Text style={[itemStyle.text, {fontWeight: "bold"}]}>{item.name}</Text>
+                <Text style={itemStyle.text}>{item.weekSpan[0]}-{item.weekSpan[1]}周</Text>
+            </Flex>
+        </Pressable>
+    );
+}

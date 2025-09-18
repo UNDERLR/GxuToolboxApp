@@ -5,7 +5,7 @@ import {jwxt} from "@/js/jw/jwxt.ts";
 import {userMgr} from "@/js/mgr/user.ts";
 import {Icon} from "@/components/un-ui/Icon.tsx";
 import {beQuery} from "@/js/be/log.ts";
-import { useNavigation } from "@react-navigation/native";
+import {useNavigation} from "@react-navigation/native";
 
 async function getToken(username: string, password: string) {
     userMgr.storeAccount(username, password);
@@ -36,12 +36,16 @@ export function JWAccountScreen() {
     const [showPwd, setShowPwd] = useState(false);
     const navigation = useNavigation();
 
+    async function init() {
+        const account = await userMgr.getAccount();
+        if (!account) return;
+        setUsername(account.username);
+        setPassword(account.password);
+    }
+
     //从存储中读取数据
     useEffect(() => {
-        userMgr.getAccount().then(data => {
-            setUsername(data.username);
-            setPassword(data.password);
-        });
+        init();
     }, []);
     return (
         <View style={style.container}>

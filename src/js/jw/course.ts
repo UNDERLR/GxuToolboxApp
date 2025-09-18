@@ -59,6 +59,8 @@ const CourseScheduleData = {
         "21:20\n22:05",
     ],
 };
+export type CourseScheduleDataType = typeof CourseScheduleData;
+export type CourseScheduleStyleType = ReturnType<typeof generateCourseScheduleStyle>;
 
 export function generateCourseScheduleStyle(config: IUserConfig["theme"]["course"], theme: any) {
     return StyleSheet.create({
@@ -196,7 +198,6 @@ export const courseApi = {
         if (!(await jwxt.testToken())) {
             return;
         }
-        console.log(schoolYear);
         const reqBody = objectToFormUrlEncoded({
             xnm: schoolYear[0],
             xqm: term ?? SchoolTerms[0][0],

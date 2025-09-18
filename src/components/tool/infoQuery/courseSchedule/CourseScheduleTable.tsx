@@ -37,7 +37,7 @@ export interface CourseScheduleTableProps<T> {
     /** 自定义元素渲染 */
     itemRender?: (item: T, onPressHook?: (item: T) => void) => ReactNode;
     /** 判断自定义元素是否在当天渲染 */
-    isItemShow?: (item: T, day: moment.Moment) => boolean;
+    isItemShow?: (item: T, day: moment.Moment, week: number) => boolean;
 }
 
 export function CourseScheduleTable<T = any>(props: CourseScheduleTableProps<T>) {
@@ -87,7 +87,7 @@ export function CourseScheduleTable<T = any>(props: CourseScheduleTableProps<T>)
                         .second(0);
 
                     if (courseDate.isAfter(now)) {
-                        futureCourses.push({course, time: courseDate});
+                        futureCourses.push({item: course, time: courseDate});
                     }
                 }
             });
@@ -244,7 +244,7 @@ export function CourseScheduleTable<T = any>(props: CourseScheduleTableProps<T>)
                     weekdayContainerStyle.push(itemStyle.activeContainer);
                     weekdayTextStyle.push(itemStyle.activeText);
                 }
-                const currentDayItemList = (props.itemList ?? []).filter(item => props.isItemShow?.(item, currentDay));
+                const currentDayItemList = (props.itemList ?? []).filter(item => props.isItemShow?.(item, currentDay, props.currentWeek));
                 return (
                     // 当日课程渲染
                     <View style={weekdayContainerStyle} key={`day${index}`}>
