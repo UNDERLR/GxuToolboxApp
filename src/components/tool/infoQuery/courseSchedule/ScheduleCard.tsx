@@ -15,7 +15,7 @@ import {CourseScheduleView} from "@/components/tool/infoQuery/courseSchedule/Cou
 import {ExamInfo} from "@/type/infoQuery/exam/examInfo.ts";
 import {ExamInfoQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
-import {courseApi} from "@/js/jw/course.ts";
+import {courseApi, CourseScheduleContext} from "@/js/jw/course.ts";
 import {examApi} from "@/js/jw/exam.ts";
 import {UserInfo} from "@/type/infoQuery/base.ts";
 import {userMgr} from "@/js/mgr/user.ts";
@@ -25,6 +25,7 @@ import {ExamDetail} from "@/components/tool/infoQuery/examInfo/ExamDetail.tsx";
 
 export function ScheduleCard() {
     const {userConfig, updateUserConfig} = useContext(UserConfigContext);
+    const {courseScheduleData, courseScheduleStyle} = useContext(CourseScheduleContext)!;
     const navigation = useNavigation();
     const {theme} = useTheme();
     const pagerView = usePagerView({pagesAmount: 20});
@@ -183,12 +184,7 @@ export function ScheduleCard() {
                 courseApiRes={apiRes}
                 pageView={pagerView}
                 itemList={examList}
-                itemRender={(item, onPressHook) =>
-                    CourseScheduleExamItem({
-                        examInfo: item,
-                        onPress: onPressHook,
-                    })
-                }
+                itemRender={(item, onPressHook) => <CourseScheduleExamItem examInfo={item} onPress={onPressHook} />}
                 itemDetailRender={item => ExamDetail({examInfo: item})}
                 isItemShow={(item, day) => moment(item.kssj.replace(/\(.*?\)/, "")).isSame(day, "d")}
             />
