@@ -84,7 +84,7 @@ export function CourseScheduleQuery() {
     return (
         <ScrollView>
             <View style={style.container}>
-                <Flex gap={10} direction="column" alignItems="flex-start">
+                <Flex gap={10} direction="column" align="flex-start">
                     <Text h4>查询参数</Text>
                     <Flex gap={10}>
                         <Text>学期</Text>
@@ -116,7 +116,7 @@ export function CourseScheduleQuery() {
                 </Flex>
                 <Divider />
                 <Text h4>课表预览</Text>
-                <Flex style={{padding: 10}} alignItems="flex-start" direction="column" gap={10}>
+                <Flex style={{padding: 10}} align="flex-start" direction="column" gap={10}>
                     <Text>课表周数</Text>
                     <UnSlider
                         step={1}

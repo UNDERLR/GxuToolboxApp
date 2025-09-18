@@ -65,10 +65,10 @@ export function ColorPicker(props: Partial<Props>) {
                 }}>
                 <Flex direction="column" gap={10}>
                     <Text h4>选择颜色</Text>
-                    <Flex justifyContent="center">
+                    <Flex justify="center">
                         <View style={style.tempColorView} />
                     </Flex>
-                    <Flex justifyContent="center">
+                    <Flex justify="center">
                         <Text>{props.alpha ? value.rgbaString : value.hexString().toUpperCase()}</Text>
                     </Flex>
                     <Flex gap={10}>

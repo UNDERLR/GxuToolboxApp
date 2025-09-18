@@ -128,7 +128,7 @@ export function ScheduleEdit() {
 
     return (
         <ScrollView contentContainerStyle={{padding: "5%"}}>
-            <Flex gap={10} direction="column" alignItems="flex-start">
+            <Flex gap={10} direction="column" align="flex-start">
                 <Flex gap={10}>
                     <Text>学期</Text>
                     <View style={{flex: 1}}>
@@ -165,15 +165,15 @@ export function ScheduleEdit() {
                     itemRender={(item, onPressHook) => <ActivityItem item={item} onPress={onPressHook} />}
                 />
                 <Divider />
-                <Flex justifyContent="space-between">
+                <Flex justify="space-between">
                     <Text h4>日程列表</Text>
-                    <Flex gap={5} justifyContent="flex-end">
+                    <Flex gap={5} justify="flex-end">
                         <Pressable onPress={addActivity} android_ripple={userConfig.theme.ripple} style={{padding: 5}}>
                             <Icon name="plus" size={24} />
                         </Pressable>
                     </Flex>
                 </Flex>
-                <Flex justifyContent="center">
+                <Flex justify="center">
                     {activityList.length > 0 ? (
                         activityList.map((activity, index) => (
                             <Flex
@@ -198,7 +198,7 @@ export function ScheduleEdit() {
                                     ]}>
                                     {activity.name}
                                 </Text>
-                                <Flex gap={5} justifyContent="flex-end">
+                                <Flex gap={5} justify="flex-end">
                                     <Pressable
                                         onPress={() => editActivity(activity, index)}
                                         android_ripple={userConfig.theme.ripple}
@@ -225,15 +225,15 @@ export function ScheduleEdit() {
             </Flex>
             {/* 日程编辑 */}
             <BottomSheet isVisible={editModalOpen} onBackdropPress={() => closeEditModal()}>
-                <Flex direction="column" alignItems="flex-start" style={style.bottomSheetContainer} gap={10}>
+                <Flex direction="column" align="flex-start" style={style.bottomSheetContainer} gap={10}>
                     <Text>活动名称</Text>
                     <Input
                         value={selectedActivity?.name}
                         onEndEditing={e => (selectedActivity!.name = e.nativeEvent.text)}
                     />
-                    <Flex justifyContent="space-between">
+                    <Flex justify="space-between">
                         <Text>节次长度（1-13）</Text>
-                        <Flex gap={10} justifyContent="flex-end">
+                        <Flex gap={10} justify="flex-end">
                             <NumberInput
                                 value={selectedActivity?.timeSpan[0] ?? 1}
                                 onSubmit={v => (selectedActivity!.timeSpan[0] = v)}
@@ -245,9 +245,9 @@ export function ScheduleEdit() {
                             />
                         </Flex>
                     </Flex>
-                    <Flex justifyContent="space-between">
+                    <Flex justify="space-between">
                         <Text>周跨度（1-20）</Text>
-                        <Flex gap={10} justifyContent="flex-end">
+                        <Flex gap={10} justify="flex-end">
                             <NumberInput
                                 value={selectedActivity?.weekSpan[0] ?? pageView.activePage + 1}
                                 onSubmit={v => (selectedActivity!.weekSpan[0] = v)}
@@ -261,7 +261,7 @@ export function ScheduleEdit() {
                     </Flex>
                     <Flex>
                         <Text>所在星期</Text>
-                        <Flex justifyContent="flex-end">
+                        <Flex justify="flex-end">
                             <Picker<number>
                                 onValueChange={v => (selectedActivity!.weekday = v)}
                                 selectedValue={selectedActivity?.weekday ?? 0}
@@ -275,7 +275,7 @@ export function ScheduleEdit() {
                     </Flex>
                     <Flex>
                         <Text>颜色</Text>
-                        <Flex justifyContent="flex-end">
+                        <Flex justify="flex-end">
                             <ColorPicker
                                 color={selectedActivity?.color ?? theme.colors.primary}
                                 onColorChange={v => (selectedActivity!.color = v)}

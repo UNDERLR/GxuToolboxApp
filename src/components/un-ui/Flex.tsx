@@ -5,8 +5,8 @@ interface Props {
     gap: number;
     inline: boolean;
     direction: "row" | "column";
-    alignItems: FlexAlignType;
-    justifyContent: "center" | "flex-start" | "flex-end" | "space-between" | "space-around" | "space-evenly";
+    align: FlexAlignType;
+    justify: "center" | "flex-start" | "flex-end" | "space-between" | "space-around" | "space-evenly";
     childrenStyle?: StyleProp<ViewStyle>;
 }
 
@@ -17,8 +17,8 @@ export default function Flex(props: FlexProps) {
             flex: !props.inline ? 1 : undefined,
             flexDirection: props.direction ?? "row",
             gap: props.gap ?? 0,
-            alignItems: props.alignItems ?? "center",
-            justifyContent: props.justifyContent ?? "flex-start",
+            alignItems: props.align ?? "center",
+            justifyContent: props.justify ?? "flex-start",
         },
     });
     return (

@@ -137,7 +137,7 @@ export function ClassCourseSchedule() {
             <View style={style.container}>
                 <Text h4>查询参数</Text>
                 <Text style={{color: theme.colors.grey2}}>请从上往下依次修改参数</Text>
-                <Flex gap={10} direction="column" alignItems="flex-start">
+                <Flex gap={10} direction="column" align="flex-start">
                     <Flex gap={10}>
                         <Text>学期</Text>
                         <View style={{flex: 1}}>
@@ -213,7 +213,7 @@ export function ClassCourseSchedule() {
                 </Flex>
                 <Divider />
                 <Text h4>课表查询结果</Text>
-                <Flex gap={10} direction="column" alignItems="flex-start">
+                <Flex gap={10} direction="column" align="flex-start">
                     <Flex>
                         <View style={{flex: 1}}>
                             <UnPicker selectedValue={classScheduleIndex} onValueChange={setClassScheduleIndex}>

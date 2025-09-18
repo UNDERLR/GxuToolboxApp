@@ -147,9 +147,9 @@ export function ScheduleCard() {
     return (
         <Card containerStyle={style.card}>
             <Card.Title style={style.cardTitle}>
-                <Flex justifyContent="space-between">
+                <Flex justify="space-between">
                     <Text h4>日程表</Text>
-                    <Flex gap={15} justifyContent="flex-end">
+                    <Flex gap={15} justify="flex-end">
                         {rest.activePage + 1 !== realCurrentWeek && (
                             <Pressable
                                 android_ripple={userConfig.theme.ripple}

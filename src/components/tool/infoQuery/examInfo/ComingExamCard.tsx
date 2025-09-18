@@ -70,9 +70,9 @@ export function ComingExamCard() {
     return (
         <Card containerStyle={style.card}>
             <Card.Title>
-                <Flex justifyContent="space-between">
+                <Flex justify="space-between">
                     <Text h4>近期考试</Text>
-                    <Flex gap={15} justifyContent="flex-end"></Flex>
+                    <Flex gap={15} justify="flex-end"></Flex>
                 </Flex>
             </Card.Title>
             <Card.Divider />

@@ -45,7 +45,7 @@ export function UnSlider(props: Props & SliderProps) {
     };
 
     return (
-        <Flex gap={10} inline justifyContent="flex-end" style={props.containerStyle}>
+        <Flex gap={10} inline justify="flex-end" style={props.containerStyle}>
             {inputMode ? (
                 <NumberInput
                     value={value}

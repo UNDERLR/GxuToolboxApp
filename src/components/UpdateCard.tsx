@@ -88,12 +88,12 @@ export function UpdateCard() {
     return visible ? (
         <Card containerStyle={style.card}>
             <Card.Title>
-                <Flex justifyContent="space-between">
+                <Flex justify="space-between">
                     <Text h4>发现新版本~</Text>
                 </Flex>
             </Card.Title>
             <Card.Divider />
-            <Flex direction="column" gap={10} alignItems="flex-start" inline style={{paddingHorizontal: "2%"}}>
+            <Flex direction="column" gap={10} align="flex-start" inline style={{paddingHorizontal: "2%"}}>
                 {/*<Text>可以在设置关闭更新提示</Text>*/}
                 <Text style={{fontSize: 14}}>版本号：{version?.versionName}</Text>
                 <Text style={{fontSize: 14}}>更新信息：</Text>

@@ -115,7 +115,7 @@ export function CourseScheduleView<T = any>(props: CourseScheduleViewProps<T>) {
                     () =>
                         rest.pages.map((_, index) => (
                             <View testID="pager-view-content" key={index} collapsable={false}>
-                                <Flex inline justifyContent="center" gap={5}>
+                                <Flex inline justify="center" gap={5}>
                                     {props.showDate && (
                                         <Text>
                                             {moment().isBefore(userConfig.jw.startDay) && "当前学期未开始"}

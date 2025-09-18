@@ -54,7 +54,7 @@ function PropItem({item, ...props}: {item: Info} & Props) {
         case "cdmc":
             info.label = (
                 <Pressable android_ripple={userConfig.theme.ripple} onPress={() => Pos.parseAndSearchInMap(value + "")}>
-                    <Flex gap={5} alignItems="center">
+                    <Flex gap={5} align="center">
                         <Text style={style.infoLabel}>{label}</Text>
                         <Icon
                             type="Ionicon"
@@ -69,11 +69,11 @@ function PropItem({item, ...props}: {item: Info} & Props) {
             break;
     }
     return (
-        <Flex justifyContent="space-between" gap={30}>
+        <Flex justify="space-between" gap={30}>
             <Flex gap={10} inline>
                 {info.label}
             </Flex>
-            <Flex justifyContent="flex-end">{info.value}</Flex>
+            <Flex justify="flex-end">{info.value}</Flex>
         </Flex>
     );
 }
@@ -105,7 +105,7 @@ export function ExamDetail(props: Props) {
 
     return (
         <View {...props}>
-            <Flex justifyContent="center">
+            <Flex justify="center">
                 <Text>点击属性复制到剪切板</Text>
             </Flex>
             {infoList.map((item, index) => (
@@ -114,14 +114,14 @@ export function ExamDetail(props: Props) {
                 </ListItem>
             ))}
             <ListItem>
-                <Flex justifyContent="space-between" gap={30}>
+                <Flex justify="space-between" gap={30}>
                     <Flex gap={10} inline>
-                        <Flex inline justifyContent="center" style={style.infoIcon}>
+                        <Flex inline justify="center" style={style.infoIcon}>
                             <Icon type="fontawesome" name="code" size={20} />
                         </Flex>
                         <Text style={style.infoLabel}>复制考试信息JSON</Text>
                     </Flex>
-                    <Flex justifyContent="flex-end">
+                    <Flex justify="flex-end">
                         <Pressable
                             android_ripple={userConfig.theme.ripple}
                             onPress={() =>

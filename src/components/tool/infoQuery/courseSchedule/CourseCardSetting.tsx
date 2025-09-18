@@ -57,7 +57,7 @@ export function CourseCardSetting(props: Props) {
                 <Text>课程信息可见性</Text>
             </ListItem.Subtitle>
             <ListItem>
-                <Flex direction="column" gap={10} alignItems="flex-start">
+                <Flex direction="column" gap={10} align="flex-start">
                     <Flex>
                         {Array(Object.keys(courseScheduleData.courseInfoVisible).length)
                             .fill(null)
@@ -121,7 +121,7 @@ export function CourseCardSetting(props: Props) {
                     </Flex>
                     <Flex gap={10}>
                         <Text>课表起始日</Text>
-                        <Flex justifyContent="flex-end">
+                        <Flex justify="flex-end">
                             <UnDateTimePicker
                                 value={moment(userConfig.jw.startDay).valueOf()}
                                 onChange={v => {

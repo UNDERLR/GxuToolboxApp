@@ -207,7 +207,7 @@ export function CourseScheduleTable<T = any>(props: CourseScheduleTableProps<T>)
                               inline
                               key={`timespan-${index}`}
                               style={courseScheduleStyle.timeSpanItem}
-                              justifyContent="center">
+                              justify="center">
                               <Text style={courseScheduleStyle.timeSpanText}>{`${index + 1}\n${time}`}</Text>
                           </Flex>
                       ))
@@ -219,7 +219,7 @@ export function CourseScheduleTable<T = any>(props: CourseScheduleTableProps<T>)
                                   courseScheduleStyle.timeSpanItem,
                                   {height: userConfig.theme.course.timeSpanHeight * 2},
                               ]}
-                              justifyContent="center">
+                              justify="center">
                               <Text style={courseScheduleStyle.timeSpanText}>{`${value[0]}\n${value[1]}`}</Text>
                           </Flex>
                       ))}
