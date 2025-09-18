@@ -16,8 +16,6 @@ export interface CourseScheduleTableProps<T> {
     courseStyle?: ViewStyle;
     /** 课程元素点击事件 */
     onCoursePress?: (course: Course) => void;
-    /** 计算下一节课的回调 */
-    onNextCourseCalculated?: (course?: Course) => void;
 
     /** 学期的第一天 */
     startDay?: moment.MomentInput;
@@ -50,64 +48,12 @@ export function CourseScheduleTable<T = any>(props: CourseScheduleTableProps<T>)
     const currentWeek = props.currentWeek ?? Math.ceil(moment.duration(moment().diff(startDay)).asWeeks());
     const currentTimeSpan = getCurrentTimeSpan();
 
-    // 计算下一节课
-    const nextCourse = useMemo(() => {
-        const allCourses = props.courseList ?? [];
-        if (!allCourses || allCourses.length === 0) {
-            return;
-        }
-
-        const now = moment();
-        const futureCourses: {course: Course; time: moment.Moment}[] = [];
-        const startTimes = courseScheduleData.timeSpanList.map(span => span.split("\n")[0]);
-
-        allCourses.forEach(course => {
-            const weekSpans = course.zcd.split(",");
-            const dayOfWeek = parseInt(course.xqj, 10);
-            const startSection = parseInt(course.jcs.split("-")[0], 10) - 1;
-            const courseTime = startTimes[startSection];
-
-            if (!courseTime) {
-                return;
-            }
-
-            const [hour, minute] = courseTime.split(":").map(Number);
-
-            weekSpans.forEach(weekSpan => {
-                const weeks = weekSpan.replace("周", "").split("-").map(Number);
-                const startWeek = weeks[0];
-                const endWeek = weeks.length > 1 ? weeks[1] : startWeek;
-
-                for (let week = startWeek; week <= endWeek; week++) {
-                    const courseDate = moment(userConfig.jw.startDay)
-                        .add(week - 1, "weeks")
-                        .day(dayOfWeek)
-                        .hour(hour)
-                        .minute(minute)
-                        .second(0);
-
-                    if (courseDate.isAfter(now)) {
-                        futureCourses.push({item: course, time: courseDate});
-                    }
-                }
-            });
-        });
-
-        if (futureCourses.length === 0) {
-            return;
-        }
-
-        futureCourses.sort((a, b) => a.time.diff(b.time));
-        return futureCourses[0]?.course;
-    }, [props.courseList, courseScheduleData.timeSpanList, userConfig.jw.startDay]);
-
     function init() {
         parseCourses(props.courseList ?? []);
     }
 
     useEffect(() => {
         init();
-        props.onNextCourseCalculated?.(nextCourse);
         // 时间段刷新定时器
         if (props.showTimeSpanHighlight) {
             const id = setInterval(() => setCurrentTime(moment().format()), 5000);
@@ -115,7 +61,7 @@ export function CourseScheduleTable<T = any>(props: CourseScheduleTableProps<T>)
                 clearInterval(id);
             };
         }
-    }, [props, nextCourse]);
+    }, [props]);
 
     // 从接口返回的数据解析出当周每天的课程
     function parseCourses(courseList: Course[]) {

@@ -13,12 +13,15 @@ import {CourseDetail} from "@/components/tool/infoQuery/courseSchedule/CourseDet
 import {CourseScheduleQueryRes} from "@/type/api/infoQuery/classScheduleAPI.ts";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 import {Color} from "@/js/color.ts";
+import {CourseScheduleContext} from "@/js/jw/course.ts";
 
 export interface CourseScheduleViewProps<T> extends Omit<CourseScheduleTableProps<T>, "courseList"> {
     /** 横向滚动使用的PageView对象 */
     pageView: ReturnType<typeof usePagerView>;
     /** 进行解析的课表返回体 */
     courseApiRes?: CourseScheduleQueryRes;
+    /** 计算下一节课的回调 */
+    onNextCourseCalculated?: (course?: Course) => void;
 
     /** 是否显示下一节课 */
     showNextCourse?: boolean;
@@ -33,10 +36,10 @@ export function CourseScheduleView<T = any>(props: CourseScheduleViewProps<T>) {
     const {AnimatedPagerView, ref, ...rest} = props.pageView;
     const startDay = props.startDay ?? userConfig.jw.startDay;
     const realCurrentWeek = Math.ceil(moment.duration(moment().diff(startDay)).asWeeks());
+    const {courseScheduleData, courseScheduleStyle} = useContext(CourseScheduleContext)!;
 
     const [courseDetailVisible, setCourseDetailVisible] = useState(false);
     const [activeCourse, setActiveCourse] = useState<Course>({} as Course);
-    const [nextCourse, setNextCourse] = useState<Course>();
 
     const style = StyleSheet.create({
         pagerView: {
@@ -88,6 +91,58 @@ export function CourseScheduleView<T = any>(props: CourseScheduleViewProps<T>) {
         "d",
         "[]",
     );
+
+    // 计算下一节课
+    const nextCourse = useMemo(() => {
+        const allCourses = props.courseApiRes?.kbList ?? [];
+        if (!allCourses || allCourses.length === 0) {
+            return;
+        }
+
+        const now = moment();
+        const futureCourses: {course: Course; time: moment.Moment}[] = [];
+        const startTimes = courseScheduleData.timeSpanList.map(span => span.split("\n")[0]);
+
+        allCourses.forEach(course => {
+            const weekSpans = course.zcd.split(",");
+            const dayOfWeek = parseInt(course.xqj, 10);
+            const startSection = parseInt(course.jcs.split("-")[0], 10) - 1;
+            const courseTime = startTimes[startSection];
+
+            if (!courseTime) {
+                return;
+            }
+
+            const [hour, minute] = courseTime.split(":").map(Number);
+
+            weekSpans.forEach(weekSpan => {
+                const weeks = weekSpan.replace("周", "").split("-").map(Number);
+                const startWeek = weeks[0];
+                const endWeek = weeks.length > 1 ? weeks[1] : startWeek;
+
+                for (let week = startWeek; week <= endWeek; week++) {
+                    const courseDate = moment(userConfig.jw.startDay)
+                        .add(week - 1, "weeks")
+                        .day(dayOfWeek)
+                        .hour(hour)
+                        .minute(minute)
+                        .second(0);
+
+                    if (courseDate.isAfter(now)) {
+                        futureCourses.push({course: course, time: courseDate});
+                    }
+                }
+            });
+        });
+
+        if (futureCourses.length === 0) {
+            return;
+        }
+        futureCourses.sort((a, b) => a.time.diff(b.time));
+        props.onNextCourseCalculated?.(futureCourses[0]?.course);
+        return futureCourses[0]?.course;
+    }, [props.courseApiRes?.kbList, courseScheduleData.timeSpanList, userConfig.jw.startDay]);
+
     return (
         <View style={{width: "100%"}}>
             {nextCourse && props.showNextCourse && (
@@ -136,7 +191,6 @@ export function CourseScheduleView<T = any>(props: CourseScheduleViewProps<T>) {
                                     onCoursePress={showCourseDetail}
                                     currentWeek={index + 1}
                                     onItemPress={showItemDetail}
-                                    onNextCourseCalculated={setNextCourse}
                                 />
                             </View>
                         )),
