@@ -1,15 +1,12 @@
-import {ScrollView, StyleSheet, ToastAndroid, TouchableOpacity, View} from "react-native";
+import {ScrollView, StyleSheet, ToastAndroid, View} from "react-native";
 import {Button, Divider, Text, useTheme} from "@rneui/themed";
 import React, {useContext, useEffect, useState} from "react";
 import Flex from "@/components/un-ui/Flex.tsx";
-import {Picker} from "@react-native-picker/picker";
 import {SchoolTerms, SchoolTermValue, SchoolYears} from "@/type/global.ts";
-import {infoQuery} from "@/js/jw/infoQuery.ts";
 import {NumberInput} from "@/components/un-ui/NumberInput.tsx";
 import {ExamScoreQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
 import {store} from "@/js/store.ts";
 import {Color} from "@/js/color.ts";
-import {UnPicker} from "@/components/un-ui/UnPicker.tsx";
 import {ExamScoreTable} from "@/screens/tool/infoQuery/ExamScoreTable.tsx";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 import {examApi} from "@/js/jw/exam.ts";
@@ -120,7 +117,7 @@ export function ExamScore() {
         <ScrollView>
             <View style={style.container}>
                 <Text h4>查询参数</Text>
-                <Flex gap={10} direction="column" alignItems="flex-start">
+                <Flex gap={10} direction="column" align="flex-start">
                     <Flex gap={10}>
                         <Text>学期</Text>
                         <View style={{flex: 1}}>
@@ -150,15 +147,15 @@ export function ExamScore() {
                     </Flex>
                 </Flex>
                 <Divider />
-                <Flex direction="column" gap={15} alignItems="flex-start">
-                    <Flex alignItems="flex-end" gap={5}>
+                <Flex direction="column" gap={15} align="flex-start">
+                    <Flex align="flex-end" gap={5}>
                         <Text h4>查询结果</Text>
                         <Text>{`第${apiRes.currentPage ?? 1}/${apiRes.totalPage ?? 1}页，共有${
                             apiRes.totalCount ?? 0
                         }条结果`}</Text>
                     </Flex>
-                    <Flex gap={10} justifyContent="space-between" alignItems="center">
-                        <Flex gap={10} alignItems="center">
+                    <Flex gap={10} justify="space-between" align="center">
+                        <Flex gap={10} align="center">
                             <Text>页数</Text>
                             <NumberInput value={page} onChange={setPage} min={1} max={apiRes.totalPage ?? 1} />
                             <Text>每页15条记录</Text>
@@ -168,7 +165,7 @@ export function ExamScore() {
                     <Flex>
                         <ExamScoreTable data={apiRes.items ?? []} year={year} term={term} />
                     </Flex>
-                    <Flex gap={10} alignItems="center">
+                    <Flex gap={10} align="center">
                         <Text>页数</Text>
                         <NumberInput value={page} onChange={setPage} min={1} max={apiRes.totalPage ?? 1} />
                         <Text>每页15条记录</Text>

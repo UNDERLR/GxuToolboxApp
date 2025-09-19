@@ -100,7 +100,7 @@ export function UnSectionList(props: Props & SectionListProps<UnListItem, UnList
                 );
             case "text":
                 return (
-                    <Flex style={itemStyle} justifyContent="space-between">
+                    <Flex style={itemStyle} justify="space-between">
                         <Text>{item.label}</Text>
                         <Text>{item.value}</Text>
                     </Flex>
@@ -120,14 +120,14 @@ export function UnSectionList(props: Props & SectionListProps<UnListItem, UnList
                 );
             case "any":
                 return (
-                    <Flex style={itemStyle} justifyContent="space-between">
+                    <Flex style={itemStyle} justify="space-between">
                         <Text>{item.label}</Text>
                         {item.value}
                     </Flex>
                 );
             case "blockAny":
                 return (
-                    <Flex direction="column" alignItems="flex-start" gap={10} style={itemStyle}>
+                    <Flex direction="column" align="flex-start" gap={10} style={itemStyle}>
                         <View>
                             <Text>{item.label}</Text>
                         </View>

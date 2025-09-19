@@ -39,8 +39,8 @@ export function UnTermSelector(props: Props) {
                 const [year, term] = v.split("-");
                 props.onChange?.(+year, term as SchoolTermValue);
             }}>
-            {optionList.map(option => (
-                <Picker.Item {...option} />
+            {optionList.map((option, index) => (
+                <Picker.Item {...option} key={index} />
             ))}
         </UnPicker>
     );

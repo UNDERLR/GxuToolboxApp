@@ -34,7 +34,7 @@ export const DefaultUserTheme: IUserTheme = {
     ripple: {
         color: "gray",
     },
-    course: {
+    item: {
         timeSpanHeight: 80,
         weekdayHeight: 60,
         courseItemMargin: 2,

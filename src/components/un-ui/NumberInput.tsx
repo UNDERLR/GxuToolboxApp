@@ -75,7 +75,7 @@ export function NumberInput(props: Props) {
                 onPressIn={e => e.stopPropagation()}
                 onPress={minus}
                 disabled={props.value <= (props.min ?? Number.MIN_SAFE_INTEGER)}>
-                <Flex style={style.leftIcon} inline justifyContent="center">
+                <Flex style={style.leftIcon} inline justify="center">
                     <Icon
                         name="minus"
                         size={(props.size ?? 30) / 2}
@@ -114,7 +114,7 @@ export function NumberInput(props: Props) {
                 android_ripple={userConfig.theme.ripple}
                 onPress={plus}
                 disabled={props.value >= (props.max ?? Number.MAX_SAFE_INTEGER)}>
-                <Flex style={style.rightIcon} inline justifyContent="center">
+                <Flex style={style.rightIcon} inline justify="center">
                     <Icon
                         name="plus"
                         size={(props.size ?? 30) / 2}

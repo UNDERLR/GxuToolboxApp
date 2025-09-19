@@ -63,7 +63,7 @@ export default function BuildingListItem(props: Props) {
     return (
         <TouchableOpacity onPress={openMap}>
             <View style={styles.container}>
-                <Flex direction="column" alignItems="flex-start" style={{flex: 1}}>
+                <Flex direction="column" align="flex-start" style={{flex: 1}}>
                     <Text style={styles.nameText}>{props.building.name}</Text>
                     <Flex style={{flexWrap: "wrap", marginTop: 8}} gap={8}>
                         {props.building.simpleName.map((name, index) => (

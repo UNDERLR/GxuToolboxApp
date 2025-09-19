@@ -149,7 +149,7 @@ export function ExamScoreTable(props: Props) {
                                         return (
                                             <Flex
                                                 key={`index${index}`}
-                                                justifyContent="space-between"
+                                                justify="space-between"
                                                 style={styles.detailItem}>
                                                 <View style={{width: "50%"}}>
                                                     <Text style={styles.detailItemLabel} numberOfLines={1}>
@@ -166,7 +166,7 @@ export function ExamScoreTable(props: Props) {
                                     }) || <Text style={styles.detailItem}>正在加载...</Text>}
                                     {scoreDetailRows.map((row, detailIndex) => (
                                         <Flex
-                                            justifyContent="space-between"
+                                            justify="space-between"
                                             key={`${item.jxb_id}-${row.key}-${detailIndex}`}
                                             style={styles.detailItem}>
                                             <View style={{width: "45%"}}>

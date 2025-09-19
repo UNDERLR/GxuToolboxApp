@@ -15,13 +15,21 @@ import {CourseScheduleView} from "@/components/tool/infoQuery/courseSchedule/Cou
 import {ExamInfo} from "@/type/infoQuery/exam/examInfo.ts";
 import {ExamInfoQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
-import {courseApi} from "@/js/jw/course.ts";
+import {courseApi, CourseScheduleContext} from "@/js/jw/course.ts";
 import {examApi} from "@/js/jw/exam.ts";
 import {UserInfo} from "@/type/infoQuery/base.ts";
 import {userMgr} from "@/js/mgr/user.ts";
+import {useNavigation} from "@react-navigation/native";
+import {CourseScheduleExamItem} from "@/components/tool/infoQuery/examInfo/CourseScheduleExamItem.tsx";
+import {ExamDetail} from "@/components/tool/infoQuery/examInfo/ExamDetail.tsx";
+import {IActivity} from "@/type/app/activity.ts";
+import {ActivityItem} from "@/components/app/activity/ActivityItem.tsx";
+import {ActivityDetail} from "@/components/app/activity/ActivityDetail.tsx";
 
 export function ScheduleCard() {
     const {userConfig, updateUserConfig} = useContext(UserConfigContext);
+    const {courseScheduleData, courseScheduleStyle} = useContext(CourseScheduleContext)!;
+    const navigation = useNavigation();
     const {theme} = useTheme();
     const pagerView = usePagerView({pagesAmount: 20});
     const {...rest} = pagerView;
@@ -77,6 +85,16 @@ export function ScheduleCard() {
         }
     }
 
+    const [activityList, setActivityList] = useState<IActivity[]>([]);
+    function getActivityList() {
+        console.log(userConfig);
+        const activityDataIndex = userConfig.activity.data.findIndex(item => +item.year === year && item.term === term);
+        if (activityDataIndex > -1) {
+            setActivityList(userConfig.activity.data[activityDataIndex].list);
+        } else {
+            setActivityList([]);
+        }
+    }
     async function getCourseSchedule() {
         const data = await courseApi.getCourseSchedule(year, term);
         if (data?.kbList) {
@@ -94,8 +112,8 @@ export function ScheduleCard() {
                 key: "userInfo",
             })
             .catch(console.warn);
-        const {username} = await userMgr.getAccount();
-        if (!userInfo || !username) return;
+        const account = await userMgr.getAccount();
+        if (!userInfo || !account) return;
 
         const schoolId = Schools.filter(school => school[1] === userInfo.school)?.[0]?.[0];
         if (!schoolId) return;
@@ -105,7 +123,7 @@ export function ScheduleCard() {
             schoolId,
             userInfo.subject_id,
             userInfo.grade,
-            username.slice(2, 8),
+            account.username.slice(2, 8),
         );
 
         if (!Array.isArray(data?.weekNum) || (data?.weekNum.length ?? 0) < 1) return;
@@ -133,6 +151,7 @@ export function ScheduleCard() {
     async function loadData() {
         await getCourseSchedule();
         await getExamList();
+        getActivityList();
         await getStartDay();
     }
 
@@ -142,9 +161,9 @@ export function ScheduleCard() {
     return (
         <Card containerStyle={style.card}>
             <Card.Title style={style.cardTitle}>
-                <Flex justifyContent="space-between">
+                <Flex justify="space-between">
                     <Text h4>日程表</Text>
-                    <Flex gap={15} justifyContent="flex-end">
+                    <Flex gap={15} justify="flex-end">
                         {rest.activePage + 1 !== realCurrentWeek && (
                             <Pressable
                                 android_ripple={userConfig.theme.ripple}
@@ -154,6 +173,11 @@ export function ScheduleCard() {
                                 <Icon name="back" size={24} />
                             </Pressable>
                         )}
+                        <Pressable
+                            android_ripple={userConfig.theme.ripple}
+                            onPress={() => navigation.navigate("ScheduleEdit")}>
+                            <Icon name="edit" size={24} />
+                        </Pressable>
                         <Pressable
                             android_ripple={userConfig.theme.ripple}
                             onPress={() => setCourseScheduleSettingVisible(true)}>
@@ -166,14 +190,33 @@ export function ScheduleCard() {
                 </Flex>
             </Card.Title>
             <Card.Divider />
-            <CourseScheduleView
+            <CourseScheduleView<ExamInfo | IActivity>
                 showDate
                 showNextCourse
                 showTimeSpanHighlight
                 startDay={startDay}
                 courseApiRes={apiRes}
                 pageView={pagerView}
-                examList={examList}
+                itemList={[...examList, ...activityList]}
+                itemRender={(item, onPressHook) =>
+                    item.hasOwnProperty("xh_id") ? (
+                        <CourseScheduleExamItem examInfo={item as ExamInfo} onPress={onPressHook} />
+                    ) : (
+                        <ActivityItem item={item as IActivity} onPress={onPressHook} />
+                    )
+                }
+                itemDetailRender={item =>
+                    item.hasOwnProperty("xh_id") ? (
+                        <ExamDetail examInfo={item as ExamInfo} />
+                    ) : (
+                        <ActivityDetail activity={item as IActivity} />
+                    )
+                }
+                isItemShow={(item, day, week) =>
+                    item.hasOwnProperty("xh_id")
+                        ? moment(item.kssj.replace(/\(.*?\)/, "")).isSame(day, "d")
+                        : item.weekday === day.weekday() && week >= item.weekSpan[0] && week <= item.weekSpan[1]
+                }
             />
             {apiRes?.sjkList && (
                 <>

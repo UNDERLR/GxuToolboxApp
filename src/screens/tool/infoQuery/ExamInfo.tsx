@@ -95,7 +95,7 @@ export function ExamInfo() {
     return (
         <ScrollView>
             <View style={style.container}>
-                <Flex gap={10} direction="column" alignItems="flex-start">
+                <Flex gap={10} direction="column" align="flex-start">
                     <Text h4>查询参数</Text>
                     <Flex gap={10}>
                         <Text>学期</Text>
@@ -121,8 +121,8 @@ export function ExamInfo() {
                     </Flex>
                 </Flex>
                 <Divider />
-                <Flex direction="column" gap={15} alignItems="flex-start">
-                    <Flex alignItems="flex-end" gap={5}>
+                <Flex direction="column" gap={15} align="flex-start">
+                    <Flex align="flex-end" gap={5}>
                         <Text h4>查询结果</Text>
                         <Text>{`第${apiRes.currentPage ?? 1}/${apiRes.totalPage ?? 1}页，共有${
                             apiRes.totalCount ?? 0

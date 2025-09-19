@@ -4,6 +4,7 @@ import {Course} from "@/type/infoQuery/course/course.ts";
 import {ExamInfo} from "@/type/infoQuery/exam/examInfo.ts";
 import {DefaultUserTheme} from "@/js/theme.ts";
 import moment from "moment";
+import {IUserActivity} from "@/type/app/activity.ts";
 
 export interface IUserConfig {
     /** 主题相关配置 */
@@ -12,12 +13,14 @@ export interface IUserConfig {
     jw: IUserJwConfig;
     /** 偏好配置 */
     preference: IUserPreference;
+    /** 各学期日程 */
+    activity: IUserActivity;
 }
 
 /** 用户教务配置 */
 export interface IUserJwConfig {
     /** 学年 */
-    year: SchoolYearValue;
+    year: SchoolYearValue | number;
     /** 学期 */
     term: SchoolTermValue;
     /** 当前课表起始 */
@@ -27,7 +30,7 @@ export interface IUserJwConfig {
 /** 偏好配置 */
 export interface IUserPreference {
     /** 课程元素详情 */
-    courseDetail: Record<keyof Omit<Course, "queryModel" | "userModel">, IDetailItem>;
+    courseDetail: Record<keyof Omit<Course, "queryModel" | "userModel" | "backgroundColor">, IDetailItem>;
     /** 考试元素详情 */
     examDetail: Record<keyof Omit<ExamInfo, "queryModel" | "userModel">, IDetailItem>;
 }
@@ -60,7 +63,7 @@ export interface IUserTheme {
         /** 课表课程元素边框宽度 */
         courseItemBorderWidth: number;
         /** 课程元素颜色Map */
-        courseColor: Record<string, string>
+        courseColor: Record<string, string>;
     };
 }
 
@@ -73,6 +76,9 @@ export const defaultUserConfig: IUserConfig = {
             ? SchoolTerms[1][0]
             : SchoolTerms[0][0],
         startDay: "2025-09-08",
+    },
+    activity: {
+        data: [],
     },
     preference: {
         courseDetail: {
