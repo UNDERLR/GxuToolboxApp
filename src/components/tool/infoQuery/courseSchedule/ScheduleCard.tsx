@@ -139,12 +139,12 @@ export function ScheduleCard() {
             console.warn(e);
             return {};
         });
-        setApiRes(courseData);
+        if (courseData.kbList) setApiRes(courseData);
         const examData: ExamInfoQueryRes = await store.load({key: "examInfo"}).catch(e => {
             console.warn(e);
             return {};
         });
-        setExamList(examData.items);
+        if (examData.items) setExamList(examData.items);
         loadData();
     }
 
@@ -194,6 +194,7 @@ export function ScheduleCard() {
                 showDate
                 showNextCourse
                 showTimeSpanHighlight
+                showDayHighlight
                 startDay={startDay}
                 courseApiRes={apiRes}
                 pageView={pagerView}
