@@ -22,6 +22,9 @@ import {userMgr} from "@/js/mgr/user.ts";
 import {useNavigation} from "@react-navigation/native";
 import {CourseScheduleExamItem} from "@/components/tool/infoQuery/examInfo/CourseScheduleExamItem.tsx";
 import {ExamDetail} from "@/components/tool/infoQuery/examInfo/ExamDetail.tsx";
+import {IActivity} from "@/type/app/activity.ts";
+import {ActivityItem} from "@/components/app/activity/ActivityItem.tsx";
+import {ActivityDetail} from "@/components/app/activity/ActivityDetail.tsx";
 
 export function ScheduleCard() {
     const {userConfig, updateUserConfig} = useContext(UserConfigContext);
@@ -82,6 +85,16 @@ export function ScheduleCard() {
         }
     }
 
+    const [activityList, setActivityList] = useState<IActivity[]>([]);
+    function getActivityList() {
+        console.log(userConfig);
+        const activityDataIndex = userConfig.activity.data.findIndex(item => +item.year === year && item.term === term);
+        if (activityDataIndex > -1) {
+            setActivityList(userConfig.activity.data[activityDataIndex].list);
+        } else {
+            setActivityList([]);
+        }
+    }
     async function getCourseSchedule() {
         const data = await courseApi.getCourseSchedule(year, term);
         if (data?.kbList) {
@@ -138,6 +151,7 @@ export function ScheduleCard() {
     async function loadData() {
         await getCourseSchedule();
         await getExamList();
+        getActivityList();
         await getStartDay();
     }
 
@@ -176,17 +190,33 @@ export function ScheduleCard() {
                 </Flex>
             </Card.Title>
             <Card.Divider />
-            <CourseScheduleView<ExamInfo>
+            <CourseScheduleView<ExamInfo | IActivity>
                 showDate
                 showNextCourse
                 showTimeSpanHighlight
                 startDay={startDay}
                 courseApiRes={apiRes}
                 pageView={pagerView}
-                itemList={examList}
-                itemRender={(item, onPressHook) => <CourseScheduleExamItem examInfo={item} onPress={onPressHook} />}
-                itemDetailRender={item => ExamDetail({examInfo: item})}
-                isItemShow={(item, day) => moment(item.kssj.replace(/\(.*?\)/, "")).isSame(day, "d")}
+                itemList={[...examList, ...activityList]}
+                itemRender={(item, onPressHook) =>
+                    item.hasOwnProperty("xh_id") ? (
+                        <CourseScheduleExamItem examInfo={item as ExamInfo} onPress={onPressHook} />
+                    ) : (
+                        <ActivityItem item={item as IActivity} onPress={onPressHook} />
+                    )
+                }
+                itemDetailRender={item =>
+                    item.hasOwnProperty("xh_id") ? (
+                        <ExamDetail examInfo={item as ExamInfo} />
+                    ) : (
+                        <ActivityDetail activity={item as IActivity} />
+                    )
+                }
+                isItemShow={(item, day, week) =>
+                    item.hasOwnProperty("xh_id")
+                        ? moment(item.kssj.replace(/\(.*?\)/, "")).isSame(day, "d")
+                        : item.weekday === day.weekday() && week >= item.weekSpan[0] && week <= item.weekSpan[1]
+                }
             />
             {apiRes?.sjkList && (
                 <>

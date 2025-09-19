@@ -14,7 +14,7 @@ import {http, objectToFormUrlEncoded} from "@/js/http.ts";
 import {defaultYear} from "@/js/jw/infoQuery.ts";
 import {Course, PracticalCourse} from "@/type/infoQuery/course/course.ts";
 
-const CourseScheduleData = {
+export const CourseScheduleData = {
     courseInfoVisible: {
         name: true,
         position: true,

@@ -5,7 +5,7 @@ import {UnTermSelector} from "@/components/un-ui/UnTermSelector.tsx";
 import React, {useContext, useEffect, useState} from "react";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 import {CourseScheduleQueryRes} from "@/type/api/infoQuery/classScheduleAPI.ts";
-import {courseApi, CourseScheduleContext} from "@/js/jw/course.ts";
+import {courseApi, CourseScheduleData} from "@/js/jw/course.ts";
 import {CourseScheduleView} from "@/components/tool/infoQuery/courseSchedule/CourseScheduleView.tsx";
 import {usePagerView} from "react-native-pager-view";
 import {UnSlider} from "@/components/un-ui/UnSlider.tsx";
@@ -16,11 +16,11 @@ import {ActivityItem} from "@/components/app/activity/ActivityItem.tsx";
 import {NumberInput} from "@/components/un-ui/NumberInput.tsx";
 import {Picker} from "@react-native-picker/picker";
 import {ColorPicker} from "@/components/un-ui/ColorPicker.tsx";
+import {ActivityDetail} from "@/components/app/activity/ActivityDetail.tsx";
 
 export function ScheduleEdit() {
     const {userConfig, updateUserConfig} = useContext(UserConfigContext);
     const {theme} = useTheme();
-    const {courseScheduleData} = useContext(CourseScheduleContext)!;
     const pageView = usePagerView({pagesAmount: 20});
 
     const [year, setYear] = useState(userConfig.jw.year);
@@ -33,7 +33,7 @@ export function ScheduleEdit() {
 
     function addActivity() {
         const color =
-            courseScheduleData.randomColor[Math.fround(Math.random() * courseScheduleData.randomColor.length)];
+            CourseScheduleData.randomColor[Math.fround(Math.random() * CourseScheduleData.randomColor.length)];
         activityList.unshift({
             color,
             name: "新活动",
@@ -43,6 +43,7 @@ export function ScheduleEdit() {
             weekday: 0,
         });
         setActivityList(activityList);
+        save();
     }
 
     function editActivity(item: IActivity, index: number) {
@@ -62,6 +63,7 @@ export function ScheduleEdit() {
     function closeEditModal() {
         activityList[selectedIndex] = selectedActivity!;
         setActivityList(activityList);
+        setEditModalOpen(false)
         save();
     }
 
@@ -84,6 +86,7 @@ export function ScheduleEdit() {
                 term,
                 list: activityList,
             });
+            setActivityListIndex(userConfig.activity.data.length - 1);
         }
         updateUserConfig(userConfig);
         ToastAndroid.show("保存日程成功", ToastAndroid.SHORT);
@@ -162,6 +165,7 @@ export function ScheduleEdit() {
                     isItemShow={(item, day, week) =>
                         item.weekday === day.weekday() && week >= item.weekSpan[0] && week <= item.weekSpan[1]
                     }
+                    itemDetailRender={item => <ActivityDetail activity={item}/>}
                     itemRender={(item, onPressHook) => <ActivityItem item={item} onPress={onPressHook} />}
                 />
                 <Divider />
@@ -173,7 +177,7 @@ export function ScheduleEdit() {
                         </Pressable>
                     </Flex>
                 </Flex>
-                <Flex justify="center">
+                <Flex justify="center" direction="column" gap={10}>
                     {activityList.length > 0 ? (
                         activityList.map((activity, index) => (
                             <Flex
@@ -229,19 +233,32 @@ export function ScheduleEdit() {
                     <Text>活动名称</Text>
                     <Input
                         value={selectedActivity?.name}
-                        onEndEditing={e => (selectedActivity!.name = e.nativeEvent.text)}
+                        onChangeText={v => {
+                            selectedActivity!.name = v;
+                            setSelectedActivity(selectedActivity);
+                        }}
                     />
                     <Flex justify="space-between">
                         <Text>节次长度（1-13）</Text>
                         <Flex gap={10} justify="flex-end">
                             <NumberInput
+                                min={1}
+                                max={selectedActivity?.timeSpan[1]}
                                 value={selectedActivity?.timeSpan[0] ?? 1}
-                                onSubmit={v => (selectedActivity!.timeSpan[0] = v)}
+                                onChange={v => {
+                                    selectedActivity!.timeSpan[0] = v;
+                                    setSelectedActivity(selectedActivity);
+                                }}
                             />
                             <Text>至</Text>
                             <NumberInput
+                                min={selectedActivity?.timeSpan[0]}
+                                max={13}
                                 value={selectedActivity?.timeSpan[1] ?? 1}
-                                onSubmit={v => (selectedActivity!.timeSpan[1] = v)}
+                                onChange={v => {
+                                    selectedActivity!.timeSpan[1] = v;
+                                    setSelectedActivity(selectedActivity);
+                                }}
                             />
                         </Flex>
                     </Flex>
@@ -249,13 +266,23 @@ export function ScheduleEdit() {
                         <Text>周跨度（1-20）</Text>
                         <Flex gap={10} justify="flex-end">
                             <NumberInput
+                                min={1}
+                                max={selectedActivity?.weekSpan[1]}
                                 value={selectedActivity?.weekSpan[0] ?? pageView.activePage + 1}
-                                onSubmit={v => (selectedActivity!.weekSpan[0] = v)}
+                                onChange={v => {
+                                    selectedActivity!.weekSpan[0] = v;
+                                    setSelectedActivity(selectedActivity);
+                                }}
                             />
                             <Text>至</Text>
                             <NumberInput
+                                min={selectedActivity?.weekSpan[0]}
+                                max={20}
                                 value={selectedActivity?.weekSpan[1] ?? pageView.activePage + 1}
-                                onSubmit={v => (selectedActivity!.weekSpan[1] = v)}
+                                onChange={v => {
+                                    selectedActivity!.weekSpan[1] = v;
+                                    setSelectedActivity(selectedActivity);
+                                }}
                             />
                         </Flex>
                     </Flex>
@@ -263,10 +290,13 @@ export function ScheduleEdit() {
                         <Text>所在星期</Text>
                         <Flex justify="flex-end">
                             <Picker<number>
-                                onValueChange={v => (selectedActivity!.weekday = v)}
+                                onValueChange={v => {
+                                    selectedActivity!.weekday = v;
+                                    setSelectedActivity(selectedActivity);
+                                }}
                                 selectedValue={selectedActivity?.weekday ?? 0}
                                 style={{width: "50%"}}>
-                                {courseScheduleData.weekdayList.slice(0, 6).map((text, index) => (
+                                {CourseScheduleData.weekdayList.slice(0, 6).map((text, index) => (
                                     <Picker.Item key={index} label={"星期" + text} value={index + 1} />
                                 ))}
                                 <Picker.Item label="星期日" value={0} />
@@ -278,7 +308,10 @@ export function ScheduleEdit() {
                         <Flex justify="flex-end">
                             <ColorPicker
                                 color={selectedActivity?.color ?? theme.colors.primary}
-                                onColorChange={v => (selectedActivity!.color = v)}
+                                onColorChange={v => {
+                                    selectedActivity!.color = v;
+                                    setSelectedActivity(selectedActivity);
+                                }}
                             />
                         </Flex>
                     </Flex>
@@ -287,8 +320,11 @@ export function ScheduleEdit() {
                         multiline
                         textAlignVertical="top"
                         style={{height: 200}}
-                        value={selectedActivity?.name}
-                        onEndEditing={e => (selectedActivity!.name = e.nativeEvent.text)}
+                        value={selectedActivity?.desc}
+                        onChangeText={v => {
+                            selectedActivity!.desc = v;
+                            setSelectedActivity(selectedActivity);
+                        }}
                     />
                 </Flex>
             </BottomSheet>
