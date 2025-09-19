@@ -27,7 +27,9 @@ interface Version {
 export function UpdateCard() {
     const {theme} = useTheme();
     const {userConfig, updateUserConfig} = useContext(UserConfigContext);
-    const [channel, setChannel] = useState<ChannelList>(ChannelList.beta);
+    const [channel, setChannel] = useState<ChannelList>(
+        PackageJSON.version.indexOf("beta") > -1 ? ChannelList.beta : ChannelList.release,
+    );
     const [version, setVersion] = useState<Version>();
     const [visible, setVisible] = useState(false);
     useEffect(() => {
