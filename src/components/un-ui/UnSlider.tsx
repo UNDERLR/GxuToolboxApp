@@ -1,6 +1,6 @@
 import {SliderProps} from "@rneui/base";
 import {Slider, Text, useTheme} from "@rneui/themed";
-import {StyleProp, StyleSheet, ViewStyle} from "react-native";
+import {StyleProp, StyleSheet, View, ViewStyle} from "react-native";
 import Flex from "./Flex.tsx";
 import {Color} from "@/js/color.ts";
 import {useState} from "react";
@@ -40,7 +40,7 @@ export function UnSlider(props: Props & SliderProps) {
         } else if (!Number.isNaN(props.minimumValue) && props.minimumValue !== undefined && v < props.minimumValue) {
             res = props.minimumValue;
         }
-        setValue(v);
+        setValue(res);
         props.onValueChange?.(res);
     };
 
@@ -54,7 +54,10 @@ export function UnSlider(props: Props & SliderProps) {
                     max={props.maximumValue}
                     min={props.minimumValue}
                     step={props.step}
-                    onBlur={() => setInputMode(false)}
+                    onBlur={() => {
+                        onValueChange(value);
+                        setInputMode(false);
+                    }}
                     autoFocus
                 />
             ) : (
@@ -62,7 +65,7 @@ export function UnSlider(props: Props & SliderProps) {
                     {value}
                 </Text>
             )}
-            <Flex style={{marginBottom: -5}}>
+            <View style={{marginBottom: -5, flex: 1}}>
                 <Slider
                     {...props}
                     onValueChange={setValue}
@@ -73,7 +76,7 @@ export function UnSlider(props: Props & SliderProps) {
                     trackStyle={style.track}
                     thumbStyle={style.thumb}
                 />
-            </Flex>
+            </View>
         </Flex>
     );
 }

@@ -26,7 +26,7 @@ export default function Flex(props: FlexProps) {
             {React.Children.map(props.children, child => {
                 if (React.isValidElement(child)) {
                     return React.cloneElement(child as React.ReactElement<any>, {
-                        style: [{height: "auto"}, props.childrenStyle, child.props?.style],
+                        style: [props.childrenStyle, child.props?.style, {height: "auto"}],
                     });
                 }
                 return child;

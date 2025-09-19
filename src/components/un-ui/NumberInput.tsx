@@ -102,10 +102,8 @@ export function NumberInput(props: Props) {
                     autoFocus={props.autoFocus}
                     onBlur={props.onBlur}
                     onChangeText={v => {
-                        const num = parseFloat(v);
-                        if (!isNaN(num)) {
-                            props.onChange?.(num);
-                        }
+                        const num = parseFloat(v.replace(/[^0-9-.]/g, ""));
+                        props.onChange?.(num);
                     }}
                     style={style.input}
                 />
