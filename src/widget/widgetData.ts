@@ -2,7 +2,7 @@
 import {useContext, useEffect, useState} from "react";
 import moment from "moment";
 import {store} from "@/js/store";
-import {CourseScheduleQueryRes, Course} from "@/type/api/infoQuery/classScheduleAPI";
+import {Course, CourseScheduleQueryRes} from "@/type/api/infoQuery/classScheduleAPI";
 import {CourseScheduleContext} from "@/js/jw/course.ts";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 
@@ -34,7 +34,13 @@ const PRESET_COLORS = [
     "#FF2D55", // Pink
     "#00C7BE", // Teal
 ];
-
+export async function testa() {
+    console.log("test");
+    return await store.load<any>({key: "userConfig"}).catch(e => {
+        console.warn(e);
+        return null;
+    });
+}
 export function useWidgetInfo() {
     const [title, setTitle] = useState<Course | undefined>(undefined);
     const [nextCourse, setNextCourse] = useState<NextCourse[] | undefined>(undefined);
@@ -128,6 +134,97 @@ export function useWidgetInfo() {
     }, []);
 
     return {title, nextCourse, todayCourse, tomorrowCourse};
+}
+
+export async function getWidgetData() {
+    const timeSpanList = [
+        "08:00\n08:45",
+        "08:55\n09:40",
+        "10:00\n10:45",
+        "10:55\n11:40",
+        "14:30\n15:15",
+        "15:20\n16:05",
+        "16:25\n17:10",
+        "17:15\n18:00",
+        "18:10\n18:55",
+        "18:45\n19:30",
+        "19:40\n20:25",
+        "20:30\n21:15",
+        "21:20\n22:05",
+    ];
+    const courseList = await store.load<CourseScheduleQueryRes>({key: "courseRes"}).catch(e => {
+        console.warn(e);
+        return null;
+    });
+    const list = courseList?.kbList;
+    if (!list) {
+        return;
+    }
+    const startDay = await store.load<any>({key: "userConfig"}).catch(e => {
+        console.warn(e);
+        return null;
+    });
+    const now = moment();
+    const tmr = now.clone().add(1, "day");
+
+    const today: any[] = [];
+    const tomorrow: any[] = [];
+    const startTimes = timeSpanList.map(span => span.split("\n")[0]);
+    const endTimes = timeSpanList.map(span => span.split("\n")[1]);
+    console.log("now", now.format("YYYY-MM-DD HH:mm:ss"));
+    console.log(list[0]);
+    list.forEach(course => {
+        const dayOfWeek = parseInt(course.xqj, 10);
+        const startSection = parseInt(course.jcs.split("-")[0], 10) - 1;
+        const endSection = parseInt(course.jcs.split("-")[1], 10) - 1;
+        const courseTime = startTimes[startSection];
+        const courseEndTime = endTimes[endSection];
+        if (!courseTime) {
+            return;
+        }
+
+        const [hour, minute] = courseTime.split(":").map(Number);
+
+        parseWeeks(course.zcd).forEach(week => {
+            const courseDate = moment(startDay)
+                .add(week - 1, "weeks")
+                .day(dayOfWeek)
+                .hour(hour)
+                .minute(minute)
+                .second(0);
+            const courseEndDate = moment(startDay)
+                .add(week - 1, "weeks")
+                .day(dayOfWeek)
+                .hour(Number(courseEndTime.split(":")[0]))
+                .minute(Number(courseEndTime.split(":")[1]))
+                .second(0);
+
+            // 判断今天还有什么课
+            if (courseDate.isSame(now, "day") && courseDate.isAfter(now)) {
+                console.log("today", course.kcmc, courseDate.format("YYYY-MM-DD"));
+                today.push({
+                    name: course.kcmc,
+                    beginTime: courseDate.format("HH:mm"),
+                    endTime: courseEndDate.format("HH:mm"),
+                    index: course.jcs,
+                    teacher: course.xm,
+                    room: course.cdmc,
+                });
+            }
+            if (courseDate.isSame(tmr, "day")) {
+                console.log("tmr", course.kcmc, courseDate.format("YYYY-MM-DD"));
+                tomorrow.push({
+                    name: course.kcmc,
+                    beginTime: courseDate.format("HH:mm"),
+                    endTime: courseEndDate.format("HH:mm"),
+                    index: course.jcs,
+                    teacher: course.xm,
+                    room: course.cdmc,
+                });
+            }
+        });
+    });
+    return {today, tomorrow};
 }
 
 export function parseWeeks(weekStr: string): number[] {

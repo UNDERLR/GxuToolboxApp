@@ -1,6 +1,8 @@
 package com.gxu_tool_app
 
 import android.app.Application
+import android.content.Intent
+import android.os.Build
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactHost

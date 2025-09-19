@@ -15,6 +15,9 @@
     <!-- 位置权限 -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
+    <!-- 允许应用启动前台服务 -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
     <application
         android:name=".MainApplication"
         android:allowBackup="false"
@@ -68,9 +71,15 @@
             android:name="com.reactnativeandroidwidget.RNWidgetCollectionService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
+        <!-- 分钟级更新服务 -->
+        <service
+            android:name=".TimeTickService"
+            android:enabled="true"
+            android:exported="false" />
+
         <!-- 课程表小部件 -->
         <receiver
-            android:name=".widget.CourseScheduleWidget"
+            android:name=".CourseScheduleWidgetProvider"
             android:exported="false"
             android:label="移动教务·课程表">
             <intent-filter>

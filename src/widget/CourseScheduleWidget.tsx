@@ -1,6 +1,7 @@
 import React from "react";
 import { FlexWidget, TextWidget } from "react-native-android-widget";
 import {CourseItem} from "@/widget/CourseItem.tsx";
+import moment from "moment/moment";
 
 interface CourseScheduleWidgetProps {
     todayCourse?: {
@@ -62,7 +63,7 @@ export function CourseScheduleWidget({ todayCourse = [], tomorrowCourse = [] }: 
         // 状态3: 今明两日都无课
         noCourseMessage = "今明两日无课";
     }
-    // displayTitle += " - 第 X 周";
+    displayTitle += moment().format("YYYY-MM-DD HH:mm:ss");
 
     return (
         <FlexWidget
