@@ -3,7 +3,7 @@ import {StyleProp, StyleSheet, TextStyle, View, ViewStyle} from "react-native";
 import moment from "moment/moment";
 import {Color} from "@/js/color.ts";
 import {Text, useTheme} from "@rneui/themed";
-import {ReactNode, useContext, useEffect, useMemo, useState} from "react";
+import {ReactNode, useContext, useEffect, useState} from "react";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {CourseItem} from "@/components/tool/infoQuery/courseSchedule/CourseItem.tsx";
 import {CourseScheduleContext} from "@/js/jw/course.ts";
@@ -82,10 +82,13 @@ export function CourseScheduleTable<T = any>(props: CourseScheduleTableProps<T>)
         let res = false;
         weekSpans.forEach(weekSpan => {
             const weeks = weekSpan
-                .replace("周", "")
+                .replace(/[^0-9-]/g, "")
                 .split("-")
                 .map(weekItem => parseInt(weekItem, 10));
-            if ((weeks.length === 1 && weeks[0] === week) || (weeks[0] <= week && week <= weeks[1])) {
+            if (
+                ((weeks.length === 1 && weeks[0] === week) || (weeks[0] <= week && week <= weeks[1])) &&
+                !((/单/.test(weekSpan) && week % 2 === 0) || (/双/.test(weekSpan) && week % 2 === 1))
+            ) {
                 res = true;
                 return;
             }
@@ -190,7 +193,9 @@ export function CourseScheduleTable<T = any>(props: CourseScheduleTableProps<T>)
                     weekdayContainerStyle.push(itemStyle.activeContainer);
                     weekdayTextStyle.push(itemStyle.activeText);
                 }
-                const currentDayItemList = (props.itemList ?? []).filter(item => props.isItemShow?.(item, currentDay, props.currentWeek));
+                const currentDayItemList = (props.itemList ?? []).filter(item =>
+                    props.isItemShow?.(item, currentDay, props.currentWeek),
+                );
                 return (
                     // 当日课程渲染
                     <View style={weekdayContainerStyle} key={`day${index}`}>
