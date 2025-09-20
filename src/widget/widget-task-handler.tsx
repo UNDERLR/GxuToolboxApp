@@ -13,16 +13,19 @@ export async function widgetTaskHandler(props: WidgetTaskHandlerProps) {
 
         const widgetInfo = props.widgetInfo;
         const Widget = nameToWidget[widgetInfo.widgetName as keyof typeof nameToWidget];
-        const { today = [], tomorrow = [] } = await getWidgetData() ?? {};
+
         if (!Widget) {
             console.error(`[widgetTaskHandler] Widget component not found for name: ${widgetInfo.widgetName}`);
             return;
         }
+
         switch (props.widgetAction) {
             case "WIDGET_ADDED":
             case "WIDGET_UPDATE":
             case "WIDGET_RESIZED":
-                props.renderWidget(<Widget todayCourse={today} tomorrowCourse={tomorrow} />);
+                const { today: initialToday = [], tomorrow: initialTomorrow = [] } = await getWidgetData() ?? {};
+                const initialTimestamp = new Date().toLocaleTimeString();
+                props.renderWidget(<Widget todayCourse={initialToday} tomorrowCourse={initialTomorrow} lastUpdated={initialTimestamp} />);
                 break;
 
             case "WIDGET_DELETED":
@@ -30,7 +33,13 @@ export async function widgetTaskHandler(props: WidgetTaskHandlerProps) {
                 break;
 
             case "WIDGET_CLICK":
-                // Not needed for now
+                if (props.clickAction === "REFRESH_SCHEDULE") {
+                    // Fetch fresh data ONLY on refresh click
+                    console.log("refresh");
+                    const { today = [], tomorrow = [] } = await getWidgetData() ?? {};
+                    const refreshTimestamp = new Date().toLocaleTimeString();
+                    props.renderWidget(<Widget todayCourse={today} tomorrowCourse={tomorrow} lastUpdated={refreshTimestamp} />);
+                }
                 break;
 
             default:

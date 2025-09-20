@@ -1,5 +1,5 @@
 import React from "react";
-import { FlexWidget, TextWidget } from "react-native-android-widget";
+import {FlexWidget, TextWidget} from "react-native-android-widget";
 import {CourseItem} from "@/widget/CourseItem.tsx";
 import moment from "moment/moment";
 
@@ -16,6 +16,7 @@ interface CourseScheduleWidgetProps {
         endTime: string;
         room: string;
     }[];
+    lastUpdated?: string;
 }
 
 // 辅助函数，获取周几
@@ -30,6 +31,7 @@ const getDayOfWeek = (offset = 0) => {
  * @description 课程表小部件
  * @param todayCourse
  * @param tomorrowCourse
+ * @param lastUpdated
  * @constructor
  * @description
  * 状态：
@@ -37,7 +39,7 @@ const getDayOfWeek = (offset = 0) => {
  * - 今日无课，但明日有课，显示明日课表，标题：明日课程预告 / 周X（明天）
  * - 今日无课，明日无课，显示“今明两日无课”，标题：今日 / 周X
  */
-export function CourseScheduleWidget({ todayCourse = [], tomorrowCourse = [] }: CourseScheduleWidgetProps) {
+export function CourseScheduleWidget({todayCourse = [], tomorrowCourse = [], lastUpdated}: CourseScheduleWidgetProps) {
     let displayTitle = `今天 / ${getDayOfWeek()}`;
     let coursesToDisplay = [];
     let moreCoursesCount = 0;
@@ -63,7 +65,8 @@ export function CourseScheduleWidget({ todayCourse = [], tomorrowCourse = [] }: 
         // 状态3: 今明两日都无课
         noCourseMessage = "今明两日无课";
     }
-    displayTitle += moment().format("YYYY-MM-DD HH:mm:ss");
+    // 使用传入的时间戳
+    const updatedTime = lastUpdated || moment().format("MM-DD HH:mm");
 
     return (
         <FlexWidget
@@ -74,19 +77,47 @@ export function CourseScheduleWidget({ todayCourse = [], tomorrowCourse = [] }: 
                 backgroundColor: "#f4f8ff",
                 borderRadius: 16,
                 flexDirection: "column",
-                borderWidth: 1,
             }}
         >
-            {/* 标题 */}
-            <TextWidget
-                text={displayTitle}
-                style={{
-                    fontSize: 15,
-                    fontFamily: "Inter-SemiBold",
-                    color: "#333333",
-                    marginBottom: 8,
-                }}
-            />
+            {/* 标题和刷新按钮容器 */}
+            <FlexWidget style={{
+                width: "match_parent",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: 8,
+            }}>
+                <FlexWidget>
+                    <TextWidget
+                        text={displayTitle}
+                        style={{
+                            fontSize: 15,
+                            fontFamily: "Inter-SemiBold",
+                            color: "#333333",
+                        }}
+                    />
+                    <TextWidget
+                        text={`更新于 ${updatedTime}`}
+                        style={{
+                            fontSize: 15,
+                            fontFamily: "Inter-SemiBold",
+                            color: "#333333",
+                        }}
+                    />
+                </FlexWidget>
+                <FlexWidget
+                    clickAction="REFRESH_SCHEDULE"
+                    style={{padding: 4}} // 增加点击区域
+                >
+                    <TextWidget
+                        text="↻" // 刷新图标
+                        style={{
+                            fontSize: 22,
+                            color: "#555555",
+                        }}
+                    />
+                </FlexWidget>
+            </FlexWidget>
 
             {/* 课程列表 或 无课提示 */}
             {coursesToDisplay.length > 0 ? (

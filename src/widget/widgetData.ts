@@ -34,13 +34,6 @@ const PRESET_COLORS = [
     "#FF2D55", // Pink
     "#00C7BE", // Teal
 ];
-export async function testa() {
-    console.log("test");
-    return await store.load<any>({key: "userConfig"}).catch(e => {
-        console.warn(e);
-        return null;
-    });
-}
 export function useWidgetInfo() {
     const [title, setTitle] = useState<Course | undefined>(undefined);
     const [nextCourse, setNextCourse] = useState<NextCourse[] | undefined>(undefined);
