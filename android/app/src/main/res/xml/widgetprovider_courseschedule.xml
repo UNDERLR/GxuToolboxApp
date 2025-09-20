@@ -10,7 +10,7 @@
 
                     android:initialLayout="@layout/rn_widget"
 
-                    android:previewImage="@android:drawable/ic_dialog_info"
+                    android:previewImage="@drawable/widget_preview"
                     android:description="@string/widget_courseschedule_description"
 
                     android:resizeMode="horizontal|vertical"
