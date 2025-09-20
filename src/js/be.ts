@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const httpBE = axios.create({
-    baseURL: "http://192.168.1.7:5090",
+    baseURL: "http://acm.gxu.edu.cn/gxuicpc",
     headers: {
         "Content-Type": "application/json; charset=UTF-8",
     },
