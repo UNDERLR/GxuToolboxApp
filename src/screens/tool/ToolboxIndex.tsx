@@ -44,6 +44,16 @@ const toolList = [
                 icon: <Icon name="barschart" size={iconSize} />,
                 navigation: "examScore",
             },
+            {
+                label: "调课信息查询",
+                icon: <Icon name="barschart" size={iconSize} />,
+                navigation: "reschedulingNews",
+            },
+            {
+                label: "自主选课",
+                icon: <Icon name="barschart" size={iconSize} />,
+                navigation: "SelfSelectedCourse",
+            },
         ],
     },
     {

@@ -1,5 +1,5 @@
 export interface IPos {
-    type: "教学楼" | "学院" | "食堂" | "校门" | "综合性建筑" | "体育场" | "店铺" | "宿舍" | "其他";
+    type: "教学楼" | "学院" | "食堂" | "校门" | "综合性建筑" | "体育场" | "店铺" | "宿舍" | "快递驿站" | "其他";
     test: RegExp | ((text: string) => boolean);
     name: string;
     fullName: string;
@@ -477,4 +477,54 @@ export const BuildingList: IPos[] = [
     {type: "宿舍", name: "东33栋", fullName: "广西大学行健文理学院学生宿舍5栋", simpleName: [], test: /#/},
     {type: "宿舍", name: "东34栋", fullName: "广西大学东34栋", simpleName: [], test: /#/},
     {type: "宿舍", name: "东35栋", fullName: "广西大学东校园学生宿舍35栋", simpleName: [], test: /#/},
+    {
+        type:"体育场",
+        name:"西体育馆",
+        fullName:"广西大学西校园新西体育馆",
+        simpleName:["西体"],
+        test: /#/,
+    },
+    {
+        type:"体育场",
+        name:"西田径场",
+        fullName:"广西大学西校园运动场",
+        simpleName:["篮球场","网球场"],
+        test: /#/,
+    },
+    {
+        type:"体育场",
+        name:"东体育馆",
+        fullName:"广西大学东校园体育馆",
+        simpleName:[],
+        test: /#/,
+    },
+    {
+        type:"体育场",
+        name:"东田径场",
+        fullName:"广西大学东校园运动场",
+        simpleName:["篮球场"],
+        test: /#/,
+    },
+    {
+        type:"体育场",
+        name:"行健田径场、体育馆",
+        fullName:"广西大学图书馆行健馆",
+        simpleName:[],
+        test: /#/,
+    },
+    {
+        type:"体育场",
+        name:"行健篮球场",
+        fullName:"广西大学行健文理学院篮球场",
+        simpleName:[],
+        test: /#/,
+    },
+    {
+        type:"快递驿站",
+        name:"行健驿站",
+        fullName:"中通快递(广西大学行健文理学院店)",
+        simpleName:[],
+        test:/#/,
+    },
+
 ];

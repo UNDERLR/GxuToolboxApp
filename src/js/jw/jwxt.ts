@@ -132,4 +132,14 @@ export const jwxt = {
             } as WebViewSource,
         });
     },
+    getReschedulingNews: async (isRead = 1): Promise<AxiosResponse> => {
+        const res = await http.post("/xtgl/index_cxDbsy.html?doType=query", {
+            sfyy: isRead,
+            flag: 1,
+            _search: false,
+            "queryModel.showCount": 150,
+            "queryModel.currentPage": 1,
+        });
+        return res;
+    },
 };
