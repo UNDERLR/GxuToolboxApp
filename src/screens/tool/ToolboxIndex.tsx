@@ -46,14 +46,14 @@ const toolList = [
             },
             {
                 label: "调课信息查询",
-                icon: <Icon name="barschart" size={iconSize} />,
+                icon: <Icon name="notification" size={iconSize} />,
                 navigation: "reschedulingNews",
             },
-            {
-                label: "自主选课",
-                icon: <Icon name="barschart" size={iconSize} />,
-                navigation: "SelfSelectedCourse",
-            },
+            // {
+            //     label: "自主选课",
+            //     icon: <Icon name="barschart" size={iconSize} />,
+            //     navigation: "SelfSelectedCourse",
+            // },
         ],
     },
     {
@@ -78,7 +78,7 @@ const toolList = [
                 label: "小部件预览",
                 icon: <Icon type="Ionicon" name="compass-outline" size={iconSize} />,
                 navigation: "WidgetPreviewScreen",
-            }
+            },
         ],
     },
 ] as settingSection[];

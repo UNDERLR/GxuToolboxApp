@@ -5,7 +5,7 @@ import {http, objectToFormUrlEncoded} from "@/js/http.ts";
 import {defaultYear} from "@/js/jw/infoQuery.ts";
 import {ToastAndroid} from "react-native";
 
-export const selectCourseApi = {
+export const CourseSelectionApi = {
     getCourseInfo: async (year: number, term: number): Promise<any> => {
         const yearIndex = SchoolYears.findIndex(v => +v[0] === year);
         if (!(await jwxt.testToken())) {

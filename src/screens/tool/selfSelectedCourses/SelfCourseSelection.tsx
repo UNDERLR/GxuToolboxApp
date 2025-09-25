@@ -1,9 +1,9 @@
-import {ScrollView, Text, View} from "react-native";
+import {ScrollView, View} from "react-native";
 import {useEffect, useState} from "react";
-import {selectCourseApi} from "@/js/jw/selectCourse.ts";
-import {ListItem} from "@rneui/themed";
+import {CourseSelectionApi} from "@/js/jw/selectCourse.ts";
+import {ListItem, Text} from "@rneui/themed";
 
-export function SelfSelectedCourse() {
+export function SelfCourseSelection() {
     const [courses, setCourses] = useState<any[][]>([]);
     const [expanded, setExpanded] = useState<number | null>(null);
     useEffect(() => {
@@ -30,7 +30,7 @@ export function SelfSelectedCourse() {
         setCourses(courseList);
     };
     const init = async () => {
-        const res = await selectCourseApi.getCourseInfo(2025, 3);
+        const res = await CourseSelectionApi.getCourseInfo(2025, 3);
         accordion(res.tmpList);
     };
     return (
@@ -45,7 +45,11 @@ export function SelfSelectedCourse() {
                         {course.map((item, index1) => (
                             <ListItem key={index1}>
                                 <ListItem.Content>
-                                    <ListItem.Title><Text style={{fontSize: 16,width:"100%"}}>{`${item.jxbmc}-${item.yxzrs}/${item.jxbrl}`}</Text></ListItem.Title>
+                                    <ListItem.Title>
+                                        <Text style={{fontSize: 16,width:"100%"}}>
+                                            {`${item.jxbmc}-${item.yxzrs}/${item.jxbrl}`}
+                                        </Text>
+                                    </ListItem.Title>
                                 </ListItem.Content>
                             </ListItem>
                         ))}
