@@ -32,8 +32,7 @@ export function ScheduleEdit() {
     const [activityList, setActivityList] = useState<IActivity[]>([]);
 
     function addActivity() {
-        const color =
-            CourseScheduleData.randomColor[Math.fround(Math.random() * CourseScheduleData.randomColor.length)];
+        const color = CourseScheduleData.randomColor[Math.floor(Math.random() * CourseScheduleData.randomColor.length)];
         activityList.unshift({
             color,
             name: "新活动",
@@ -42,7 +41,7 @@ export function ScheduleEdit() {
             desc: "活动描述",
             weekday: 0,
         });
-        setActivityList(activityList);
+        setActivityList([...activityList]);
         save();
     }
 
@@ -54,7 +53,7 @@ export function ScheduleEdit() {
 
     function deleteActivity(index: number) {
         activityList.splice(index, 1);
-        setActivityList(activityList);
+        setActivityList([...activityList]);
     }
 
     const [editModalOpen, setEditModalOpen] = useState(false);
@@ -62,8 +61,8 @@ export function ScheduleEdit() {
     const [selectedActivity, setSelectedActivity] = useState<IActivity>();
     function closeEditModal() {
         activityList[selectedIndex] = selectedActivity!;
-        setActivityList(activityList);
-        setEditModalOpen(false)
+        setActivityList([...activityList]);
+        setEditModalOpen(false);
         save();
     }
 
@@ -76,6 +75,7 @@ export function ScheduleEdit() {
         if (activityList.length === 0 && activityListIndex > -1) {
             // 日程为空就删除
             userConfig.activity.data.splice(activityListIndex, 1);
+            setActivityListIndex(-1);
         } else if (activityListIndex > -1) {
             // 替换
             userConfig.activity.data[activityListIndex].list = activityList;
@@ -92,8 +92,11 @@ export function ScheduleEdit() {
         ToastAndroid.show("保存日程成功", ToastAndroid.SHORT);
     }
 
+    function updateSelectedActivity() {
+        setSelectedActivity({...selectedActivity!});
+    }
+
     async function init() {
-        await getCourses();
         const activityDataIndex = userConfig.activity.data.findIndex(item => item.year === year && item.term === term);
         if (activityDataIndex > -1) {
             setActivityList(userConfig.activity.data[activityDataIndex].list);
@@ -105,6 +108,7 @@ export function ScheduleEdit() {
 
     useEffect(() => {
         init();
+        getCourses();
     }, [year, term]);
 
     const style = StyleSheet.create({
@@ -165,7 +169,7 @@ export function ScheduleEdit() {
                     isItemShow={(item, day, week) =>
                         item.weekday === day.weekday() && week >= item.weekSpan[0] && week <= item.weekSpan[1]
                     }
-                    itemDetailRender={item => <ActivityDetail activity={item}/>}
+                    itemDetailRender={item => <ActivityDetail activity={item} />}
                     itemRender={(item, onPressHook) => <ActivityItem item={item} onPress={onPressHook} />}
                 />
                 <Divider />
@@ -175,10 +179,13 @@ export function ScheduleEdit() {
                         <Pressable onPress={addActivity} android_ripple={userConfig.theme.ripple} style={{padding: 5}}>
                             <Icon name="plus" size={24} />
                         </Pressable>
+                        <Pressable onPress={save} android_ripple={userConfig.theme.ripple} style={{padding: 5}}>
+                            <Icon name="save" size={24} color={theme.colors.primary} />
+                        </Pressable>
                     </Flex>
                 </Flex>
                 <Flex justify="center" direction="column" gap={10}>
-                    {activityList.length > 0 ? (
+                    {activityList.length > 0 ? ( // 日程列表渲染
                         activityList.map((activity, index) => (
                             <Flex
                                 key={index}
@@ -189,19 +196,35 @@ export function ScheduleEdit() {
                                     },
                                     style.activityListItem,
                                 ]}>
-                                <Text
-                                    style={[
-                                        {
+                                <Flex gap={5}>
+                                    <Text
+                                        style={[
+                                            {
+                                                color: Color.mix(
+                                                    activity.color ?? theme.colors.primary,
+                                                    theme.colors.black,
+                                                    0.5,
+                                                ).rgbaString,
+                                            },
+                                            style.activityListItemText,
+                                        ]}>
+                                        {activity.name}
+                                    </Text>
+                                    <Text
+                                        style={{
                                             color: Color.mix(
                                                 activity.color ?? theme.colors.primary,
-                                                theme.colors.black,
+                                                theme.colors.grey2,
                                                 0.5,
                                             ).rgbaString,
-                                        },
-                                        style.activityListItemText,
-                                    ]}>
-                                    {activity.name}
-                                </Text>
+                                        }}>
+                                        {activity.weekSpan[0] === activity.weekSpan[1]
+                                            ? `仅第${activity.weekSpan[0]}周`
+                                            : `第${activity.weekSpan.join("至")}周`}
+                                        &nbsp;|&nbsp;
+                                        {`第${activity.timeSpan.join("至")}节`}
+                                    </Text>
+                                </Flex>
                                 <Flex gap={5} justify="flex-end">
                                     <Pressable
                                         onPress={() => editActivity(activity, index)}
@@ -235,7 +258,7 @@ export function ScheduleEdit() {
                         value={selectedActivity?.name}
                         onChangeText={v => {
                             selectedActivity!.name = v;
-                            setSelectedActivity(selectedActivity);
+                            updateSelectedActivity();
                         }}
                     />
                     <Flex justify="space-between">
@@ -247,7 +270,7 @@ export function ScheduleEdit() {
                                 value={selectedActivity?.timeSpan[0] ?? 1}
                                 onChange={v => {
                                     selectedActivity!.timeSpan[0] = v;
-                                    setSelectedActivity(selectedActivity);
+                                    updateSelectedActivity();
                                 }}
                             />
                             <Text>至</Text>
@@ -257,7 +280,7 @@ export function ScheduleEdit() {
                                 value={selectedActivity?.timeSpan[1] ?? 1}
                                 onChange={v => {
                                     selectedActivity!.timeSpan[1] = v;
-                                    setSelectedActivity(selectedActivity);
+                                    updateSelectedActivity();
                                 }}
                             />
                         </Flex>
@@ -271,7 +294,7 @@ export function ScheduleEdit() {
                                 value={selectedActivity?.weekSpan[0] ?? pageView.activePage + 1}
                                 onChange={v => {
                                     selectedActivity!.weekSpan[0] = v;
-                                    setSelectedActivity(selectedActivity);
+                                    updateSelectedActivity();
                                 }}
                             />
                             <Text>至</Text>
@@ -281,7 +304,7 @@ export function ScheduleEdit() {
                                 value={selectedActivity?.weekSpan[1] ?? pageView.activePage + 1}
                                 onChange={v => {
                                     selectedActivity!.weekSpan[1] = v;
-                                    setSelectedActivity(selectedActivity);
+                                    updateSelectedActivity();
                                 }}
                             />
                         </Flex>
@@ -292,7 +315,7 @@ export function ScheduleEdit() {
                             <Picker<number>
                                 onValueChange={v => {
                                     selectedActivity!.weekday = v;
-                                    setSelectedActivity(selectedActivity);
+                                    updateSelectedActivity();
                                 }}
                                 selectedValue={selectedActivity?.weekday ?? 0}
                                 style={{width: "50%"}}>
@@ -310,7 +333,7 @@ export function ScheduleEdit() {
                                 color={selectedActivity?.color ?? theme.colors.primary}
                                 onColorChange={v => {
                                     selectedActivity!.color = v;
-                                    setSelectedActivity(selectedActivity);
+                                    updateSelectedActivity();
                                 }}
                             />
                         </Flex>
@@ -323,7 +346,7 @@ export function ScheduleEdit() {
                         value={selectedActivity?.desc}
                         onChangeText={v => {
                             selectedActivity!.desc = v;
-                            setSelectedActivity(selectedActivity);
+                            updateSelectedActivity();
                         }}
                     />
                 </Flex>

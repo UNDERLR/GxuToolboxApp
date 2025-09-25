@@ -59,7 +59,15 @@ export function ActivityItem(props: ActivityItemProps) {
             style={[props.style, courseScheduleStyle.courseItem, itemStyle.item]}>
             <Flex direction="column" gap={5}>
                 <Text style={[itemStyle.text, {fontWeight: "bold"}]}>{item.name}</Text>
-                <Text style={itemStyle.text}>{item.weekSpan[0]}-{item.weekSpan[1]}周</Text>
+                {item.weekSpan[0] === item.weekSpan[1] ? (
+                    <Text style={itemStyle.text}>
+                        仅第{item.weekSpan[0]}周
+                    </Text>
+                ) : (
+                    <Text style={itemStyle.text}>
+                        {item.weekSpan.join("-")}周
+                    </Text>
+                )}
             </Flex>
         </Pressable>
     );

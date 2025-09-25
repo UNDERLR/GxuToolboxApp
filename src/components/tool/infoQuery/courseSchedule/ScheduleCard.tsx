@@ -157,7 +157,7 @@ export function ScheduleCard() {
 
     useEffect(() => {
         init();
-    }, [year, term]);
+    }, [year, term, userConfig.activity]);
     return (
         <Card containerStyle={style.card}>
             <Card.Title style={style.cardTitle}>
