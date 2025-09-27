@@ -1,0 +1,153 @@
+import {store} from "@/js/store.ts";
+import {CourseScheduleQueryRes} from "@/type/api/infoQuery/classScheduleAPI.ts";
+import moment from "moment/moment";
+
+export function parseWeeks(weekStr: string): number[] {
+    const result: number[] = [];
+    // 按逗号拆成多段
+    const segments = weekStr.split(",");
+
+    for (const seg of segments) {
+        // 去掉括号、周 字样
+        const clean = seg.replace(/周|\(.*?\)/g, "").trim();
+        if (!clean) {
+            continue;
+        }
+
+        if (clean.includes("-")) {
+            // 1-3 形式
+            const [start, end] = clean.split("-").map(Number);
+            const range = Array.from({length: end - start + 1}, (_, i) => start + i);
+            // 判断奇偶
+            if (seg.includes("(单)")) {
+                result.push(...range.filter(n => n % 2 === 1));
+            } else if (seg.includes("(双)")) {
+                result.push(...range.filter(n => n % 2 === 0));
+            } else {
+                result.push(...range);
+            }
+        } else {
+            // 单周数字
+            const n = Number(clean);
+            if (!Number.isNaN(n)) {
+                result.push(n);
+            }
+        }
+    }
+
+    // 去重并升序
+    return Array.from(new Set(result)).sort((a, b) => a - b);
+}
+
+export const nextCourses = async () => {
+    const timeSpanList = [
+        "08:00\n08:45",
+        "08:55\n09:40",
+        "10:00\n10:45",
+        "10:55\n11:40",
+        "14:30\n15:15",
+        "15:20\n16:05",
+        "16:25\n17:10",
+        "17:15\n18:00",
+        "18:10\n18:55",
+        "18:45\n19:30",
+        "19:40\n20:25",
+        "20:30\n21:15",
+        "21:20\n22:05",
+    ];
+    const courseList = await store.load<CourseScheduleQueryRes>({key: "courseRes"}).catch(e => {
+        console.warn(e);
+        return null;
+    });
+    const list = courseList?.kbList;
+    if (!list) {
+        return;
+    }
+    const config = await store.load<any>({key: "userConfig"}).catch(e => {
+        console.warn(e);
+        return null;
+    });
+    const startDay = config.jw.startDay;
+    console.log(startDay);
+    const now = moment();
+    const tmr = now.clone().add(1, "day");
+
+    const today: any[] = [];
+    const tomorrow: any[] = [];
+    let next: any = null;
+    const startTimes = timeSpanList.map(span => span.split("\n")[0]);
+    const endTimes = timeSpanList.map(span => span.split("\n")[1]);
+    console.log("now", now.format("YYYY-MM-DD HH:mm:ss"));
+    list.forEach(course => {
+        const dayOfWeek = parseInt(course.xqj, 10);
+        const startSection = parseInt(course.jcs.split("-")[0], 10) - 1;
+        const endSection = parseInt(course.jcs.split("-")[1], 10) - 1;
+        const courseTime = startTimes[startSection];
+        const courseEndTime = endTimes[endSection];
+        if (!courseTime) {
+            return;
+        }
+
+        const [hour, minute] = courseTime.split(":").map(Number);
+
+        parseWeeks(course.zcd).forEach(week => {
+            const courseDate = moment(startDay)
+                .add(week - 1, "weeks")
+                .day(dayOfWeek)
+                .hour(hour)
+                .minute(minute)
+                .second(0);
+            const courseEndDate = moment(startDay)
+                .add(week - 1, "weeks")
+                .day(dayOfWeek)
+                .hour(Number(courseEndTime.split(":")[0]))
+                .minute(Number(courseEndTime.split(":")[1]))
+                .second(0);
+
+            if (courseDate.isAfter(now)) {
+                const courseInfo = {
+                    name: course.kcmc,
+                    beginTime: courseDate.format("HH:mm"),
+                    endTime: courseEndDate.format("HH:mm"),
+                    index: course.jcs,
+                    teacher: course.xm,
+                    room: course.cdmc,
+                    date: courseDate, // 保留 moment 对象用于比较
+                };
+
+                if (!next || courseDate.isBefore(next.date)) {
+                    next = courseInfo;
+                }
+            }
+
+            // 判断今天还有什么课
+            if (courseDate.isSame(now, "day") && courseDate.isAfter(now)) {
+                today.push({
+                    name: course.kcmc,
+                    beginTime: courseDate.format("HH:mm"),
+                    endTime: courseEndDate.format("HH:mm"),
+                    index: course.jcs,
+                    teacher: course.xm,
+                    room: course.cdmc,
+                });
+            }
+            if (courseDate.isSame(tmr, "day")) {
+                tomorrow.push({
+                    name: course.kcmc,
+                    beginTime: courseDate.format("HH:mm"),
+                    endTime: courseEndDate.format("HH:mm"),
+                    index: course.jcs,
+                    teacher: course.xm,
+                    room: course.cdmc,
+                });
+            }
+        });
+    });
+
+    // 从 next 对象中移除临时的 date 字段
+    if (next) {
+        next.date = next.date.format("YYYY-MM-DD");
+    }
+
+    return {today, tomorrow, next};
+};

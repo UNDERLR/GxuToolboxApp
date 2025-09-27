@@ -23,16 +23,16 @@ interface Notification {
 
 const ChangeDetail = ({label, oldValue, newValue}: {label: string; oldValue: string; newValue: string}) => {
     const {theme} = useTheme();
-    return newValue !== oldValue && (
+    return (newValue !== oldValue) ? (
         <View style={styles.detailRow}>
             <Text style={[styles.label, {color: theme.colors.grey1}]}>{label}:</Text>
             <View style={styles.changeContainer}>
                 <Text style={styles.oldValue}> {oldValue} </Text>
-                <Icon name="arrow-right" size={16} color={theme.colors.grey2} style={{marginHorizontal: 5}} />
+                <Icon name="right" size={16} color={theme.colors.grey2} style={{marginHorizontal: 5}} />
                 <Text style={styles.newValue}> {newValue} </Text>
             </View>
         </View>
-    );
+    ) : null;
 };
 
 export function RescheduleNotificationScreen() {

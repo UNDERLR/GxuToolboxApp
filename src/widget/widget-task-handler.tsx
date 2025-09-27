@@ -1,7 +1,7 @@
 import React from "react";
 import type {WidgetTaskHandlerProps} from "react-native-android-widget";
 import {CourseScheduleWidget} from "./CourseScheduleWidget.tsx";
-import {getWidgetData} from "@/widget/widgetData.ts";
+import {nextCourses} from "@/js/nextCourses.ts";
 
 const nameToWidget = {
     CourseScheduleWidgetProvider: CourseScheduleWidget,
@@ -23,7 +23,7 @@ export async function widgetTaskHandler(props: WidgetTaskHandlerProps) {
             case "WIDGET_ADDED":
             case "WIDGET_UPDATE":
             case "WIDGET_RESIZED":
-                const { today: initialToday = [], tomorrow: initialTomorrow = [] } = await getWidgetData() ?? {};
+                const { today: initialToday = [], tomorrow: initialTomorrow = [] } = await nextCourses() ?? {};
                 const initialTimestamp = new Date().toLocaleTimeString();
                 props.renderWidget(<Widget todayCourse={initialToday} tomorrowCourse={initialTomorrow} lastUpdated={initialTimestamp} />);
                 break;
@@ -36,7 +36,7 @@ export async function widgetTaskHandler(props: WidgetTaskHandlerProps) {
                 if (props.clickAction === "REFRESH_SCHEDULE") {
                     // Fetch fresh data ONLY on refresh click
                     console.log("refresh");
-                    const { today = [], tomorrow = [] } = await getWidgetData() ?? {};
+                    const { today = [], tomorrow = [] } = await nextCourses() ?? {};
                     const refreshTimestamp = new Date().toLocaleTimeString();
                     props.renderWidget(<Widget todayCourse={today} tomorrowCourse={tomorrow} lastUpdated={refreshTimestamp} />);
                 }

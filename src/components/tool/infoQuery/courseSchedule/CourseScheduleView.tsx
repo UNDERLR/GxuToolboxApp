@@ -1,4 +1,4 @@
-import React, {ReactNode, useContext, useMemo, useState} from "react";
+import React, {ReactNode, useContext, useEffect, useMemo, useState} from "react";
 import {StyleSheet, View} from "react-native";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {BottomSheet, Text, useTheme} from "@rneui/themed";
@@ -14,6 +14,7 @@ import {CourseScheduleQueryRes} from "@/type/api/infoQuery/classScheduleAPI.ts";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 import {Color} from "@/js/color.ts";
 import {CourseScheduleContext} from "@/js/jw/course.ts";
+import {nextCourses} from "@/js/nextCourses.ts";
 
 export interface CourseScheduleViewProps<T> extends Omit<CourseScheduleTableProps<T>, "courseList"> {
     /** 横向滚动使用的PageView对象 */
@@ -93,54 +94,13 @@ export function CourseScheduleView<T = any>(props: CourseScheduleViewProps<T>) {
     );
 
     // 计算下一节课
-    const nextCourse = useMemo(() => {
-        const allCourses = props.courseApiRes?.kbList ?? [];
-        if (!allCourses || allCourses.length === 0) {
-            return;
-        }
-
-        const now = moment();
-        const futureCourses: {course: Course; time: moment.Moment}[] = [];
-        const startTimes = courseScheduleData.timeSpanList.map(span => span.split("\n")[0]);
-
-        allCourses.forEach(course => {
-            const weekSpans = course.zcd.split(",");
-            const dayOfWeek = parseInt(course.xqj, 10);
-            const startSection = parseInt(course.jcs.split("-")[0], 10) - 1;
-            const courseTime = startTimes[startSection];
-
-            if (!courseTime) {
-                return;
+    const [nextCourse, setNextCourse] = useState<any>(null);
+    useEffect(() => {
+        nextCourses().then(res => {
+            if (res?.next) {
+                setNextCourse(res.next);
             }
-
-            const [hour, minute] = courseTime.split(":").map(Number);
-
-            weekSpans.forEach(weekSpan => {
-                const weeks = weekSpan.replace("周", "").split("-").map(Number);
-                const startWeek = weeks[0];
-                const endWeek = weeks.length > 1 ? weeks[1] : startWeek;
-
-                for (let week = startWeek; week <= endWeek; week++) {
-                    const courseDate = moment(userConfig.jw.startDay)
-                        .add(week - 1, "weeks")
-                        .day(dayOfWeek)
-                        .hour(hour)
-                        .minute(minute)
-                        .second(0);
-
-                    if (courseDate.isAfter(now)) {
-                        futureCourses.push({course: course, time: courseDate});
-                    }
-                }
-            });
         });
-
-        if (futureCourses.length === 0) {
-            return;
-        }
-        futureCourses.sort((a, b) => a.time.diff(b.time));
-        props.onNextCourseCalculated?.(futureCourses[0]?.course);
-        return futureCourses[0]?.course;
     }, [props.courseApiRes?.kbList, courseScheduleData.timeSpanList, userConfig.jw.startDay]);
 
     return (
@@ -148,7 +108,7 @@ export function CourseScheduleView<T = any>(props: CourseScheduleViewProps<T>) {
             {nextCourse && props.showNextCourse && (
                 <View style={style.nextCourse}>
                     <Text style={{fontSize: 13}}>
-                        下一节：{nextCourse.kcmc} #{nextCourse.cdmc}
+                        下一节：{nextCourse.name} #{nextCourse.room}
                     </Text>
                 </View>
             )}
