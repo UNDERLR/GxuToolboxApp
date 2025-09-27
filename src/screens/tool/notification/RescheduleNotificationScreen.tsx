@@ -1,11 +1,11 @@
-import {ScrollView, StyleSheet, Text, View} from "react-native";
+import {ScrollView, StyleSheet, View} from "react-native";
 import {useEffect, useMemo, useState} from "react";
 import {jwxt} from "@/js/jw/jwxt.ts";
-import {ButtonGroup, ListItem, Switch} from "@rneui/themed";
+import {ButtonGroup, ListItem, Switch, Text, useTheme} from "@rneui/themed";
 import {Icon} from "@/components/un-ui/Icon.tsx";
 import {store} from "@/js/store.ts";
 
-interface NewsItem {
+interface Notification {
     course: string;
     oldTeacher: string;
     oldWeek: string;
@@ -21,25 +21,28 @@ interface NewsItem {
     text: string;
 }
 
-const ChangeDetail = ({label, oldValue, newValue}: {label: string; oldValue: string; newValue: string}) =>
-    newValue !== oldValue ? (
+const ChangeDetail = ({label, oldValue, newValue}: {label: string; oldValue: string; newValue: string}) => {
+    const {theme} = useTheme();
+    return newValue !== oldValue && (
         <View style={styles.detailRow}>
-            <Text style={styles.label}>{label}:</Text>
+            <Text style={[styles.label, {color: theme.colors.grey1}]}>{label}:</Text>
             <View style={styles.changeContainer}>
                 <Text style={styles.oldValue}> {oldValue} </Text>
-                <Icon name="right" size={16} color="#555" style={{marginHorizontal: 5}} />
+                <Icon name="arrow-right" size={16} color={theme.colors.grey2} style={{marginHorizontal: 5}} />
                 <Text style={styles.newValue}> {newValue} </Text>
             </View>
         </View>
-    ) : null;
+    );
+};
 
-export function NewsScreen() {
-    const [newsList, setNewsList] = useState<NewsItem[]>([]);
+export function RescheduleNotificationScreen() {
+    const {theme} = useTheme();
+    const [notificationList, setNotificationList] = useState<Notification[]>([]);
     const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
     const [loading, setLoading] = useState(false);
-    const [selectedIndex, setSelectedIndex] = useState(1);
+    const [selectedIndex, setSelectedIndex] = useState(0);
     const [startDay, setStartDay] = useState();
-    const [showFull, setShowFull] = useState<boolean>(false);
+    const [showFull, setShowFull] = useState<boolean>(true);
 
     const reg = new RegExp(
         String.raw`:(?<oldTeacher>[\s\S]*?)老师` +
@@ -52,13 +55,13 @@ export function NewsScreen() {
         "g",
     );
 
-    const fetchNews = async (isRead: number) => {
+    const getNotifications = async (isRead: number) => {
         const userConfig = await store.load({key: "userConfig"}).catch(e => {
             console.warn(e);
         });
         setStartDay(userConfig.jw.startDay);
         setLoading(true);
-        setNewsList([]);
+        setNotificationList([]);
         setExpandedIndex(null);
         try {
             const res = await jwxt.getReschedulingNews(isRead);
@@ -69,7 +72,7 @@ export function NewsScreen() {
                     res1.push({...m.groups, time: item.cjsj, text: item.xxnr});
                 }
             });
-            setNewsList(res1);
+            setNotificationList(res1);
         } catch (e) {
             console.error("Failed to fetch news:", e);
         } finally {
@@ -79,32 +82,29 @@ export function NewsScreen() {
 
     useEffect(() => {
         // 教务系统用 1 表示未读，2 表示已读
-        fetchNews(selectedIndex + 1);
+        getNotifications(selectedIndex + 1);
     }, [selectedIndex]);
 
     const filteredList = useMemo(() => {
         if (showFull || !startDay) {
-            return newsList;
+            return notificationList;
         }
-        return newsList.filter(item => new Date(item.time) >= new Date(startDay));
-    }, [newsList, showFull, startDay]);
+        return notificationList.filter(item => new Date(item.time) >= new Date(startDay));
+    }, [notificationList, showFull, startDay]);
 
     return (
         <View style={{flex: 1}}>
             <ButtonGroup
                 buttons={["未读消息", "已读消息"]}
                 selectedIndex={selectedIndex}
-                onPress={(value) => {
+                onPress={value => {
                     setSelectedIndex(value);
                 }}
-                containerStyle={{ margin: 10, borderRadius: 8 }}
+                containerStyle={{margin: 10, borderRadius: 8}}
             />
             <View style={styles.filterContainer}>
                 <Text style={styles.filterText}>仅显示本学期</Text>
-                <Switch
-                    value={!showFull}
-                    onValueChange={(value) => setShowFull(!value)}
-                />
+                <Switch value={!showFull} onValueChange={value => setShowFull(!value)} />
             </View>
             <ScrollView style={styles.container}>
                 {loading ? (
@@ -112,13 +112,13 @@ export function NewsScreen() {
                 ) : filteredList.length === 0 ? (
                     <Text style={{textAlign: "center", padding: 20}}>没有消息</Text>
                 ) : (
-                    filteredList.map((item: NewsItem, index) => (
-                        (<ListItem.Accordion
+                    filteredList.map((item: Notification, index) => (
+                        <ListItem.Accordion
                             key={index + item.time}
                             content={
                                 <>
                                     <Icon name="info" size={24} color="#337ab7" />
-                                    <ListItem.Content style={{ marginLeft: 10 }}>
+                                    <ListItem.Content style={{marginLeft: 10}}>
                                         <ListItem.Title style={styles.title}>调课提醒：{item.course}</ListItem.Title>
                                         <ListItem.Subtitle style={styles.subtitle}>{item.time}</ListItem.Subtitle>
                                     </ListItem.Content>
@@ -128,15 +128,30 @@ export function NewsScreen() {
                             onPress={() => {
                                 setExpandedIndex(expandedIndex === index ? null : index);
                             }}>
-                            <View style={styles.expandedContainer}>
+                            <View
+                                style={[
+                                    styles.expandedContainer,
+                                    {
+                                        backgroundColor: theme.colors.background,
+                                        borderTopColor: "#eee",
+                                    },
+                                ]}>
                                 <ChangeDetail label="教师" oldValue={item.oldTeacher} newValue={item.newTeacher} />
                                 <ChangeDetail label="周次" oldValue={item.oldWeek} newValue={item.newWeek} />
-                                <ChangeDetail label="星期" oldValue={`星期${item.oldWeekday}`} newValue={`星期${item.newWeekday}`} />
-                                <ChangeDetail label="节次" oldValue={`${item.oldSection}节`} newValue={`${item.newSection}节`} />
+                                <ChangeDetail
+                                    label="星期"
+                                    oldValue={`星期${item.oldWeekday}`}
+                                    newValue={`星期${item.newWeekday}`}
+                                />
+                                <ChangeDetail
+                                    label="节次"
+                                    oldValue={`${item.oldSection}节`}
+                                    newValue={`${item[`new${'Section'}`]}节`}
+                                />
                                 <ChangeDetail label="地点" oldValue={item.oldPlace} newValue={item.newPlace} />
                                 <Text>{`原文：${item.text}`}</Text>
                             </View>
-                        </ListItem.Accordion>)
+                        </ListItem.Accordion>
                     ))
                 )}
             </ScrollView>
@@ -169,9 +184,7 @@ const styles = StyleSheet.create({
     expandedContainer: {
         paddingHorizontal: 26,
         paddingVertical: 20,
-        backgroundColor: "#f9f9f9",
         borderTopWidth: 1,
-        borderTopColor: "#eee",
     },
     detailRow: {
         flexDirection: "row",
@@ -181,7 +194,6 @@ const styles = StyleSheet.create({
     label: {
         width: 50,
         fontSize: 14,
-        color: "#333",
     },
     changeContainer: {
         flexDirection: "row",
