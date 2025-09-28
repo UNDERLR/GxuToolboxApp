@@ -31,33 +31,24 @@ import {ExamScoreQueryRes} from "@/type/exam.ts";
 export function useGpa(score: ExamScoreQueryRes | null | undefined) {
     const [gpa, setGpa] = useState(0);
     // 平均加权成绩
-    const [weightedAverage, setWeightedAverage] = useState(0);
     useEffect(() => {
         if (!score?.items || score.items.length === 0) {
             setGpa(0);
-            setWeightedAverage(0);
             return;
         }
+        // 分子和分母
+        let numerator = 0;
+        let denominator = 0;
 
-        const {totalWeightedScore, totalCredits} = score.items.reduce(
-            (acc, item) => {
-                const cj = parseFloat(item.cj);
-                const xf = parseFloat(item.xf);
-
-                if (!isNaN(cj) && !isNaN(xf) && xf > 0) {
-                    acc.totalWeightedScore += cj * xf;
-                    acc.totalCredits += xf;
-                }
-                return acc;
-            },
-            {totalWeightedScore: 0, totalCredits: 0},
-        );
-
-        const newWeightedAverage = totalCredits > 0 ? totalWeightedScore / totalCredits : 0;
-        setWeightedAverage(newWeightedAverage);
-
+        score.items.forEach((item: any) => {
+            if (item.cj >= 60) {
+                numerator += item.jd * item.xf;
+            }
+            denominator += item.xf * 1;
+        });
+        console.log(numerator,denominator);
         // 暂时将 gpa 也设置为加权平均分，以便在 UI 中显示
-        setGpa(newWeightedAverage);
+        setGpa(numerator / denominator);
 
     }, [score]);
 
