@@ -35,6 +35,11 @@ export function SettingIndex() {
                     value: "jwAccount",
                 },
                 {
+                    label: "统一认证账号设置",
+                    type: "navigation",
+                    value: "authAccount",
+                },
+                {
                     label: "偏好设置",
                     type: "navigation",
                     value: "userPreferenceSetting",

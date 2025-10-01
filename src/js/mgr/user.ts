@@ -1,7 +1,7 @@
 import {store} from "@/js/store.ts";
 
 export const userMgr = {
-    storeAccount: (username: string, password: string) => {
+    storeJWAccount: (username: string, password: string) => {
         store.save({
             key: "userAccount",
             data: {
@@ -10,13 +10,7 @@ export const userMgr = {
             },
         });
     },
-    storeToken: (token: string) => {
-        store.save({
-            key: "userToken",
-            data: token,
-        });
-    },
-    getAccount: () => {
+    getJWAccount: () => {
         return store
             .load<{username: string; password: string}>({
                 key: "userAccount",
@@ -26,9 +20,23 @@ export const userMgr = {
                 return null;
             });
     },
-    getToken: () => {
-        return store.load<string>({
-            key: "userToken",
+    storeAuthAccount: (username: string, password: string) => {
+        store.save({
+            key: "userAuthAccount",
+            data: {
+                username,
+                password,
+            },
         });
+    },
+    getAuthAccount: () => {
+        return store
+            .load<{username: string; password: string}>({
+                key: "userAuthAccount",
+            })
+            .catch(e => {
+                console.warn(e);
+                return null;
+            });
     },
 };

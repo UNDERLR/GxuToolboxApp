@@ -49,8 +49,8 @@ export const jwxt = {
     },
 
     refreshToken: async (): Promise<AxiosResponse | void> => {
-        const {username, password} = await userMgr.getAccount();
-        userMgr.storeAccount(username, password);
+        const {username, password} = await userMgr.getJWAccount();
+        userMgr.storeJWAccount(username, password);
         const keys = await jwxt.getPublicKey();
         if (keys.exponent) {
             return await jwxt.login(username, password, keys.modulus, keys.exponent);

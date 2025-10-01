@@ -1,43 +1,34 @@
 import {StyleSheet, ToastAndroid, View} from "react-native";
 import {Button, Input, Text} from "@rneui/themed";
 import {useEffect, useState} from "react";
-import {jwxt} from "@/js/jw/jwxt.ts";
 import {userMgr} from "@/js/mgr/user.ts";
 import {Icon} from "@/components/un-ui/Icon.tsx";
-import {beQuery} from "@/js/be/log.ts";
 import {useNavigation} from "@react-navigation/native";
+import {authApi} from "@/js/auth/auth.ts";
 
 async function getToken(username: string, password: string) {
-    userMgr.storeJWAccount(username, password);
-    ToastAndroid.show("开始尝试登录", ToastAndroid.SHORT);
-    const data = await jwxt.getPublicKey();
-    if (data.exponent) {
+    userMgr.storeAuthAccount(username, password);
+    ToastAndroid.show("开始尝试登录统一认证系统", ToastAndroid.SHORT);
+    const rsaData = await authApi.getPubKey();
+    if (rsaData.exponent) {
         // 尝试登录
-        await jwxt.login(username, password, data.modulus, data.exponent);
-        // 检验Token
-        if (await jwxt.testToken(false)) {
-            ToastAndroid.show("获取成功，尝试获取用户基础信息", ToastAndroid.SHORT);
-            if ((await jwxt.getInfo()) !== undefined) {
-                ToastAndroid.show("获取基础信息成功", ToastAndroid.SHORT);
-                const res = await beQuery.postLog(username);
-                console.log("记录",res.data);
-            } else {
-                ToastAndroid.show("获取基础信息失败", ToastAndroid.SHORT);
-            }
+        const res = await authApi.login(username, password, rsaData.modulus, rsaData.exponent);
+        if (res) {
+            ToastAndroid.show("登录成功", ToastAndroid.SHORT);
         } else {
-            ToastAndroid.show("获取失败，请检查帐密是否正确或者检查是否连接校园网", ToastAndroid.SHORT);
+            ToastAndroid.show("登录失败，请检查帐密是否正确或者检查是否连接校园网", ToastAndroid.SHORT);
         }
     }
 }
 
-export function JWAccountScreen() {
+export function AuthAccountScreen() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [showPwd, setShowPwd] = useState(false);
     const navigation = useNavigation();
 
     async function init() {
-        const account = await userMgr.getJWAccount();
+        const account = await userMgr.getAuthAccount();
         if (!account) return;
         setUsername(account.username);
         setPassword(account.password);
@@ -50,14 +41,14 @@ export function JWAccountScreen() {
     return (
         <View style={style.container}>
             <Text h2 style={style.title}>
-                设置教务帐密
+                设置统一认证帐密
             </Text>
-            <Text style={style.note}>仅用于工具从教务系统获取信息，凌晨请连接校园网</Text>
+            <Text style={style.note}>仅用于工具通过统一认证系统获取西大其他网站信息，凌晨请连接校园网</Text>
             <Input
                 value={username}
                 onChangeText={v => setUsername(v)}
                 label="账号/学号"
-                placeholder="工具绑定的教务系统账号"
+                placeholder="工具绑定的统一认证系统账号"
                 style={style.input}
             />
             <Input
@@ -77,15 +68,15 @@ export function JWAccountScreen() {
                 }
                 style={style.input}
             />
-            <Button onPress={() => getToken(username, password)}>登录</Button>
-            <Button
-                containerStyle={{marginTop: 10}}
-                onPress={() => {
-                    jwxt.openPageInWebView("/xtgl/login_slogin.html", navigation);
-                }}>
-                打开教务登录页
-            </Button>
-            <Text style={style.note}>提示获取成功后，回到课表页进行测试，若无法正常获取课表，可能为密码错误</Text>
+            <Button onPress={() => getToken(username, password)}>登录统一认证系统</Button>
+            {/*<Button*/}
+            {/*    containerStyle={{marginTop: 10}}*/}
+            {/*    onPress={() => {*/}
+            {/*        jwxt.openPageInWebView("/xtgl/login_slogin.html", navigation);*/}
+            {/*    }}>*/}
+            {/*    打开教务登录页*/}
+            {/*</Button>*/}
+            {/*<Text style={style.note}>提示获取成功后，回到课表页进行测试，若无法正常获取课表，可能为密码错误</Text>*/}
         </View>
     );
 }

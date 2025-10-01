@@ -9,11 +9,12 @@ export const http = axios.create({
         "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
     },
     withCredentials: true,
+    maxRedirects: 0,
 });
 
 http.interceptors.request.use(config => {
     userMgr
-        .getAccount()
+        .getJWAccount()
         .then(data => {
             if (!data.username || !data.password) {
                 ToastAndroid.show("未正确设置账号，请前往设置设置账号", ToastAndroid.SHORT);

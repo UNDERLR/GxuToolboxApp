@@ -10,6 +10,7 @@ import {CourseItemDetailSettingScreen} from "@/screens/setting/account/CourseIte
 import {ExamItemDetailSettingScreen} from "@/screens/setting/account/ExamItemDetailSettingScreen.tsx";
 import {useNavigation} from "@react-navigation/native";
 import {jwxt} from "@/js/jw/jwxt.ts";
+import {AuthAccountScreen} from "@/screens/setting/account/AuthAccountScreen.tsx";
 
 const Stack = createNativeStackNavigator();
 
@@ -81,6 +82,7 @@ export function SettingStack() {
 
             {/*  账号相关  */}
             <Stack.Screen name="jwAccount" component={JWAccountScreen} options={{title: "教务系统账号设置"}} />
+            <Stack.Screen name="authAccount" component={AuthAccountScreen} options={{title: "统一认证系统账号设置"}} />
 
             {/*  偏好设置  */}
             <Stack.Screen
