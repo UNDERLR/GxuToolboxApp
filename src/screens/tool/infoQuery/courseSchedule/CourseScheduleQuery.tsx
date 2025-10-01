@@ -130,7 +130,7 @@ export function CourseScheduleQuery() {
                 <CourseScheduleView
                     startDay={userConfig.jw.startDay}
                     pageView={pageView}
-                    courseApiRes={courseScheduleApiRes}
+                    courseSchedule={courseScheduleApiRes}
                 />
                 {courseScheduleApiRes?.sjkList && (
                     <>

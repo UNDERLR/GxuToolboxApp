@@ -15,7 +15,7 @@ import {CourseScheduleView} from "@/components/tool/infoQuery/courseSchedule/Cou
 import {ExamInfo} from "@/type/infoQuery/exam/examInfo.ts";
 import {ExamInfoQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
-import {courseApi, CourseScheduleContext} from "@/js/jw/course.ts";
+import {courseApi, CourseScheduleClass, CourseScheduleContext} from "@/js/jw/course.ts";
 import {examApi} from "@/js/jw/exam.ts";
 import {UserInfo} from "@/type/infoQuery/base.ts";
 import {userMgr} from "@/js/mgr/user.ts";
@@ -26,6 +26,7 @@ import {IActivity} from "@/type/app/activity.ts";
 import {ActivityItem} from "@/components/app/activity/ActivityItem.tsx";
 import {ActivityDetail} from "@/components/app/activity/ActivityDetail.tsx";
 import {PhyExp} from "@/type/infoQuery/course/course.ts";
+import {http} from "@/js/http.ts";
 
 export function ScheduleCard() {
     const {userConfig, updateUserConfig} = useContext(UserConfigContext);
@@ -35,7 +36,7 @@ export function ScheduleCard() {
     const pagerView = usePagerView({pagesAmount: 20});
     const {...rest} = pagerView;
 
-    const [apiRes, setApiRes] = useState<CourseScheduleQueryRes>();
+    const [courseSchedule, setCourseSchedule] = useState<CourseScheduleClass>();
     const startDay = moment(userConfig.jw.startDay);
 
     const realCurrentWeek = Math.ceil(moment.duration(moment().diff(startDay)).asWeeks());
@@ -100,7 +101,7 @@ export function ScheduleCard() {
         const data = await courseApi.getCourseSchedule(year, term);
         if (data?.kbList) {
             ToastAndroid.show("获取课表成功", ToastAndroid.SHORT);
-            setApiRes(data);
+            setCourseSchedule(data);
             await store.save({key: "courseRes", data});
             if (data.kbList.findIndex(item => item.kcmc === "大学物理实验") > -1) {
                 getPhyExp();
@@ -144,12 +145,19 @@ export function ScheduleCard() {
         setPhyExpList(data);
     }
 
+    const [timeShift, setTimeShift] = useState<[string, string][]>([]);
+    async function getTimeShift() {
+        const {data} = await http.get("https://acm.gxu.edu.cn/mirror/gxujwtapp/data.json");
+        console.log(data);
+        setTimeShift(data.timeShift);
+    }
+
     async function init() {
         const courseData: CourseScheduleQueryRes = await store.load({key: "courseRes"}).catch(e => {
             console.warn(e);
             return {};
         });
-        if (courseData.kbList) setApiRes(courseData);
+        if (courseData.kbList) setCourseSchedule(new CourseScheduleClass(courseData));
         const examData: ExamInfoQueryRes = await store.load({key: "examInfo"}).catch(e => {
             console.warn(e);
             return {};
@@ -159,6 +167,7 @@ export function ScheduleCard() {
     }
 
     async function loadData() {
+        await getTimeShift();
         await getCourseSchedule();
         await getExamList();
         getActivityList();
@@ -206,7 +215,8 @@ export function ScheduleCard() {
                 showTimeSpanHighlight
                 showDayHighlight
                 startDay={startDay}
-                courseApiRes={apiRes}
+                timeShift={timeShift}
+                courseSchedule={courseSchedule}
                 pageView={pagerView}
                 phyExpList={phyExpList}
                 itemList={[...examList, ...activityList]}
@@ -226,14 +236,16 @@ export function ScheduleCard() {
                 }
                 isItemShow={(item, day, week) =>
                     item.hasOwnProperty("xh_id")
-                        ? moment(item.kssj.replace(/\(.*?\)/, "")).isSame(day, "d")
-                        : item.weekday === day.weekday() && week >= item.weekSpan[0] && week <= item.weekSpan[1]
+                        ? moment((item as ExamInfo).kssj.replace(/\(.*?\)/, "")).isSame(day, "d")
+                        : (item as IActivity).weekday === day.weekday() &&
+                          week >= (item as IActivity).weekSpan[0] &&
+                          week <= (item as IActivity).weekSpan[1]
                 }
             />
-            {apiRes?.sjkList && (
+            {courseSchedule?.sjkList && (
                 <>
                     <Card.Divider />
-                    <PracticalCourseList courseList={apiRes.sjkList} />
+                    <PracticalCourseList courseList={courseSchedule.sjkList} />
                 </>
             )}
             {/* 课表卡片设置 */}

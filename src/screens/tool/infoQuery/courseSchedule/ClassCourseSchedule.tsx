@@ -246,7 +246,7 @@ export function ClassCourseSchedule() {
                         <CourseScheduleView
                             startDay={classScheduleApiRes.weekNum[0].rq.split("/")[0]}
                             pageView={pageView}
-                            courseApiRes={classScheduleApiRes}
+                            courseSchedule={classScheduleApiRes}
                         />
                         {classScheduleApiRes?.sjkList && (
                             <>

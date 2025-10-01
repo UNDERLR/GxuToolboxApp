@@ -4,8 +4,7 @@ import {BottomSheet, Divider, Input, Text, useTheme} from "@rneui/themed";
 import {UnTermSelector} from "@/components/un-ui/UnTermSelector.tsx";
 import React, {useContext, useEffect, useState} from "react";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
-import {CourseScheduleQueryRes} from "@/type/api/infoQuery/classScheduleAPI.ts";
-import {courseApi, CourseScheduleData} from "@/js/jw/course.ts";
+import {courseApi, CourseScheduleClass, CourseScheduleData} from "@/js/jw/course.ts";
 import {CourseScheduleView} from "@/components/tool/infoQuery/courseSchedule/CourseScheduleView.tsx";
 import {usePagerView} from "react-native-pager-view";
 import {UnSlider} from "@/components/un-ui/UnSlider.tsx";
@@ -26,7 +25,7 @@ export function ScheduleEdit() {
     const [year, setYear] = useState(userConfig.jw.year);
     const [term, setTerm] = useState(userConfig.jw.term);
 
-    const [courseRes, setCourseRes] = useState<CourseScheduleQueryRes>();
+    const [courseRes, setCourseRes] = useState<CourseScheduleClass>();
     // 用户数据中的Index
     const [activityListIndex, setActivityListIndex] = useState(-1);
     const [activityList, setActivityList] = useState<IActivity[]>([]);
@@ -163,7 +162,7 @@ export function ScheduleEdit() {
                 </Flex>
                 <CourseScheduleView<IActivity>
                     pageView={pageView}
-                    courseApiRes={courseRes}
+                    courseSchedule={courseRes}
                     courseStyle={{opacity: 0.25}}
                     itemList={activityList}
                     isItemShow={(item, day, week) =>

@@ -6,12 +6,12 @@ import {Text, useTheme} from "@rneui/themed";
 import {ReactNode, useContext, useEffect, useState} from "react";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {CourseItem} from "@/components/tool/infoQuery/courseSchedule/CourseItem.tsx";
-import {CourseScheduleContext} from "@/js/jw/course.ts";
+import {CourseScheduleClass, CourseScheduleContext} from "@/js/jw/course.ts";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 
 export interface CourseScheduleTableProps<T> {
     /** 课程列表，会自动解析是否本周 */
-    courseList?: Course[];
+    courseSchedule?: CourseScheduleClass;
     /** 课程元素自定义样式 */
     courseStyle?: ViewStyle;
     /** 课程元素点击事件 */
@@ -30,6 +30,8 @@ export interface CourseScheduleTableProps<T> {
     showTimeSpanHighlight?: boolean;
     /** 时候高亮今日，通过第一天和周数计算后和系统时间进行比对 */
     showDayHighlight?: boolean;
+    /** 调课信息 */
+    timeShift?: [string, string][];
 
     /** 自定义元素列表 */
     itemList?: T[];
@@ -52,7 +54,7 @@ export function CourseScheduleTable<T = any>(props: CourseScheduleTableProps<T>)
     const currentTimeSpan = getCurrentTimeSpan();
 
     function init() {
-        parseCourses(props.courseList ?? []);
+        if (props.courseSchedule) parseCourses();
     }
 
     useEffect(() => {
@@ -67,36 +69,24 @@ export function CourseScheduleTable<T = any>(props: CourseScheduleTableProps<T>)
     }, [props]);
 
     // 从接口返回的数据解析出当周每天的课程
-    function parseCourses(courseList: Course[]) {
-        const res = [[], [], [], [], [], [], []] as Course[][];
-        if (courseList) {
-            courseList.forEach((course: Course) => {
-                if (testCourseWeek(course, currentWeek)) {
-                    res[parseInt(course.xqj, 10) - 1].push(course);
-                }
+    function parseCourses() {
+        const res = props.courseSchedule!.getCourseListByWeek(currentWeek);
+        if (Array.isArray(res)) {
+            // 调课判断
+            res.forEach((day, index) => {
+                const currentDay = moment(startDay).add({
+                    week: currentWeek - 1,
+                    day: index,
+                });
+                const timeShiftItem = props.timeShift?.find(item =>
+                    moment(item[0], "YYYY-MM-DD").isSame(currentDay, "day"),
+                );
+                if (timeShiftItem) res[index] = props.courseSchedule!.getCourseListByDay(timeShiftItem[1], startDay);
+                if (props.timeShift?.find(item => moment(item[1], "YYYY-MM-DD").isSame(currentDay, "day")))
+                    res[index] = [];
             });
+            setCourseSchedule(res);
         }
-        setCourseSchedule(res);
-    }
-
-    // 判断Course是否是本周课程
-    function testCourseWeek(course: Course, week: number = currentWeek): boolean {
-        const weekSpans = course.zcd.split(",");
-        let res = false;
-        weekSpans.forEach(weekSpan => {
-            const weeks = weekSpan
-                .replace(/[^0-9-]/g, "")
-                .split("-")
-                .map(weekItem => parseInt(weekItem, 10));
-            if (
-                ((weeks.length === 1 && weeks[0] === week) || (weeks[0] <= week && week <= weeks[1])) &&
-                !((/单/.test(weekSpan) && week % 2 === 0) || (/双/.test(weekSpan) && week % 2 === 1))
-            ) {
-                res = true;
-                return;
-            }
-        });
-        return res;
     }
 
     // 计算当前时间段
@@ -197,15 +187,20 @@ export function CourseScheduleTable<T = any>(props: CourseScheduleTableProps<T>)
                     weekdayTextStyle.push(itemStyle.activeText);
                 }
                 const currentDayItemList = (props.itemList ?? []).filter(item =>
-                    props.isItemShow?.(item, currentDay, props.currentWeek),
+                    props.isItemShow?.(item, currentDay, currentWeek),
                 );
+                const isTimeShift =
+                    props.timeShift &&
+                    props.timeShift.findIndex(item => moment(item[0], "YYYY-MM-DD").isSame(currentDay, "day")) > -1;
                 return (
                     // 当日课程渲染
-                    <View style={weekdayContainerStyle} key={`day${index}`}>
+                    <View style={weekdayContainerStyle} key={`day-${currentDay.format("YYYY-MM-DD")}-${index}`}>
+                        {/* 日期部分 */}
                         <View style={courseScheduleStyle.weekdayItem}>
                             <Text style={weekdayTextStyle}>
                                 {props.showDate
-                                    ? `${weekday}\n${currentDay.month() + 1}-${currentDay.date()}`
+                                    ? `${weekday}${isTimeShift ? "(调)" : ""}\n` +
+                                      `${currentDay.month() + 1}-${currentDay.date()}`
                                     : `${weekday}`}
                             </Text>
                         </View>

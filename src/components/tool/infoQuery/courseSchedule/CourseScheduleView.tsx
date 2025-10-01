@@ -10,17 +10,16 @@ import {usePagerView} from "react-native-pager-view";
 import moment from "moment/moment";
 import {Course} from "@/type/infoQuery/course/course.ts";
 import {CourseDetail} from "@/components/tool/infoQuery/courseSchedule/CourseDetail.tsx";
-import {CourseScheduleQueryRes} from "@/type/api/infoQuery/classScheduleAPI.ts";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 import {Color} from "@/js/color.ts";
-import {CourseScheduleContext} from "@/js/jw/course.ts";
+import {CourseScheduleClass, CourseScheduleContext} from "@/js/jw/course.ts";
 import {nextCourses} from "@/js/nextCourses.ts";
 
-export interface CourseScheduleViewProps<T> extends Omit<CourseScheduleTableProps<T>, "courseList"> {
+export interface CourseScheduleViewProps<T> extends CourseScheduleTableProps<T> {
     /** 横向滚动使用的PageView对象 */
     pageView: ReturnType<typeof usePagerView>;
     /** 进行解析的课表返回体 */
-    courseApiRes?: CourseScheduleQueryRes;
+    courseSchedule?: CourseScheduleClass;
     /** 计算下一节课的回调 */
     onNextCourseCalculated?: (course?: Course) => void;
 
@@ -37,7 +36,7 @@ export function CourseScheduleView<T = any>(props: CourseScheduleViewProps<T>) {
     const {AnimatedPagerView, ref, ...rest} = props.pageView;
     const startDay = props.startDay ?? userConfig.jw.startDay;
     const realCurrentWeek = Math.ceil(moment.duration(moment().diff(startDay)).asWeeks());
-    const {courseScheduleData, courseScheduleStyle} = useContext(CourseScheduleContext)!;
+    const {courseScheduleData} = useContext(CourseScheduleContext)!;
 
     const [courseDetailVisible, setCourseDetailVisible] = useState(false);
     const [activeCourse, setActiveCourse] = useState<Course>({} as Course);
@@ -101,7 +100,7 @@ export function CourseScheduleView<T = any>(props: CourseScheduleViewProps<T>) {
                 setNextCourse(res.next);
             }
         });
-    }, [props.courseApiRes?.kbList, courseScheduleData.timeSpanList, userConfig.jw.startDay]);
+    }, [props.courseSchedule?.kbList, courseScheduleData.timeSpanList, userConfig.jw.startDay]);
 
     return (
         <View style={{width: "100%"}}>
@@ -147,14 +146,13 @@ export function CourseScheduleView<T = any>(props: CourseScheduleViewProps<T>) {
                                 </Flex>
                                 <CourseScheduleTable<T>
                                     {...props}
-                                    courseList={props.courseApiRes?.kbList}
                                     onCoursePress={showCourseDetail}
                                     currentWeek={index + 1}
                                     onItemPress={showItemDetail}
                                 />
                             </View>
                         )),
-                    [rest.pages, realCurrentWeek, props.courseApiRes?.kbList, props.phyExpList],
+                    [rest.pages, realCurrentWeek, props.courseSchedule?.kbList, props.phyExpList],
                 )}
             </AnimatedPagerView>
             {/* 课表课程信息 */}
