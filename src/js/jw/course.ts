@@ -287,6 +287,7 @@ export const courseApi = {
     },
 };
 
+/** 课表类，从 `CourseScheduleQueryRes` 解析 */
 export class CourseScheduleClass extends BaseClass<CourseScheduleQueryRes> implements CourseScheduleQueryRes {
     kbList!: Course[];
     sjkList!: PracticalCourse[];
@@ -296,6 +297,10 @@ export class CourseScheduleClass extends BaseClass<CourseScheduleQueryRes> imple
         super(apiRes);
     }
 
+    /**
+     * 根据周数获取课表
+     * @param week 1-20
+     */
     getCourseListByWeek(week: number): Course[][] {
         const res = [[], [], [], [], [], [], []] as Course[][];
 
@@ -326,6 +331,11 @@ export class CourseScheduleClass extends BaseClass<CourseScheduleQueryRes> imple
         return res;
     }
 
+    /**
+     * 获取某一天的课表
+     * @param date 目标日期
+     * @param startDay 课表开始第一天
+     */
     getCourseListByDay(date: moment.MomentInput, startDay: moment.MomentInput): Course[] {
         const dateMoment = moment(date);
         const week = Math.ceil(moment.duration(dateMoment.diff(startDay)).asWeeks()) + 1;
