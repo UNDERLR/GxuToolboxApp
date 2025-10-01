@@ -1,4 +1,4 @@
-import {Course} from "@/type/infoQuery/course/course.ts";
+import {Course, PhyExp} from "@/type/infoQuery/course/course.ts";
 import {StyleProp, StyleSheet, TextStyle, View, ViewStyle} from "react-native";
 import moment from "moment/moment";
 import {Color} from "@/js/color.ts";
@@ -16,6 +16,9 @@ export interface CourseScheduleTableProps<T> {
     courseStyle?: ViewStyle;
     /** 课程元素点击事件 */
     onCoursePress?: (course: Course) => void;
+
+    /** 物理实验列表 */
+    phyExpList?: PhyExp[];
 
     /** 学期的第一天 */
     startDay?: moment.MomentInput;
@@ -206,15 +209,32 @@ export function CourseScheduleTable<T = any>(props: CourseScheduleTableProps<T>)
                                     : `${weekday}`}
                             </Text>
                         </View>
-                        {courseSchedule[index].map((course, i) => (
-                            <CourseItem
-                                style={props.courseStyle}
-                                onCoursePress={props.onCoursePress}
-                                key={`day${index}-${course.jxb_id}-${i}`}
-                                course={course}
-                                index={i}
-                            />
-                        ))}
+                        {courseSchedule[index].map((course, i) => {
+                            // 物理实验课替换
+                            if (Array.isArray(props.phyExpList)) {
+                                const phyExpIndex = props.phyExpList.findIndex(item =>
+                                    currentDay.isSame(moment(item.skrq, "YYYYMMDD"), "day"),
+                                );
+                                if (phyExpIndex > -1) {
+                                    const phyExp = props.phyExpList[phyExpIndex];
+                                    course = {
+                                        ...course,
+                                        kcmc: phyExp.xmmc,
+                                        cdmc: phyExp.fjbh,
+                                        xm: phyExp.zjjsxm,
+                                    };
+                                }
+                            }
+                            return (
+                                <CourseItem
+                                    style={props.courseStyle}
+                                    onCoursePress={props.onCoursePress}
+                                    key={`day${index}-${course.jxb_id}-${i}`}
+                                    course={course}
+                                    index={i}
+                                />
+                            );
+                        })}
 
                         {/*课表其他元素*/}
                         {currentDayItemList.map(examInfo => props.itemRender?.(examInfo, props.onItemPress))}

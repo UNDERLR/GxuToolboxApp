@@ -154,7 +154,7 @@ export function CourseScheduleView<T = any>(props: CourseScheduleViewProps<T>) {
                                 />
                             </View>
                         )),
-                    [rest.pages, realCurrentWeek, props.courseApiRes?.kbList],
+                    [rest.pages, realCurrentWeek, props.courseApiRes?.kbList, props.phyExpList],
                 )}
             </AnimatedPagerView>
             {/* 课表课程信息 */}

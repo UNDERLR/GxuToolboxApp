@@ -3,7 +3,7 @@ import {Pressable, StyleSheet, ToastAndroid} from "react-native";
 import {store} from "@/js/store.ts";
 import {CourseScheduleQueryRes} from "@/type/api/infoQuery/classScheduleAPI.ts";
 import {useCallback, useContext, useEffect, useState} from "react";
-import {PracticalCourseList} from "./PracticalCourseList.tsx";
+import {PracticalCourseList} from "../tool/infoQuery/courseSchedule/PracticalCourseList.tsx";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {Icon} from "@/components/un-ui/Icon.tsx";
 import moment from "moment";
@@ -25,6 +25,7 @@ import {ExamDetail} from "@/components/tool/infoQuery/examInfo/ExamDetail.tsx";
 import {IActivity} from "@/type/app/activity.ts";
 import {ActivityItem} from "@/components/app/activity/ActivityItem.tsx";
 import {ActivityDetail} from "@/components/app/activity/ActivityDetail.tsx";
+import {PhyExp} from "@/type/infoQuery/course/course.ts";
 
 export function ScheduleCard() {
     const {userConfig, updateUserConfig} = useContext(UserConfigContext);
@@ -101,6 +102,9 @@ export function ScheduleCard() {
             ToastAndroid.show("获取课表成功", ToastAndroid.SHORT);
             setApiRes(data);
             await store.save({key: "courseRes", data});
+            if (data.kbList.findIndex(item => item.kcmc === "大学物理实验") > -1) {
+                getPhyExp();
+            }
         } else {
             ToastAndroid.show("获取课表失败", ToastAndroid.SHORT);
         }
@@ -112,7 +116,7 @@ export function ScheduleCard() {
                 key: "userInfo",
             })
             .catch(console.warn);
-        const account = await userMgr.getAccount();
+        const account = await userMgr.getJWAccount();
         if (!userInfo || !account) return;
 
         const schoolId = Schools.filter(school => school[1] === userInfo.school)?.[0]?.[0];
@@ -133,6 +137,12 @@ export function ScheduleCard() {
             updateUserConfig(userConfig);
         }
     }, [year, term]);
+
+    const [phyExpList, setPhyExpList] = useState<PhyExp[]>([]);
+    async function getPhyExp() {
+        const {data} = await courseApi.getPhyExpList();
+        setPhyExpList(data);
+    }
 
     async function init() {
         const courseData: CourseScheduleQueryRes = await store.load({key: "courseRes"}).catch(e => {
@@ -198,6 +208,7 @@ export function ScheduleCard() {
                 startDay={startDay}
                 courseApiRes={apiRes}
                 pageView={pagerView}
+                phyExpList={phyExpList}
                 itemList={[...examList, ...activityList]}
                 itemRender={(item, onPressHook) =>
                     item.hasOwnProperty("xh_id") ? (

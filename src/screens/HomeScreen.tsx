@@ -1,22 +1,16 @@
 import {GestureResponderEvent, PanResponder, PanResponderGestureState, ScrollView, View} from "react-native";
-import {ScheduleCard} from "@/components/tool/infoQuery/courseSchedule/ScheduleCard.tsx";
-import React, {useContext, useRef, useState} from "react";
-import {useTheme} from "@rneui/themed";
-import {UserConfigContext} from "@/components/AppProvider.tsx";
+import {ScheduleCard} from "@/components/app/ScheduleCard.tsx";
+import React, {useRef, useState} from "react";
 import {UpdateCard} from "@/components/UpdateCard.tsx";
 
 export function HomeScreen() {
-    const {theme} = useTheme();
-    const {userConfig} = useContext(UserConfigContext);
     // 滚动相关状态和引用
     const scrollViewRef = useRef<ScrollView>(null);
     const [scrollEnabled, setScrollEnabled] = useState(true);
-    const touchStart = useRef({x: 0, y: 0});
 
     // 配置参数
     const ASPECT_RATIO_THRESHOLD = 2; // 垂直/水平移动比例阈值
     const MIN_GESTURE_DISTANCE = 5; // 最小手势移动距离
-    const VELOCITY_THRESHOLD = 0.5; // 速度阈值
 
     // 手势控制器
     const panResponder = PanResponder.create({
@@ -52,6 +46,9 @@ export function HomeScreen() {
 
         // 手势结束时的处理
         onPanResponderRelease: () => {
+            setScrollEnabled(true);
+        },
+        onPanResponderEnd: () => {
             setScrollEnabled(true);
         },
 
