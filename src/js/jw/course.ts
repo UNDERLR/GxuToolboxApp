@@ -8,11 +8,13 @@ import {
     ClassScheduleQueryRes,
     CourseScheduleQueryRes,
     GetCourseScheduleListRes,
+    PhyExpQueryRes,
 } from "@/type/api/infoQuery/classScheduleAPI.ts";
 import {jwxt} from "@/js/jw/jwxt.ts";
 import {http, objectToFormUrlEncoded} from "@/js/http.ts";
 import {defaultYear} from "@/js/jw/infoQuery.ts";
-import {Course, PracticalCourse} from "@/type/infoQuery/course/course.ts";
+import {Course, PhyExp, PracticalCourse} from "@/type/infoQuery/course/course.ts";
+import {authApi} from "@/js/auth/auth.ts";
 
 export const CourseScheduleData = {
     courseInfoVisible: {
@@ -262,5 +264,24 @@ export const courseApi = {
             ToastAndroid.show("获取课表信息失败", ToastAndroid.SHORT);
             return null;
         }
+    },
+
+    getPhyExpList: async (): Promise<PhyExpQueryRes> => {
+        await authApi.loginService("http://pec.gxu.edu.cn//caslogin.aspx");
+        const res = await http.post<{d: string}>(
+            "https://pec.gxu.edu.cn/LMSmini/teacher/UI/wxInterface/syjx.asmx/getRuleManage",
+            {
+                page: 1,
+                limit: 100,
+            },
+            {headers: {"Content-Type": "application/json"}},
+        );
+        const data: PhyExpQueryRes = JSON.parse(res.data.d);
+        // 将实验课键名转小写
+        data.data = data.data.map(
+            item => Object.fromEntries(Object.entries(item).map(([key, _]) => [key.toLowerCase(), _])) as PhyExp,
+        );
+        console.log(data);
+        return data;
     },
 };

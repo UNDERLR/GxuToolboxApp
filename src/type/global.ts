@@ -28,6 +28,11 @@ export type SchoolYearsType = typeof SchoolYears;
 export type SchoolYearValue = typeof SchoolYears[number][0];
 export type SchoolYearLabel = typeof SchoolYears[number][1];
 
+/** `number` 的字符串类型，可直接转换 */
+export type strNum = string;
+/** `boolean` 的字符串类型，可直接转换  */
+export type strBool = string;
+
 export const SchoolTerms = [
     ["3", "秋季学期"],
     ["12", "春季学期"],

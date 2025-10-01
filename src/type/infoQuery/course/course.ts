@@ -1,4 +1,4 @@
-import {SchoolTermValue, SchoolValue} from "@/type/global.ts";
+import {SchoolTermValue, SchoolValue, strNum} from "@/type/global.ts";
 
 export interface Course {
     /** 在课程表中显示的背景颜色 */
@@ -269,4 +269,34 @@ export interface CourseSchedule {
     xsxyxh: number;
     /**  */
     year: string;
+}
+
+/** 物理实验课 */
+export interface PhyExp {
+    /** 实验课唯一ID，主键 */
+    id: strNum;
+    /** 周次 */
+    zc: strNum;
+    /** 班级名称 */
+    bjmc: string;
+    /** 上课日期 */
+    skrq: string;
+    /** 上课时间 */
+    sksj: string;
+    /** 人数 */
+    rs: strNum;
+    /** 课程名称 */
+    kcmc: string;
+    /** 实验名称 */
+    xmmc: string;
+    /** 教师名称，带有入职ID，例王潇漾(20230073) */
+    zjjs: string;
+    /** 教师姓名 */
+    zjjsxm: string;
+    /** 星期 */
+    xq: strNum;
+    /** 上课地点 */
+    fjbh: string;
+    /** 实验室名称 */
+    sysmc: string;
 }

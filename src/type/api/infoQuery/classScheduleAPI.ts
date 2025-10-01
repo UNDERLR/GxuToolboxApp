@@ -1,4 +1,4 @@
-import {Course, CourseSchedule, PracticalCourse} from "@/type/infoQuery/course/course.ts";
+import {Course, CourseSchedule, PhyExp, PracticalCourse} from "@/type/infoQuery/course/course.ts";
 import {Class, Week} from "@/type/infoQuery/base.ts";
 import {PageModel, QueryResRoot} from "@/type/global.ts";
 
@@ -18,3 +18,11 @@ export interface ClassScheduleQueryRes extends CourseScheduleQueryRes {
 }
 
 export interface GetCourseScheduleListRes extends QueryResRoot<CourseSchedule & Class & PageModel> {}
+
+/** 物理实验课表查询返回 */
+export interface PhyExpQueryRes {
+    code: number;
+    msg: string;
+    count: number;
+    data: PhyExp[];
+}
