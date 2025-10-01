@@ -53,7 +53,7 @@ export const authApi = {
     },
 
     /**
-     * 使用存储中的账号登入服务，用于获取不同服务的cookiehttps://ca.gxu.edu.cn:8443/zfca/login?service=http://pec.gxu.edu.cn//caslogin.aspx
+     * 使用存储中的账号登入服务，用于获取不同服务的cookie
      * @param serviceUrl 对应服务的url
      */
     loginService: async (serviceUrl: string) => {

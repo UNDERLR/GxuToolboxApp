@@ -15,6 +15,8 @@ import {http, objectToFormUrlEncoded} from "@/js/http.ts";
 import {defaultYear} from "@/js/jw/infoQuery.ts";
 import {Course, PhyExp, PracticalCourse} from "@/type/infoQuery/course/course.ts";
 import {authApi} from "@/js/auth/auth.ts";
+import {BaseClass} from "@/js/class.ts";
+import moment from "moment";
 
 export const CourseScheduleData = {
     courseInfoVisible: {
@@ -195,7 +197,7 @@ export const courseApi = {
     getCourseSchedule: async (
         year: number | SchoolYearValue,
         term: SchoolTermValue,
-    ): Promise<CourseScheduleQueryRes | undefined> => {
+    ): Promise<CourseScheduleClass | undefined> => {
         const schoolYear = SchoolYears.find(v => +v[0] === year) ?? SchoolYears.find(v => +v[0] === defaultYear)!;
         if (!(await jwxt.testToken())) {
             return;
@@ -208,7 +210,7 @@ export const courseApi = {
         if (typeof res.data === "object") {
             await randomCourseColor(res.data.kbList);
             await randomCourseColor(res.data.sjkList);
-            return res.data;
+            return new CourseScheduleClass(res.data);
         } else {
             ToastAndroid.show("获取课表信息失败", ToastAndroid.SHORT);
             return;
@@ -281,7 +283,54 @@ export const courseApi = {
         data.data = data.data.map(
             item => Object.fromEntries(Object.entries(item).map(([key, _]) => [key.toLowerCase(), _])) as PhyExp,
         );
-        console.log(data);
         return data;
     },
 };
+
+export class CourseScheduleClass extends BaseClass<CourseScheduleQueryRes> implements CourseScheduleQueryRes {
+    kbList!: Course[];
+    sjkList!: PracticalCourse[];
+    xsbjList!: Array<any>;
+
+    constructor(apiRes: CourseScheduleQueryRes) {
+        super(apiRes);
+    }
+
+    getCourseListByWeek(week: number): Course[][] {
+        const res = [[], [], [], [], [], [], []] as Course[][];
+
+        function testCourseWeek(course: Course): boolean {
+            const weekSpans = course.zcd.split(",");
+            let res = false;
+            weekSpans.forEach(weekSpan => {
+                const weeks = weekSpan
+                    .replace(/[^0-9-]/g, "")
+                    .split("-")
+                    .map(weekItem => parseInt(weekItem, 10));
+                if (
+                    ((weeks.length === 1 && weeks[0] === week) || (weeks[0] <= week && week <= weeks[1])) &&
+                    !((/单/.test(weekSpan) && week % 2 === 0) || (/双/.test(weekSpan) && week % 2 === 1))
+                ) {
+                    res = true;
+                    return;
+                }
+            });
+            return res;
+        }
+
+        this.kbList.forEach(course => {
+            if (testCourseWeek(course)) {
+                res[parseInt(course.xqj, 10) - 1].push(course);
+            }
+        });
+        return res;
+    }
+
+    getCourseListByDay(date: moment.MomentInput, startDay: moment.MomentInput): Course[] {
+        const dateMoment = moment(date);
+        const week = Math.ceil(moment.duration(dateMoment.diff(startDay)).asWeeks()) + 1;
+        const weekCourseList = this.getCourseListByWeek(week);
+        const weekday = dateMoment.weekday();
+        return weekCourseList[weekday > 0 ? weekday - 1 : 6];
+    }
+}
