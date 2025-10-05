@@ -18,11 +18,10 @@ export function PhyExpScreen() {
     const [tableData, setTableData] = useState({
         header: ["上课时间", "上课地点", "实验名称"],
         width: [130, 190, 300],
-        body: [] as string[][],
+        body: [] as (string | Element)[][],
     });
 
     function formatData(list: PhyExp[]) {
-        console.log(list);
         setTableData({
             ...tableData,
             body: list.map(item => [

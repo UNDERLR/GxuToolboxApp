@@ -147,7 +147,7 @@ export function ToolboxIndex() {
     });
 
     return (
-        <ScrollView style={style.settingContainer}>
+        <ScrollView contentContainerStyle={style.settingContainer}>
             {toolList.map(section => (
                 <View style={style.settingSectionContainer} key={`tool-${section.title}`}>
                     <Text h4>{section.title}</Text>
