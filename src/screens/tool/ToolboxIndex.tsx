@@ -52,6 +52,16 @@ const toolList = [
         ],
     },
     {
+        title: "实践课",
+        data: [
+            {
+                label: "物理实验课查询",
+                icon: <Icon name="tool" size={iconSize} />,
+                navigation: "phyExpScreen",
+            },
+        ],
+    },
+    {
         title: "通知",
         data: [
             {

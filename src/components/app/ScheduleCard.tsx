@@ -152,6 +152,10 @@ export function ScheduleCard() {
     async function getPhyExp() {
         const {data} = await courseApi.getPhyExpList();
         setPhyExpList(data);
+        await store.save({
+            key: "phyExpList",
+            data,
+        });
     }
 
     // 金工实训
@@ -165,32 +169,32 @@ export function ScheduleCard() {
     };
     const [engTrainingExpList, setEngTrainingExpList] = useState<EngTrainingExp[]>([]);
     async function getEngTrainingSchedule() {
-            const {datas} = await courseApi.engTraining.getPersonalExpList();
-            const dateList = datas[0].filter(item => item.startRow === 2);
-            // 根据日期获取实训
-            // TODO: 判断节数
-            const expList = dateList.map<EngTrainingExp>(date => {
-                const exp = datas[0].find(
-                    item =>
-                        item.startRow === 9 &&
-                        item.startCol <= date.startCol &&
-                        item.startCol + item.colNumber >= date.startCol + date.colNumber,
-                );
-                return {
-                    date: date.content,
-                    type: "engTrainingExp",
-                    name: exp?.content ?? "",
-                    y: 0,
-                    span: 8,
-                    backgroundColor: undefined,
-                };
-            });
-            await store.save({
-                key: "engTrainingExpList",
-                data: expList,
-            });
-            setEngTrainingExpList(expList);
-            console.log(expList);
+        const {datas} = await courseApi.engTraining.getPersonalExpList();
+        const dateList = datas[0].filter(item => item.startRow === 2);
+        // 根据日期获取实训
+        // TODO: 判断节数
+        const expList = dateList.map<EngTrainingExp>(date => {
+            const exp = datas[0].find(
+                item =>
+                    item.startRow === 9 &&
+                    item.startCol <= date.startCol &&
+                    item.startCol + item.colNumber >= date.startCol + date.colNumber,
+            );
+            return {
+                date: date.content,
+                type: "engTrainingExp",
+                name: exp?.content ?? "",
+                y: 0,
+                span: 8,
+                backgroundColor: undefined,
+            };
+        });
+        await store.save({
+            key: "engTrainingExpList",
+            data: expList,
+        });
+        setEngTrainingExpList(expList);
+        console.log(expList);
     }
 
     // 调休信息
@@ -214,13 +218,21 @@ export function ScheduleCard() {
             return {};
         });
         if (examData.items) setExamList(examData.items);
-        // 从内存中加载金工实训缓存
-        const engTrainingExpData = await store.load({
-            key: "engTrainingExpList",
-        }).catch(e => {
+        // 从内存中加载物理实验缓存
+        const phyExpList = await store.load({key: "phyExpList"}).catch(e => {
             console.warn(e);
             return [];
         });
+        if (phyExpList) setPhyExpList(phyExpList);
+        // 从内存中加载金工实训缓存
+        const engTrainingExpData = await store
+            .load({
+                key: "engTrainingExpList",
+            })
+            .catch(e => {
+                console.warn(e);
+                return [];
+            });
         if (engTrainingExpData) setEngTrainingExpList(engTrainingExpData);
 
         loadData();

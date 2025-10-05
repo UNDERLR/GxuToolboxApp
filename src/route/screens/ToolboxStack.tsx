@@ -19,6 +19,7 @@ import {GPAcalculator} from "@/screens/tool/GPAcalculator/GPAcalculator.tsx";
 import {RescheduleNotificationScreen} from "@/screens/tool/notification/RescheduleNotificationScreen.tsx";
 import {SelfCourseSelection} from "@/screens/tool/selfSelectedCourses/SelfCourseSelection.tsx";
 import {TimeShiftScreen} from "@/screens/tool/notification/TimeShiftScreen.tsx";
+import {PhyExpScreen} from "@/screens/tool/infoQuery/praticalCourse/PhyExpScreen.tsx";
 
 const Stack = createNativeStackNavigator();
 
@@ -86,6 +87,8 @@ export function ToolboxStack() {
             <Stack.Screen name="gpaCalculator" component={GPAcalculator} options={{title: "GPA计算器"}} />
             <Stack.Screen name="WidgetPreviewScreen" component={WidgetPreviewScreen} options={{title: "小部件预览"}} />
             <Stack.Screen name="SelfSelectedCourse" component={SelfCourseSelection} options={{title: "自主选课"}} />
+
+            <Stack.Screen name="phyExpScreen" component={PhyExpScreen} options={{title: "物理实验课查询"}} />
 
             <Stack.Screen name="reschedulingNews" component={RescheduleNotificationScreen} options={{title: "调课信息查询"}} />
             <Stack.Screen name="timeShiftScreen" component={TimeShiftScreen} options={{title: "调休信息查询"}} />

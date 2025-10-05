@@ -17,7 +17,6 @@ export function TimeShiftScreen() {
 
     async function init() {
         const {data} = await http.get("https://acm.gxu.edu.cn/mirror/gxujwtapp/data.json");
-        console.log(data);
         setTableData({
             ...tableData,
             body: data.timeShift.map((item: [string, string]) => {
