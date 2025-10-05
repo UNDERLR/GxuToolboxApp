@@ -17,6 +17,8 @@ import {Course, PhyExp, PracticalCourse} from "@/type/infoQuery/course/course.ts
 import {authApi} from "@/js/auth/auth.ts";
 import {BaseClass} from "@/js/class.ts";
 import moment from "moment";
+import axios from "axios";
+import {EngTrainingScheduleRes} from "@/type/api/infoQuery/EngTraining.ts";
 
 export const CourseScheduleData = {
     courseInfoVisible: {
@@ -194,6 +196,11 @@ async function randomCourseColor(courseList: (Course | PracticalCourse)[]) {
 }
 
 export const courseApi = {
+    /**
+     * 获取个人课表
+     * @param year 学年
+     * @param term 学期
+     */
     getCourseSchedule: async (
         year: number | SchoolYearValue,
         term: SchoolTermValue,
@@ -216,6 +223,15 @@ export const courseApi = {
             return;
         }
     },
+    /**
+     * 获取班级课表列表，参数可为空
+     * @param year 学年
+     * @param term 学期
+     * @param schoolId 学院id
+     * @param subjectId 专业id
+     * @param grade 年级
+     * @param classId 班级id
+     */
     getClassCourseScheduleList: async (
         year?: number,
         term?: SchoolTermValue,
@@ -238,6 +254,15 @@ export const courseApi = {
         const res = await http.post("/kbdy/bjkbdy_cxBjkbdyTjkbList.html", reqBody);
         return res.data;
     },
+    /**
+     * 获取班级课表内容
+     * @param year 学年
+     * @param term 学期
+     * @param schoolId 学院id
+     * @param subjectId 专业id
+     * @param grade 年级
+     * @param classId 班级id
+     */
     getClassCourseSchedule: async (
         year: number,
         term: SchoolTermValue,
@@ -268,7 +293,11 @@ export const courseApi = {
         }
     },
 
+    /**
+     * 获取物理实验课列表
+     */
     getPhyExpList: async (): Promise<PhyExpQueryRes> => {
+        // 登录物理实验平台服务
         await authApi.loginService("http://pec.gxu.edu.cn//caslogin.aspx");
         const res = await http.post<{d: string}>(
             "https://pec.gxu.edu.cn/LMSmini/teacher/UI/wxInterface/syjx.asmx/getRuleManage",
@@ -284,6 +313,27 @@ export const courseApi = {
             item => Object.fromEntries(Object.entries(item).map(([key, _]) => [key.toLowerCase(), _])) as PhyExp,
         );
         return data;
+    },
+
+    // 工程训练中心课表相关（金工实训），Engineering training
+    engTraining: {
+        /**
+         * 登录工程训练中心-学生服务
+         */
+        getPersonalExpList: async (): Promise<EngTrainingScheduleRes> => {
+            const {
+                data: {token},
+            } = await authApi.loginEngTraining();
+            const res = await axios.get<EngTrainingScheduleRes>(
+                "http://xlzxms.gxu.edu.cn/api/course-newedition-server/course/course/arrange/stuPersonalArrangeTable",
+                {
+                    headers: {
+                        authorization: token,
+                    },
+                },
+            );
+            return res.data;
+        },
     },
 };
 
