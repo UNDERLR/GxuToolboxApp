@@ -11,7 +11,10 @@ import {Schools, SchoolTermValue} from "@/type/global.ts";
 import {Color} from "@/js/color.ts";
 import {usePagerView} from "react-native-pager-view";
 import {CourseCardSetting} from "@/components/tool/infoQuery/courseSchedule/CourseCardSetting.tsx";
-import {CourseScheduleView} from "@/components/tool/infoQuery/courseSchedule/CourseScheduleView.tsx";
+import {
+    CourseScheduleView,
+    CourseScheduleViewProps,
+} from "@/components/tool/infoQuery/courseSchedule/CourseScheduleView.tsx";
 import {ExamInfo} from "@/type/infoQuery/exam/examInfo.ts";
 import {ExamInfoQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
@@ -27,6 +30,7 @@ import {ActivityItem} from "@/components/app/activity/ActivityItem.tsx";
 import {ActivityDetail} from "@/components/app/activity/ActivityDetail.tsx";
 import {PhyExp} from "@/type/infoQuery/course/course.ts";
 import {http} from "@/js/http.ts";
+import {EngTrainingItem} from "@/components/tool/infoQuery/EngTraining/EngTrainingItem.tsx";
 
 export function ScheduleCard() {
     const {userConfig, updateUserConfig} = useContext(UserConfigContext);
@@ -74,8 +78,8 @@ export function ScheduleCard() {
         },
     });
 
+    // 获取考试
     const [examList, setExamList] = useState<ExamInfo[]>([]);
-
     async function getExamList() {
         const data = await examApi.getExamInfo(year, term);
         if (data?.items) {
@@ -87,6 +91,7 @@ export function ScheduleCard() {
         }
     }
 
+    // 获取自定义事件
     const [activityList, setActivityList] = useState<IActivity[]>([]);
     function getActivityList() {
         console.log(userConfig);
@@ -97,6 +102,8 @@ export function ScheduleCard() {
             setActivityList([]);
         }
     }
+
+    // 获取课表
     async function getCourseSchedule() {
         const data = await courseApi.getCourseSchedule(year, term);
         if (data?.kbList) {
@@ -111,6 +118,7 @@ export function ScheduleCard() {
         }
     }
 
+    // 获取学期第一天
     const getStartDay = useCallback(async () => {
         const userInfo = await store
             .load<UserInfo>({
@@ -139,10 +147,50 @@ export function ScheduleCard() {
         }
     }, [year, term]);
 
+    // 物理实验
     const [phyExpList, setPhyExpList] = useState<PhyExp[]>([]);
     async function getPhyExp() {
         const {data} = await courseApi.getPhyExpList();
         setPhyExpList(data);
+    }
+
+    // 金工实训
+    type EngTrainingExp = {
+        date: string;
+        name: string;
+        y: number;
+        span: number;
+        backgroundColor?: string;
+        type: "engTrainingExp";
+    };
+    const [engTrainingExpList, setEngTrainingExpList] = useState<EngTrainingExp[]>([]);
+    async function getEngTrainingSchedule() {
+            const {datas} = await courseApi.engTraining.getPersonalExpList();
+            const dateList = datas[0].filter(item => item.startRow === 2);
+            // 根据日期获取实训
+            // TODO: 判断节数
+            const expList = dateList.map<EngTrainingExp>(date => {
+                const exp = datas[0].find(
+                    item =>
+                        item.startRow === 9 &&
+                        item.startCol <= date.startCol &&
+                        item.startCol + item.colNumber >= date.startCol + date.colNumber,
+                );
+                return {
+                    date: date.content,
+                    type: "engTrainingExp",
+                    name: exp?.content ?? "",
+                    y: 0,
+                    span: 8,
+                    backgroundColor: undefined,
+                };
+            });
+            await store.save({
+                key: "engTrainingExpList",
+                data: expList,
+            });
+            setEngTrainingExpList(expList);
+            console.log(expList);
     }
 
     const [timeShift, setTimeShift] = useState<[string, string][]>([]);
@@ -153,16 +201,27 @@ export function ScheduleCard() {
     }
 
     async function init() {
+        // 从内存中加载课程缓存
         const courseData: CourseScheduleQueryRes = await store.load({key: "courseRes"}).catch(e => {
             console.warn(e);
             return {};
         });
         if (courseData.kbList) setCourseSchedule(new CourseScheduleClass(courseData));
+        // 从内存中加载考试缓存
         const examData: ExamInfoQueryRes = await store.load({key: "examInfo"}).catch(e => {
             console.warn(e);
             return {};
         });
         if (examData.items) setExamList(examData.items);
+        // 从内存中加载金工实训缓存
+        const engTrainingExpData = await store.load({
+            key: "engTrainingExpList",
+        }).catch(e => {
+            console.warn(e);
+            return [];
+        });
+        if (engTrainingExpData) setEngTrainingExpList(engTrainingExpData);
+
         loadData();
     }
 
@@ -172,11 +231,57 @@ export function ScheduleCard() {
         await getExamList();
         getActivityList();
         await getStartDay();
+        await getEngTrainingSchedule();
     }
 
     useEffect(() => {
         init();
     }, [year, term, userConfig.activity]);
+
+    type ExtendItemType = ExamInfo | IActivity | EngTrainingExp;
+    type ScheduleViewType = CourseScheduleViewProps<ExtendItemType>;
+    const itemList = [...examList, ...activityList, ...engTrainingExpList];
+    // 自定义元素渲染
+    const itemRender: ScheduleViewType["itemRender"] = (item, onPressHook) => {
+        switch (true) {
+            case (item as EngTrainingExp).type === "engTrainingExp":
+                return <EngTrainingItem item={item as EngTrainingExp} />;
+            case item.hasOwnProperty("xh_id"):
+                return <CourseScheduleExamItem examInfo={item as ExamInfo} onPress={onPressHook} />;
+            case item.hasOwnProperty("weekSpan"):
+                return <ActivityItem item={item as IActivity} onPress={onPressHook} />;
+            default:
+                return <></>;
+        }
+    };
+    // 自定义元素详情渲染
+    const itemDetailRender: ScheduleViewType["itemDetailRender"] = item => {
+        switch (true) {
+            case item.hasOwnProperty("xh_id"):
+                return <ExamDetail examInfo={item as ExamInfo} />;
+            case item.hasOwnProperty("weekSpan"):
+                return <ActivityDetail activity={item as IActivity} />;
+            default:
+                return <></>;
+        }
+    };
+    // 判断元素是否显示
+    const isItemShow: ScheduleViewType["isItemShow"] = (item, day, week) => {
+        switch (true) {
+            case (item as EngTrainingExp).type === "engTrainingExp":
+                return moment((item as EngTrainingExp).date, "MM月D日").isSame(day, "d");
+            case item.hasOwnProperty("xh_id"):
+                return moment((item as ExamInfo).kssj.replace(/\(.*?\)/, "")).isSame(day, "d");
+            case item.hasOwnProperty("weekSpan"):
+                return (
+                    (item as IActivity).weekday === day.weekday() &&
+                    week >= (item as IActivity).weekSpan[0] &&
+                    week <= (item as IActivity).weekSpan[1]
+                );
+            default:
+                return false;
+        }
+    };
     return (
         <Card containerStyle={style.card}>
             <Card.Title style={style.cardTitle}>
@@ -209,7 +314,7 @@ export function ScheduleCard() {
                 </Flex>
             </Card.Title>
             <Card.Divider />
-            <CourseScheduleView<ExamInfo | IActivity>
+            <CourseScheduleView<ExtendItemType>
                 showDate
                 showNextCourse
                 showTimeSpanHighlight
@@ -219,28 +324,10 @@ export function ScheduleCard() {
                 courseSchedule={courseSchedule}
                 pageView={pagerView}
                 phyExpList={phyExpList}
-                itemList={[...examList, ...activityList]}
-                itemRender={(item, onPressHook) =>
-                    item.hasOwnProperty("xh_id") ? (
-                        <CourseScheduleExamItem examInfo={item as ExamInfo} onPress={onPressHook} />
-                    ) : (
-                        <ActivityItem item={item as IActivity} onPress={onPressHook} />
-                    )
-                }
-                itemDetailRender={item =>
-                    item.hasOwnProperty("xh_id") ? (
-                        <ExamDetail examInfo={item as ExamInfo} />
-                    ) : (
-                        <ActivityDetail activity={item as IActivity} />
-                    )
-                }
-                isItemShow={(item, day, week) =>
-                    item.hasOwnProperty("xh_id")
-                        ? moment((item as ExamInfo).kssj.replace(/\(.*?\)/, "")).isSame(day, "d")
-                        : (item as IActivity).weekday === day.weekday() &&
-                          week >= (item as IActivity).weekSpan[0] &&
-                          week <= (item as IActivity).weekSpan[1]
-                }
+                itemList={itemList}
+                itemRender={itemRender}
+                itemDetailRender={itemDetailRender}
+                isItemShow={isItemShow}
             />
             {courseSchedule?.sjkList && (
                 <>

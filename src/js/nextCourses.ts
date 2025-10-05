@@ -68,7 +68,6 @@ export const nextCourses = async () => {
         return null;
     });
     const startDay = config.jw.startDay;
-    console.log(startDay);
     const now = moment();
     const tmr = now.clone().add(1, "day");
 
@@ -77,7 +76,6 @@ export const nextCourses = async () => {
     let next: any = null;
     const startTimes = timeSpanList.map(span => span.split("\n")[0]);
     const endTimes = timeSpanList.map(span => span.split("\n")[1]);
-    console.log("now", now.format("YYYY-MM-DD HH:mm:ss"));
     list.forEach(course => {
         const dayOfWeek = parseInt(course.xqj, 10);
         const startSection = parseInt(course.jcs.split("-")[0], 10) - 1;

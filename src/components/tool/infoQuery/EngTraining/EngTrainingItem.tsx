@@ -1,46 +1,52 @@
 import React, {useContext, useMemo} from "react";
-import {Pressable, StyleSheet, ViewStyle} from "react-native";
+import {StyleSheet, ViewStyle} from "react-native";
 import {Color} from "@/js/color.ts";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {Text, useTheme} from "@rneui/themed";
-import {Icon} from "@/components/un-ui/Icon.tsx";
-import {Course} from "@/type/infoQuery/course/course.ts";
 import {CourseScheduleContext} from "@/js/jw/course.ts";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
+import {Icon} from "@/components/un-ui/Icon.tsx";
 
+type EngTrainingExp = {
+    date: string;
+    name: string;
+    y: number;
+    span: number;
+    backgroundColor: string;
+    type: "engTrainingExp";
+};
 interface Props {
     style?: ViewStyle;
-    course: Record<string, any>;
-    index: number;
-    onCoursePress?: (course: Course) => void;
+    item: EngTrainingExp;
 }
 
 export function EngTrainingItem(props: Props) {
     const {userConfig} = useContext(UserConfigContext);
     const {courseScheduleData, courseScheduleStyle} = useContext(CourseScheduleContext)!;
     const {theme} = useTheme();
-    const {course} = props;
-    const {span, y} = course;
+    const {item} = props;
+    const {span, y} = item;
     const itemStyle = useMemo(() => {
         return StyleSheet.create({
-            course: {
+            item: {
                 height: span * userConfig.theme.course.timeSpanHeight - userConfig.theme.course.courseItemMargin * 2,
                 position: "absolute",
-                backgroundColor: Color(course.backgroundColor ?? theme.colors.primary).setAlpha(
+                backgroundColor: Color(item.backgroundColor ?? theme.colors.primary).setAlpha(
                     theme.mode === "light" ? 0.3 : 0.1,
                 ).rgbaString,
                 top:
                     userConfig.theme.course.weekdayHeight +
                     y * userConfig.theme.course.timeSpanHeight +
                     userConfig.theme.course.courseItemMargin,
+                zIndex: -1,
             },
             text: {
                 textAlign: "center",
-                color: Color.mix(course.backgroundColor ?? theme.colors.primary, theme.colors.black, 0.5).rgbaString,
+                color: Color.mix(item.backgroundColor ?? theme.colors.primary, theme.colors.black, 0.5).rgbaString,
             },
         });
     }, [
-        course.backgroundColor,
+        item.backgroundColor,
         userConfig.theme.course.courseItemMargin,
         userConfig.theme.course.timeSpanHeight,
         userConfig.theme.course.weekdayHeight,
@@ -51,29 +57,12 @@ export function EngTrainingItem(props: Props) {
     ]);
     return (
         // 课程元素
-        <Pressable
-            onPress={e => {
-                props.onCoursePress?.(course);
-            }}
-            android_ripple={userConfig.theme.ripple}
-            style={[props.style,itemStyle.course, courseScheduleStyle.courseItem]}>
-            <Flex direction="column" gap={5}>
-                {courseScheduleData.courseInfoVisible.name && (
-                    <Text style={[itemStyle.text, {fontWeight: 700}]}>{course.kcmc}</Text>
-                )}
-                {courseScheduleData.courseInfoVisible.position && (
-                    <Text style={itemStyle.text}>
-                        <Icon type="fontawesome" name="map-marker" style={itemStyle.text} />
-                        {"\n" + course.cdmc.replace("-", "\n")}
-                    </Text>
-                )}
-                {courseScheduleData.courseInfoVisible.teacher && (
-                    <Text style={itemStyle.text} ellipsizeMode="tail" numberOfLines={5}>
-                        <Icon name="user" style={itemStyle.text} />
-                        {"\n" + course.xm}
-                    </Text>
-                )}
-            </Flex>
-        </Pressable>
+        <Flex direction="column" gap={5} style={[itemStyle.item, courseScheduleStyle.courseItem]}>
+            <Icon name="tool" style={itemStyle.text} />
+            <Text style={[itemStyle.text, {fontWeight: 700}]}>金工实训</Text>
+            {courseScheduleData.courseInfoVisible.name && (
+                <Text style={[itemStyle.text, {fontWeight: 700}]}>{item.name}</Text>
+            )}
+        </Flex>
     );
 }
