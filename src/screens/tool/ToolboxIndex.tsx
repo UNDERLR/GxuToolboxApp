@@ -44,16 +44,26 @@ const toolList = [
                 icon: <Icon name="barschart" size={iconSize} />,
                 navigation: "examScore",
             },
-            {
-                label: "调课信息查询",
-                icon: <Icon name="notification" size={iconSize} />,
-                navigation: "reschedulingNews",
-            },
             // {
             //     label: "自主选课",
             //     icon: <Icon name="barschart" size={iconSize} />,
             //     navigation: "SelfSelectedCourse",
             // },
+        ],
+    },
+    {
+        title: "通知",
+        data: [
+            {
+                label: "调课信息查询",
+                icon: <Icon name="notification" size={iconSize} />,
+                navigation: "reschedulingNews",
+            },
+            {
+                label: "调休信息查询",
+                icon: <Icon type="fontawesome" name="clock-o" size={iconSize} />,
+                navigation: "timeShiftScreen",
+            },
         ],
     },
     {
@@ -90,8 +100,8 @@ export function ToolboxIndex() {
 
     const data = {
         style: {
-            cardBg: Color(theme.colors.background).setAlpha(
-                0.1 + ((theme.mode === "light" ? 0.7 : 0.4) * userConfig.theme.bgOpacity) / 100,
+            cardBg: Color(theme.mode === "light" ? theme.colors.background : theme.colors.grey5).setAlpha(
+                0.1 + ((theme.mode === "light" ? 0.7 : 0.1) * userConfig.theme.bgOpacity) / 100,
             ).rgbaString,
             settingItemRipple: {
                 color: theme.colors.grey4,

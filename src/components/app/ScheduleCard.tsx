@@ -193,6 +193,7 @@ export function ScheduleCard() {
             console.log(expList);
     }
 
+    // 调休信息
     const [timeShift, setTimeShift] = useState<[string, string][]>([]);
     async function getTimeShift() {
         const {data} = await http.get("https://acm.gxu.edu.cn/mirror/gxujwtapp/data.json");

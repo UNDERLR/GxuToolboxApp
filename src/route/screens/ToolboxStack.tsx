@@ -18,6 +18,7 @@ import {WidgetPreviewScreen} from "@/screens/tool/widgetPreview/WidgetPreviewScr
 import {GPAcalculator} from "@/screens/tool/GPAcalculator/GPAcalculator.tsx";
 import {RescheduleNotificationScreen} from "@/screens/tool/notification/RescheduleNotificationScreen.tsx";
 import {SelfCourseSelection} from "@/screens/tool/selfSelectedCourses/SelfCourseSelection.tsx";
+import {TimeShiftScreen} from "@/screens/tool/notification/TimeShiftScreen.tsx";
 
 const Stack = createNativeStackNavigator();
 
@@ -82,10 +83,12 @@ export function ToolboxStack() {
 
             <Stack.Screen name="examInfo" component={ExamInfo} options={{title: "考试信息查询"}} />
             <Stack.Screen name="examScore" component={ExamScore} options={{title: "考试成绩查询"}} />
-            <Stack.Screen name="reschedulingNews" component={RescheduleNotificationScreen} options={{title: "调课信息查询"}} />
             <Stack.Screen name="gpaCalculator" component={GPAcalculator} options={{title: "GPA计算器"}} />
             <Stack.Screen name="WidgetPreviewScreen" component={WidgetPreviewScreen} options={{title: "小部件预览"}} />
             <Stack.Screen name="SelfSelectedCourse" component={SelfCourseSelection} options={{title: "自主选课"}} />
+
+            <Stack.Screen name="reschedulingNews" component={RescheduleNotificationScreen} options={{title: "调课信息查询"}} />
+            <Stack.Screen name="timeShiftScreen" component={TimeShiftScreen} options={{title: "调休信息查询"}} />
 
             <Stack.Screen name="EvaluationOverview" component={EvaluationOverview} options={{title: "期末学生评价"}} />
             <Stack.Screen name="EvaluationDetail" component={EvaluationDetail} options={{title: "学生评价细节"}} />
