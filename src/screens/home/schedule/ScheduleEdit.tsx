@@ -179,7 +179,7 @@ export function ScheduleEdit() {
                             <Icon name="plus" size={24} />
                         </Pressable>
                         <Pressable onPress={save} android_ripple={userConfig.theme.ripple} style={{padding: 5}}>
-                            <Icon name="save" size={24} color={theme.colors.primary} />
+                            <Icon name="content-save" size={24} color={theme.colors.primary} />
                         </Pressable>
                     </Flex>
                 </Flex>

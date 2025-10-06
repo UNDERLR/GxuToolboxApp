@@ -25,23 +25,23 @@ const toolList = [
         data: [
             {
                 label: "课表查询",
-                icon: <Icon name="calendar-sharp" type="Ionicon" size={iconSize} />,
+                icon: <Icon name="calendar-month" size={iconSize} />,
                 type: "navigation",
                 navigation: "courseScheduleQuery",
             },
             {
                 label: "班级课表查询",
-                icon: <Icon name="calendar-outline" type="Ionicon" size={iconSize} />,
+                icon: <Icon name="calendar-month-outline" size={iconSize} />,
                 navigation: "classCourseSchedule",
             },
             {
                 label: "考试信息查询",
-                icon: <Icon name="book" size={iconSize} />,
+                icon: <Icon name="information-box-outline" size={iconSize} />,
                 navigation: "examInfo",
             },
             {
                 label: "考试成绩查询",
-                icon: <Icon name="barschart" size={iconSize} />,
+                icon: <Icon name="chart-box" size={iconSize} />,
                 navigation: "examScore",
             },
             // {
@@ -56,12 +56,12 @@ const toolList = [
         data: [
             {
                 label: "物理实验课查询",
-                icon: <Icon name="tool" size={iconSize} />,
+                icon: <Icon name="flask" size={iconSize} />,
                 navigation: "phyExpScreen",
             },
             {
                 label: "金工实训查询",
-                icon: <Icon name="tool" size={iconSize} />,
+                icon: <Icon name="tools" size={iconSize} />,
                 navigation: "engTrainingScheduleScreen",
             },
         ],
@@ -71,12 +71,12 @@ const toolList = [
         data: [
             {
                 label: "调课信息查询",
-                icon: <Icon name="notification" size={iconSize} />,
+                icon: <Icon name="clock-star-four-points-outline" size={iconSize} />,
                 navigation: "reschedulingNews",
             },
             {
                 label: "调休信息查询",
-                icon: <Icon type="fontawesome" name="clock-o" size={iconSize} />,
+                icon: <Icon name="calendar-clock" size={iconSize} />,
                 navigation: "timeShiftScreen",
             },
         ],
@@ -86,7 +86,7 @@ const toolList = [
         data: [
             {
                 label: "期末学生评价",
-                icon: <Icon name="infocirlceo" size={iconSize} />,
+                icon: <Icon name="invoice-text-edit" size={iconSize} />,
                 navigation: "EvaluationOverview",
             },
         ],
@@ -96,12 +96,12 @@ const toolList = [
         data: [
             {
                 label: "地图导航",
-                icon: <Icon type="Ionicon" name="compass-outline" size={iconSize} />,
+                icon: <Icon name="map" size={iconSize} />,
                 navigation: "PositionListScreen",
             },
             {
                 label: "小部件预览",
-                icon: <Icon type="Ionicon" name="compass-outline" size={iconSize} />,
+                icon: <Icon name="widgets" size={iconSize} />,
                 navigation: "WidgetPreviewScreen",
             },
         ],

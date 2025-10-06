@@ -305,18 +305,18 @@ export function ScheduleCard() {
                                 onPress={() => {
                                     rest.setPage(realCurrentWeek - 1);
                                 }}>
-                                <Icon name="back" size={24} />
+                                <Icon name="history" size={24} />
                             </Pressable>
                         )}
                         <Pressable
                             android_ripple={userConfig.theme.ripple}
                             onPress={() => navigation.navigate("ScheduleEdit")}>
-                            <Icon name="edit" size={24} />
+                            <Icon name="table-edit" size={24} />
                         </Pressable>
                         <Pressable
                             android_ripple={userConfig.theme.ripple}
                             onPress={() => setCourseScheduleSettingVisible(true)}>
-                            <Icon name="setting" size={24} />
+                            <Icon name="cog" size={24} />
                         </Pressable>
                         <Pressable
                             android_ripple={userConfig.theme.ripple}

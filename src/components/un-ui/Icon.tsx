@@ -1,27 +1,45 @@
-import AntDesign from "react-native-vector-icons/AntDesign.js";
-import FontAwesome from "react-native-vector-icons/FontAwesome.js";
-import Ionicons from "react-native-vector-icons/Ionicons.js";
 import {IconProps, useTheme} from "@rneui/themed";
+import AntDesign, {AntDesignIconName} from "@react-native-vector-icons/ant-design";
+import Ionicons, {IoniconsIconName} from "@react-native-vector-icons/ionicons";
+import FontAwesome6, {FontAwesome6RegularIconName} from "@react-native-vector-icons/fontawesome6";
+import {MaterialDesignIcons, MaterialDesignIconsIconName} from "@react-native-vector-icons/material-design-icons";
 
-interface Props extends IconProps{
-    name: string;
+interface Props extends IconProps {
+    name: AntDesignIconName | FontAwesome6RegularIconName | IoniconsIconName | MaterialDesignIconsIconName;
     size?: number;
     color?: string;
-    type?: "antdesign" | "fontawesome" | "Ionicon";
+    type?: "antdesign" | "fontawesome" | "Ionicon" | "material";
 }
 
-export function Icon({type = "antdesign", name, size = 12, color, ...props}: Props) {
+export function Icon({type = "material", name, size = 12, color, ...props}: Props) {
     const {theme} = useTheme();
     const iconColor = color || theme.colors.black;
 
     switch (type) {
         case "antdesign":
-            return <AntDesign name={name} size={size} color={iconColor} {...props} />;
+            return <AntDesign name={name as AntDesignIconName} size={size} color={iconColor} {...props} />;
         case "fontawesome":
-            return <FontAwesome name={name} size={size} color={iconColor} {...props} />;
+            return (
+                <FontAwesome6
+                    name={name as FontAwesome6RegularIconName}
+                    iconStyle="regular"
+                    size={size}
+                    color={iconColor}
+                    {...props}
+                />
+            );
         case "Ionicon":
-            return <Ionicons name={name} size={size} color={iconColor} {...props} />;
+            return <Ionicons name={name as IoniconsIconName} size={size} color={iconColor} {...props} />;
+        case "material":
+            return (
+                <MaterialDesignIcons
+                    name={name as MaterialDesignIconsIconName}
+                    size={size}
+                    color={iconColor}
+                    {...props}
+                />
+            );
         default:
-            return <AntDesign name={name} size={size} color={iconColor} {...props} />;
+            return <AntDesign name={name as AntDesignIconName} size={size} color={iconColor} {...props} />;
     }
 }

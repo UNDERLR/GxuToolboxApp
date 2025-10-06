@@ -67,7 +67,7 @@ export function MainTab() {
                 options={{
                     headerShown: false,
                     title: "工具箱",
-                    tabBarIcon: props => Icon({name: "inbox", ...props}),
+                    tabBarIcon: props => Icon({name: "toolbox", ...props}),
                 }}
                 component={ToolboxStack}
             />
@@ -76,7 +76,7 @@ export function MainTab() {
                 options={{
                     title: "设置",
                     headerShown: false,
-                    tabBarIcon: props => Icon({name: "setting", ...props}),
+                    tabBarIcon: props => Icon({name: "cog", ...props}),
                 }}
                 component={SettingStack}
             />

@@ -85,7 +85,7 @@ export function CourseScheduleExamItem(props: Props) {
                 <Text style={itemStyle.text}>考试</Text>
                 <Text style={itemStyle.text}>{examInfo.kcmc}</Text>
                 <Text style={itemStyle.text}>
-                    <Icon type="fontawesome" name="map-marker" style={itemStyle.text} />
+                    <Icon name="map-marker" style={itemStyle.text} />
                     {"\n" + examInfo.cdmc.replace("-", "\n")}
                 </Text>
                 <Text style={itemStyle.text}>{`<${examInfo.zwh}>`}</Text>

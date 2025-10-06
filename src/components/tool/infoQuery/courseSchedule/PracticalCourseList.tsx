@@ -87,11 +87,11 @@ export function PracticalCourseList(props: Props) {
                         ]}>
                         <Text style={itemStyle.text}>{course.qtkcgs}</Text>
                         <Flex gap={5}>
-                            <Icon name="clockcircleo" style={itemStyle.text} />
+                            <Icon name="clock" style={itemStyle.text} />
                             <Text style={itemStyle.text}>{course.qsjsz}</Text>
                         </Flex>
                         <Flex gap={5}>
-                            <Icon name="user" style={itemStyle.text} />
+                            <Icon name="account" style={itemStyle.text} />
                             <Text style={itemStyle.text}>{course.jsxm}</Text>
                         </Flex>
                     </View>

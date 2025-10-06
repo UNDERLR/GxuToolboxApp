@@ -67,13 +67,13 @@ export function CourseItem(props: Props) {
                 )}
                 {courseScheduleData.courseInfoVisible.position && (
                     <Text style={itemStyle.text}>
-                        <Icon type="fontawesome" name="map-marker" style={itemStyle.text} />
+                        <Icon name="map-marker" style={itemStyle.text} />
                         {"\n" + course.cdmc.replace("-", "\n")}
                     </Text>
                 )}
                 {courseScheduleData.courseInfoVisible.teacher && (
                     <Text style={itemStyle.text} ellipsizeMode="tail" numberOfLines={5}>
-                        <Icon name="user" style={itemStyle.text} />
+                        <Icon name="account" style={itemStyle.text} />
                         {"\n" + course.xm}
                     </Text>
                 )}

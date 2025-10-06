@@ -58,7 +58,7 @@ export function EngTrainingItem(props: Props) {
     return (
         // 课程元素
         <Flex direction="column" gap={5} style={[itemStyle.item, courseScheduleStyle.courseItem]}>
-            <Icon name="tool" style={itemStyle.text} />
+            <Icon name="tools" style={itemStyle.text} />
             <Text style={[itemStyle.text, {fontWeight: 700}]}>金工实训</Text>
             {courseScheduleData.courseInfoVisible.name && (
                 <Text style={[itemStyle.text, {fontWeight: 700}]}>{item.name}</Text>

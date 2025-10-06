@@ -95,7 +95,7 @@ export function UnSectionList(props: Props & SectionListProps<UnListItem, UnList
                         style={itemStyle}
                         android_ripple={userConfig.theme.ripple}>
                         <Text>{item.label}</Text>
-                        <Icon name="right" size={16} />
+                        <Icon name="chevron-right" size={16} />
                     </Pressable>
                 );
             case "text":
