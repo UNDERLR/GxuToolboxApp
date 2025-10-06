@@ -149,6 +149,10 @@ export function ToolboxIndex() {
         toolIcon: {
             marginVertical: 10,
         },
+        toolLabel: {
+            fontSize: 14,
+            textAlign: "center",
+        },
     });
 
     return (
@@ -165,9 +169,7 @@ export function ToolboxIndex() {
                                 onPress={() => navigation.navigate(tool.navigation)}>
                                 <Flex direction="column" inline>
                                     <View style={style.toolIcon}>{tool.icon}</View>
-                                    <View>
-                                        <Text>{tool.label}</Text>
-                                    </View>
+                                    <Text style={style.toolLabel}>{tool.label}</Text>
                                 </Flex>
                             </Pressable>
                         ))}

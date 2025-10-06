@@ -60,12 +60,15 @@ export function UnSectionList(props: Props & SectionListProps<UnListItem, UnList
         settingItem: {
             flexDirection: "row",
             justifyContent: "space-between",
-            paddingVertical: 20,
+            paddingVertical: 15,
             paddingHorizontal: 10,
         },
         linkText: {
             borderBottomWidth: 1,
             borderBottomColor: theme.colors.black,
+        },
+        labelText: {
+            fontSize: 16,
         },
     });
 
@@ -94,14 +97,14 @@ export function UnSectionList(props: Props & SectionListProps<UnListItem, UnList
                         onPress={() => navigation.navigate(item.value)}
                         style={itemStyle}
                         android_ripple={userConfig.theme.ripple}>
-                        <Text>{item.label}</Text>
+                        <Text style={style.labelText}>{item.label}</Text>
                         <Icon name="chevron-right" size={16} />
                     </Pressable>
                 );
             case "text":
                 return (
                     <Flex style={itemStyle} justify="space-between">
-                        <Text>{item.label}</Text>
+                        <Text style={style.labelText}>{item.label}</Text>
                         <Text>{item.value}</Text>
                     </Flex>
                 );
@@ -111,7 +114,7 @@ export function UnSectionList(props: Props & SectionListProps<UnListItem, UnList
                         onPress={() => openUrl(item.url)}
                         style={itemStyle}
                         android_ripple={userConfig.theme.ripple}>
-                        <Text>{item.label}</Text>
+                        <Text style={style.labelText}>{item.label}</Text>
                         <Text style={style.linkText}>
                             <Icon name="link" size={16} />
                             {item.value ?? item.url}
@@ -121,7 +124,7 @@ export function UnSectionList(props: Props & SectionListProps<UnListItem, UnList
             case "any":
                 return (
                     <Flex style={itemStyle} justify="space-between">
-                        <Text>{item.label}</Text>
+                        <Text style={style.labelText}>{item.label}</Text>
                         {item.value}
                     </Flex>
                 );
@@ -129,7 +132,7 @@ export function UnSectionList(props: Props & SectionListProps<UnListItem, UnList
                 return (
                     <Flex direction="column" align="flex-start" gap={10} style={itemStyle}>
                         <View>
-                            <Text>{item.label}</Text>
+                            <Text style={style.labelText}>{item.label}</Text>
                         </View>
                         {item.value}
                     </Flex>
@@ -137,7 +140,7 @@ export function UnSectionList(props: Props & SectionListProps<UnListItem, UnList
             default:
                 return (
                     <View style={itemStyle}>
-                        <Text>{item.label}</Text>
+                        <Text style={style.labelText}>{item.label}</Text>
                     </View>
                 );
         }
