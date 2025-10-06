@@ -194,7 +194,6 @@ export function ScheduleCard() {
             data: expList,
         });
         setEngTrainingExpList(expList);
-        console.log(expList);
     }
 
     // 调休信息

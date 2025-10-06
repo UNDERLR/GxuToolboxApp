@@ -6,64 +6,91 @@ import {Color} from "@/js/color.ts";
 import "moment/locale/zh-cn";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {store} from "@/js/store.ts";
-import {PhyExp} from "@/type/infoQuery/course/course.ts";
 import {courseApi} from "@/js/jw/course.ts";
 import moment from "moment/moment";
 import {WebViewSource} from "react-native-webview/lib/WebViewTypes";
 import {useNavigation} from "@react-navigation/native";
+import {urlWithParams} from "@/js/http.ts";
 
-export function PhyExpScreen() {
+type EngTrainingExp = {
+    date: string;
+    name: string;
+    y: number;
+    span: number;
+    backgroundColor?: string;
+    type: "engTrainingExp";
+};
+
+export function EngTrainingScheduleScreen() {
     const {theme} = useTheme();
     const navigation = useNavigation();
     const [tableData, setTableData] = useState({
-        header: ["上课时间", "上课地点", "实验名称"],
-        width: [130, 190, 300],
+        header: ["上课时间", "实验名称"],
+        width: [130, 250],
         body: [] as (string | Element)[][],
     });
 
-    function formatData(list: PhyExp[]) {
+    function formatData(list: EngTrainingExp[]) {
         setTableData({
             ...tableData,
             body: list.map(item => [
                 <Text
                     style={{
                         textAlign: "center",
-                        opacity: moment(item.skrq, "YYYYMMDD").isBefore(moment(), "d") ? 0.5 : 1,
+                        opacity: moment(item.date, "M月DD").isBefore(moment(), "d") ? 0.5 : 1,
                     }}>
-                    {moment(item.skrq, "YYYYMMDD").format("YYYY年MM月DD日")}
+                    {moment(item.date, "M月DD").format("YYYY年MM月DD日")}
                 </Text>,
-                item.fjbh,
-                item.xmmc,
+                item.name,
             ]),
         });
     }
 
     async function init() {
         // 从内存中加载物理实验缓存
-        const phyExpList = await store.load({key: "phyExpList"}).catch(e => {
+        const engTrainingExpList = await store.load({key: "engTrainingExpList"}).catch(e => {
             console.warn(e);
             return [];
         });
-        if (phyExpList) formatData(phyExpList);
+        if (engTrainingExpList) formatData(engTrainingExpList);
         getData();
     }
 
     function openWeb() {
         navigation.navigate("webViewScreen", {
-            title: "物理实验教学中心",
+            title: "工程训练中心",
             source: {
-                uri: "https://pec.gxu.edu.cn/Customer/MasterPage/UserCenterPage.html",
+                uri: "http://xlzxms.gxu.edu.cn/api/security-server/dietc/loginsso/student",
             } as WebViewSource,
         });
     }
 
     async function getData() {
-        const {data} = await courseApi.getPhyExpList();
-        formatData(data);
-        await store.save({
-            key: "phyExpList",
-            data,
+        const {datas} = await courseApi.engTraining.getPersonalExpList();
+        const dateList = datas[0].filter(item => item.startRow === 2);
+        // 根据日期获取实训
+        // TODO: 判断节数
+        const expList = dateList.map<EngTrainingExp>(date => {
+            const exp = datas[0].find(
+                item =>
+                    item.startRow === 9 &&
+                    item.startCol <= date.startCol &&
+                    item.startCol + item.colNumber >= date.startCol + date.colNumber,
+            );
+            return {
+                date: date.content,
+                type: "engTrainingExp",
+                name: exp?.content ?? "",
+                y: 0,
+                span: 8,
+                backgroundColor: undefined,
+            };
         });
+        await store.save({
+            key: "engTrainingExpList",
+            data: expList,
+        });
+        formatData(expList);
     }
 
     useEffect(() => {
@@ -93,7 +120,7 @@ export function PhyExpScreen() {
         <ScrollView contentContainerStyle={{padding: "5%"}}>
             <Flex direction="column" gap={10}>
                 <Button containerStyle={{width: "100%"}} onPress={openWeb}>
-                    在物理实验中心查看
+                    在工程训练中心查看
                 </Button>
                 {tableData.body.length > 0 ? (
                     <ScrollView horizontal>
@@ -114,7 +141,7 @@ export function PhyExpScreen() {
                         </Table>
                     </ScrollView>
                 ) : (
-                    <Text>当前学期没有实验课，无法查询过往学期的课程列表</Text>
+                    <Text>当前学期没有金工实训课，无法查询过往学期的课程列表</Text>
                 )}
             </Flex>
         </ScrollView>

@@ -59,6 +59,11 @@ const toolList = [
                 icon: <Icon name="tool" size={iconSize} />,
                 navigation: "phyExpScreen",
             },
+            {
+                label: "金工实训查询",
+                icon: <Icon name="tool" size={iconSize} />,
+                navigation: "engTrainingScheduleScreen",
+            },
         ],
     },
     {

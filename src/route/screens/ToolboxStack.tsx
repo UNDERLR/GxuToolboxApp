@@ -20,6 +20,7 @@ import {RescheduleNotificationScreen} from "@/screens/tool/notification/Reschedu
 import {SelfCourseSelection} from "@/screens/tool/selfSelectedCourses/SelfCourseSelection.tsx";
 import {TimeShiftScreen} from "@/screens/tool/notification/TimeShiftScreen.tsx";
 import {PhyExpScreen} from "@/screens/tool/infoQuery/praticalCourse/PhyExpScreen.tsx";
+import {EngTrainingScheduleScreen} from "@/screens/tool/infoQuery/praticalCourse/EngTrainingScheduleScreen.tsx";
 
 const Stack = createNativeStackNavigator();
 
@@ -89,6 +90,7 @@ export function ToolboxStack() {
             <Stack.Screen name="SelfSelectedCourse" component={SelfCourseSelection} options={{title: "自主选课"}} />
 
             <Stack.Screen name="phyExpScreen" component={PhyExpScreen} options={{title: "物理实验课查询"}} />
+            <Stack.Screen name="engTrainingScheduleScreen" component={EngTrainingScheduleScreen} options={{title: "金工实训查询"}} />
 
             <Stack.Screen name="reschedulingNews" component={RescheduleNotificationScreen} options={{title: "调课信息查询"}} />
             <Stack.Screen name="timeShiftScreen" component={TimeShiftScreen} options={{title: "调休信息查询"}} />
