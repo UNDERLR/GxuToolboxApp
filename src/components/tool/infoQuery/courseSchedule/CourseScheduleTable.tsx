@@ -194,7 +194,7 @@ export function CourseScheduleTable<T = any>(props: CourseScheduleTableProps<T>)
                     props.timeShift.findIndex(item => moment(item[0], "YYYY-MM-DD").isSame(currentDay, "day")) > -1;
                 return (
                     // 当日课程渲染
-                    <View style={weekdayContainerStyle} key={`day-${currentDay.format("YYYY-MM-DD")}-${index}`}>
+                    <View style={weekdayContainerStyle} key={`day-${currentWeek}-${weekday}-${index}`}>
                         {/* 日期部分 */}
                         <View style={courseScheduleStyle.weekdayItem}>
                             <Text style={weekdayTextStyle}>
@@ -206,7 +206,7 @@ export function CourseScheduleTable<T = any>(props: CourseScheduleTableProps<T>)
                         </View>
                         {courseSchedule[index].map((course, i) => {
                             // 物理实验课替换
-                            if (Array.isArray(props.phyExpList)) {
+                            if (Array.isArray(props.phyExpList) && course.kcmc === "大学物理实验") {
                                 const phyExpIndex = props.phyExpList.findIndex(item =>
                                     currentDay.isSame(moment(item.skrq, "YYYYMMDD"), "day"),
                                 );

@@ -200,8 +200,7 @@ export function ScheduleCard() {
     const [timeShift, setTimeShift] = useState<[string, string][]>([]);
     async function getTimeShift() {
         const {data} = await http.get("https://acm.gxu.edu.cn/mirror/gxujwtapp/data.json");
-        console.log(data);
-        setTimeShift(data.timeShift);
+        if (data) setTimeShift(data.timeShift);
     }
 
     async function init() {
@@ -319,7 +318,12 @@ export function ScheduleCard() {
                             onPress={() => setCourseScheduleSettingVisible(true)}>
                             <Icon name="setting" size={24} />
                         </Pressable>
-                        <Pressable android_ripple={userConfig.theme.ripple} onPress={loadData}>
+                        <Pressable
+                            android_ripple={userConfig.theme.ripple}
+                            onPress={() => {
+                                loadData();
+                                ToastAndroid.show("尝试刷新数据", ToastAndroid.SHORT);
+                            }}>
                             <Icon name="sync" size={24} />
                         </Pressable>
                     </Flex>
