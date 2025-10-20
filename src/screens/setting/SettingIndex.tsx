@@ -40,6 +40,11 @@ export function SettingIndex() {
                     value: "authAccount",
                 },
                 {
+                    label: "考勤系统账号设置",
+                    type: "navigation",
+                    value: "attendanceSystemAccount",
+                },
+                {
                     label: "偏好设置",
                     type: "navigation",
                     value: "userPreferenceSetting",

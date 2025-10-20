@@ -4,6 +4,8 @@ import cheerio from "react-native-cheerio";
 import {userMgr} from "@/js/mgr/user.ts";
 import axios, {AxiosResponse} from "axios";
 import {EngTrainingTokenRes, EngTrainingTokenResData} from "@/type/api/infoQuery/EngTraining.ts";
+import CryptoJS from "crypto-js";
+import {AttendanceSystemLoginResp} from "@/type/api/auth/attendanceSystem.ts";
 
 export const authApi = {
     /**
@@ -104,5 +106,25 @@ export const authApi = {
             studentCode,
             data: tokenRes.data.datas,
         };
+    },
+
+    loginAttendanceSystem: async (username: string, password: string, captchaCode: string): Promise<AttendanceSystemLoginResp> => {
+        const key = CryptoJS.enc.Utf8.parse("k;)*(+nmjdsf$#@d"),
+            encodePwd = CryptoJS.enc.Utf8.parse(password);
+        const encryptedPwd = CryptoJS.AES.encrypt(encodePwd, key, {
+            mode: CryptoJS.mode.ECB,
+            padding: CryptoJS.pad.Pkcs7,
+        }).toString();
+        const data = {
+            client: "web_atd",
+            loginName: username,
+            pwd: encryptedPwd,
+            type: "1",
+            verificationCode: captchaCode,
+        };
+        const res = await http.post<AttendanceSystemLoginResp>("https://yktuipweb.gxu.edu.cn/api/account/loginCheck", data, {
+            headers: {"Content-Type": "application/json;charset=UTF-8"},
+        });
+        return res.data;
     },
 };

@@ -5,12 +5,13 @@ import {JWAccountScreen} from "@/screens/setting/account/JWAccountScreen.tsx";
 import {Color} from "@/js/color.ts";
 import {Button, useTheme} from "@rneui/themed";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
-import {UserPreferenceSettingIndex} from "@/screens/setting/account/UserPreferenceSettingIndex.tsx";
-import {CourseItemDetailSettingScreen} from "@/screens/setting/account/CourseItemDetailSettingScreen.tsx";
-import {ExamItemDetailSettingScreen} from "@/screens/setting/account/ExamItemDetailSettingScreen.tsx";
+import {UserPreferenceSettingIndex} from "@/screens/setting/account/preference/UserPreferenceSettingIndex.tsx";
+import {CourseItemDetailSettingScreen} from "@/screens/setting/account/preference/CourseItemDetailSettingScreen.tsx";
+import {ExamItemDetailSettingScreen} from "@/screens/setting/account/preference/ExamItemDetailSettingScreen.tsx";
 import {useNavigation} from "@react-navigation/native";
 import {jwxt} from "@/js/jw/jwxt.ts";
 import {AuthAccountScreen} from "@/screens/setting/account/AuthAccountScreen.tsx";
+import {AttendanceSystemAccountScreen} from "@/screens/setting/account/AttendanceSystemAccountScreen.tsx";
 
 const Stack = createNativeStackNavigator();
 
@@ -83,6 +84,7 @@ export function SettingStack() {
             {/*  账号相关  */}
             <Stack.Screen name="jwAccount" component={JWAccountScreen} options={{title: "教务系统账号设置"}} />
             <Stack.Screen name="authAccount" component={AuthAccountScreen} options={{title: "统一认证系统账号设置"}} />
+            <Stack.Screen name="attendanceSystemAccount" component={AttendanceSystemAccountScreen} options={{title: "考勤系统账号设置"}} />
 
             {/*  偏好设置  */}
             <Stack.Screen

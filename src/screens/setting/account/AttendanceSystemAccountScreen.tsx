@@ -1,0 +1,137 @@
+import {ActivityIndicator, Pressable, StyleSheet, ToastAndroid, View} from "react-native";
+import {Button, Image, Input, Text} from "@rneui/themed";
+import {useEffect, useState} from "react";
+import {Icon} from "@/components/un-ui/Icon.tsx";
+import {useNavigation} from "@react-navigation/native";
+import {authApi} from "@/js/auth/auth.ts";
+import {http} from "@/js/http.ts";
+import {userMgr} from "@/js/mgr/user.ts";
+
+export function AttendanceSystemAccountScreen() {
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [captchaCode, setCaptchaCode] = useState("");
+    const [captchaCodeUri, setCaptchaCodeUri] = useState("");
+    const [showPwd, setShowPwd] = useState(false);
+    const navigation = useNavigation();
+
+    async function refreshCaptchaCode() {
+        const res = await http.get("https://yktuipweb.gxu.edu.cn/api/account/getVerify?num=666", {
+            responseType: "arraybuffer",
+        });
+        const base64 = btoa(new Uint8Array(res.data).reduce((data, byte) => data + String.fromCharCode(byte), ""));
+        const dataUri = `data:image/jpeg;base64,${base64}`;
+        setCaptchaCodeUri(dataUri);
+        return dataUri;
+    }
+
+    async function login(username: string, password: string, captchaCode: string) {
+        await userMgr.attendanceSystem.storeAccount(username, password);
+        ToastAndroid.show("开始尝试登录考勤系统", ToastAndroid.SHORT);
+        // 尝试登录
+        const res = await authApi.loginAttendanceSystem(username, password, captchaCode);
+        if (res.code === 600) {
+            ToastAndroid.show("登录成功", ToastAndroid.SHORT);
+            await userMgr.attendanceSystem.storeLoginRes(res);
+        } else {
+            ToastAndroid.show("登录失败，" + res.msg, ToastAndroid.SHORT);
+        }
+        await refreshCaptchaCode();
+    }
+
+    async function init() {
+        await refreshCaptchaCode();
+        const account = await userMgr.attendanceSystem.getAccount();
+        if (!account) return;
+        setUsername(account.username);
+        setPassword(account.password);
+    }
+
+    //从存储中读取数据
+    useEffect(() => {
+        init();
+    }, []);
+    return (
+        <View style={style.container}>
+            <Text h2 style={style.title}>
+                设置考勤系统帐密
+            </Text>
+            <Text style={style.note}>仅用于工具通过考勤系统系统获取考勤信息，凌晨请连接校园网</Text>
+            <Input
+                value={username}
+                onChangeText={v => setUsername(v)}
+                label="账号/学号"
+                placeholder="工具绑定的考勤系统账号"
+                style={style.input}
+            />
+            <Input
+                value={password}
+                onChangeText={v => setPassword(v)}
+                label="密码"
+                placeholder="对应账号的密码，默认为身份证后6位"
+                secureTextEntry={!showPwd}
+                rightIcon={
+                    <Icon
+                        type="fontawesome"
+                        name={showPwd ? "eye-slash" : "eye"}
+                        size={20}
+                        style={style.showPwdIcon}
+                        onPress={() => setShowPwd(!showPwd)}
+                    />
+                }
+                style={style.input}
+            />
+            <Input
+                value={captchaCode}
+                onChangeText={v => setCaptchaCode(v)}
+                label="验证码"
+                placeholder="右侧验证码，看不清点击刷新"
+                rightIcon={
+                    <Pressable onPress={refreshCaptchaCode}>
+                        <Image
+                            style={style.image}
+                            source={{uri: captchaCodeUri}}
+                            PlaceholderContent={<ActivityIndicator />}
+                        />
+                    </Pressable>
+                }
+                style={style.input}
+            />
+            <Button onPress={() => login(username, password, captchaCode)}>登录考勤系统</Button>
+            {/*<Button*/}
+            {/*    containerStyle={{marginTop: 10}}*/}
+            {/*    onPress={() => {*/}
+            {/*        jwxt.openPageInWebView("/xtgl/login_slogin.html", navigation);*/}
+            {/*    }}>*/}
+            {/*    打开教务登录页*/}
+            {/*</Button>*/}
+            {/*<Text style={style.note}>提示获取成功后，回到课表页进行测试，若无法正常获取课表，可能为密码错误</Text>*/}
+        </View>
+    );
+}
+
+const style = StyleSheet.create({
+    container: {
+        padding: "5%",
+    },
+    title: {
+        textAlign: "center",
+    },
+    note: {
+        marginVertical: 20,
+        textAlign: "center",
+        color: "gray",
+        fontSize: 14,
+    },
+    showPwdIcon: {
+        paddingHorizontal: 5,
+        cursor: "pointer",
+    },
+    input: {
+        height: 60,
+    },
+    image: {
+        width: 95,
+        height: 25,
+    },
+});
