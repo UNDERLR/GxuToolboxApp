@@ -2,44 +2,51 @@ import {store} from "@/js/store.ts";
 import {AttendanceSystemLoginResp} from "@/type/api/auth/attendanceSystem.ts";
 
 export const userMgr = {
-    storeJWAccount: (username: string, password: string) => {
-        return store.save({
-            key: "userAccount",
-            data: {
-                username,
-                password,
-            },
-        });
-    },
-    getJWAccount: () => {
-        return store
-            .load<{username: string; password: string}>({
+    // 教务系统相关
+    jw: {
+        storeAccount: (username: string, password: string) => {
+            return store.save({
                 key: "userAccount",
-            })
-            .catch(e => {
+                data: {
+                    username,
+                    password,
+                },
+            });
+        },
+        getAccount: async () => {
+            try {
+                return await store.load<{username: string; password: string}>({
+                    key: "userAccount",
+                });
+            } catch (e) {
                 console.warn(e);
                 return null;
-            });
+            }
+        },
     },
-    storeAuthAccount: (username: string, password: string) => {
-        return store.save({
-            key: "userAuthAccount",
-            data: {
-                username,
-                password,
-            },
-        });
-    },
-    getAuthAccount: () => {
-        return store
-            .load<{username: string; password: string}>({
+    // 认证系统相关
+    auth: {
+        storeAccount: (username: string, password: string) => {
+            return store.save({
                 key: "userAuthAccount",
-            })
-            .catch(e => {
+                data: {
+                    username,
+                    password,
+                },
+            });
+        },
+        getAccount: async () => {
+            try {
+                return await store.load<{username: string; password: string}>({
+                    key: "userAuthAccount",
+                });
+            } catch (e) {
                 console.warn(e);
                 return null;
-            });
+            }
+        },
     },
+    // 考勤系统相关
     attendanceSystem: {
         storeAccount: (username: string, password: string) => {
             return store.save({
@@ -50,15 +57,15 @@ export const userMgr = {
                 },
             });
         },
-        getAccount: () => {
-            return store
-                .load<{username: string; password: string}>({
+        getAccount: async () => {
+            try {
+                return await store.load<{username: string; password: string}>({
                     key: "attendanceSystemAccount",
-                })
-                .catch(e => {
-                    console.warn(e);
-                    return null;
                 });
+            } catch (e) {
+                console.warn(e);
+                return null;
+            }
         },
         storeLoginRes: (res: AttendanceSystemLoginResp) => {
             return store.save({
@@ -66,16 +73,15 @@ export const userMgr = {
                 data: res,
             });
         },
-
-        getLoginRes: () => {
-            return store
-                .load<AttendanceSystemLoginResp>({
+        getLoginRes: async () => {
+            try {
+                return await store.load<AttendanceSystemLoginResp>({
                     key: "attendanceSystemLoginRes",
-                })
-                .catch(e => {
-                    console.warn(e);
-                    return null;
                 });
+            } catch (e) {
+                console.warn(e);
+                return null;
+            }
         },
     },
 };

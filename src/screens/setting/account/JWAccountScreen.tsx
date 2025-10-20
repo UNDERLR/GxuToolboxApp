@@ -8,7 +8,7 @@ import {beQuery} from "@/js/be/log.ts";
 import {useNavigation} from "@react-navigation/native";
 
 async function getToken(username: string, password: string) {
-    userMgr.storeJWAccount(username, password);
+    await userMgr.jw.storeAccount(username, password);
     ToastAndroid.show("开始尝试登录", ToastAndroid.SHORT);
     const data = await jwxt.getPublicKey();
     if (data.exponent) {
@@ -37,7 +37,7 @@ export function JWAccountScreen() {
     const navigation = useNavigation();
 
     async function init() {
-        const account = await userMgr.getJWAccount();
+        const account = await userMgr.jw.getAccount();
         if (!account) return;
         setUsername(account.username);
         setPassword(account.password);

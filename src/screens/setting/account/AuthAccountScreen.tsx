@@ -7,7 +7,7 @@ import {useNavigation} from "@react-navigation/native";
 import {authApi} from "@/js/auth/auth.ts";
 
 async function getToken(username: string, password: string) {
-    userMgr.storeAuthAccount(username, password);
+    await userMgr.auth.storeAccount(username, password);
     ToastAndroid.show("开始尝试登录统一认证系统", ToastAndroid.SHORT);
     const rsaData = await authApi.getPubKey();
     if (rsaData.exponent) {
@@ -28,7 +28,7 @@ export function AuthAccountScreen() {
     const navigation = useNavigation();
 
     async function init() {
-        const account = await userMgr.getAuthAccount();
+        const account = await userMgr.auth.getAccount();
         if (!account) return;
         setUsername(account.username);
         setPassword(account.password);
