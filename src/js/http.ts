@@ -14,7 +14,7 @@ export const http = axios.create({
 
 http.interceptors.request.use(config => {
     userMgr
-        .getJWAccount()
+        .jw.getAccount()
         .then(data => {
             if (!data.username || !data.password) {
                 ToastAndroid.show("未正确设置账号，请前往设置设置账号", ToastAndroid.SHORT);
