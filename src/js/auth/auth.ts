@@ -5,7 +5,8 @@ import {userMgr} from "@/js/mgr/user.ts";
 import axios, {AxiosResponse} from "axios";
 import {EngTrainingTokenRes, EngTrainingTokenResData} from "@/type/api/infoQuery/EngTraining.ts";
 import CryptoJS from "crypto-js";
-import {AttendanceSystemLoginResp} from "@/type/api/auth/attendanceSystem.ts";
+import {AttendanceSystemType} from "@/type/api/auth/attendanceSystem.ts";
+import AST = AttendanceSystemType;
 
 export const authApi = {
     /**
@@ -67,7 +68,7 @@ export const authApi = {
     loginService: async (serviceUrl: string): Promise<AxiosResponse | void> => {
         // 获取公钥和存储中的帐密
         const rsa = await authApi.getPubKey();
-        const account = await userMgr.getAuthAccount();
+        const account = await userMgr.auth.getAccount();
         if (!account?.password || !account?.username) return;
         // 调用登录获取对应的cookie
         return (await authApi.login(
@@ -107,14 +108,27 @@ export const authApi = {
             data: tokenRes.data.datas,
         };
     },
-
-    loginAttendanceSystem: async (username: string, password: string, captchaCode: string): Promise<AttendanceSystemLoginResp> => {
+    /**
+     * 登录考勤系统
+     * @param username - 用户名
+     * @param password - 密码（明文）
+     * @param captchaCode - 验证码
+     * @returns 登录响应数据
+     */
+    loginAttendanceSystem: async (
+        username: string,
+        password: string,
+        captchaCode: string,
+    ): Promise<AST.ResRoot<AST.LoginData>> => {
+        // 加密密码
         const key = CryptoJS.enc.Utf8.parse("k;)*(+nmjdsf$#@d"),
             encodePwd = CryptoJS.enc.Utf8.parse(password);
         const encryptedPwd = CryptoJS.AES.encrypt(encodePwd, key, {
             mode: CryptoJS.mode.ECB,
             padding: CryptoJS.pad.Pkcs7,
         }).toString();
+
+        // 构造登录请求数据
         const data = {
             client: "web_atd",
             loginName: username,
@@ -122,9 +136,15 @@ export const authApi = {
             type: "1",
             verificationCode: captchaCode,
         };
-        const res = await http.post<AttendanceSystemLoginResp>("https://yktuipweb.gxu.edu.cn/api/account/loginCheck", data, {
-            headers: {"Content-Type": "application/json;charset=UTF-8"},
-        });
+
+        // 发送登录请求
+        const res = await http.post<AST.ResRoot<AST.LoginData>>(
+            "https://yktuipweb.gxu.edu.cn/api/account/loginCheck",
+            data,
+            {
+                headers: {"Content-Type": "application/json;charset=UTF-8"},
+            },
+        );
         return res.data;
     },
 };

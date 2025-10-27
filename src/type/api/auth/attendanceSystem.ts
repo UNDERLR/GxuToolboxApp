@@ -1,184 +1,348 @@
 /**
- * 学校考勤系统 - 登录接口返回根结构
+ * 考勤系统类型定义命名空间
  */
-export interface AttendanceSystemLoginResp {
-    /** 业务状态码：600-成功 */
-    code: number;
-    /** 响应描述 */
-    msg: string;
-    /** 考勤系统登录数据 */
-    data: AttendanceSystemLoginData;
-}
+export namespace AttendanceSystemType {
+    /**
+     * 分页查询参数接口
+     * 用于定义分页查询所需的基本参数和可选参数
+     */
+    export interface PageQueryParam {
+        /** 当前页码 */
+        page_index: number;
+        /** 每页显示记录数 */
+        page_size: number;
+        /** 排序字段 */
+        order_by?: string;
+        /** 搜索参数 */
+        search?: SearchParam;
+    }
 
-/**
- * 学校考勤系统 - 登录数据载荷
- */
-export interface AttendanceSystemLoginData {
-    /** 访问令牌（JWT） */
-    token: string;
-    /** 考勤人员档案 */
-    userInfo: AttendanceSystemUser;
-    /** 当前人员角色编号列表 */
-    roleNos: string[];
-    /** 当前学期校历 */
-    currentCalendar: AttendanceSystemCalendar;
-    /** 当前学期第几周 */
-    currentWeek: number;
-    /** 学校档案列表 */
-    schoolInfo: AttendanceSystemSchool[];
-}
+    /**
+     * 搜索参数接口
+     * 用于定义搜索条件的相关参数
+     */
+    export interface SearchParam {
+        /** 开始日期 */
+        ksrq?: string;
+        /** 结束日期 */
+        jsrq?: string;
+        /** 课程ID */
+        courseId?: string;
+    }
 
-/**
- * 学校考勤系统 - 人员档案
- */
-export interface AttendanceSystemUser {
-    /** 人员主键ID */
-    userId: number;
-    /** 学工号（考勤唯一标识） */
-    userNo: string;
-    /** 姓名 */
-    userName: string;
-    /** 人员类别：4-学生 */
-    userType: number;
-    /** 行政班/部门ID */
-    deptId: number;
-    /** 行政班/部门编号 */
-    deptNo: string;
-    /** 行政班/部门名称 */
-    deptName: string;
-    /** 职务（教师） */
-    userDuty: string | null;
-    /** 联系电话 */
-    phoneNo: string;
-    /** 身份证号（脱敏） */
-    userIdentity: string;
-    /** 性别：1-男 2-女 */
-    userSex: number;
-    /** 指纹特征串（占位） */
-    userFinger: string;
-    /** 是否有校园卡：1-有 */
-    userCard: number;
-    /** 人脸特征（Base64，空表示未采集） */
-    userPhoto: string | null;
-    /** 证件照相对路径（用于考勤比对） */
-    photoSrc: string;
-    /** 人脸特征路径（空表示未采集） */
-    userFace: string | null;
-    /** 扩展信息（邮箱、地址、固话） */
-    personInfo: AttendanceSystemPersonExtra;
-    /** 学院ID */
-    instituteId: number;
-    /** 学院名称 */
-    instituteName: string;
-    /** 年级ID */
-    gradeId: number;
-    /** 年级名称 */
-    gradeName: string;
-    /** 专业ID */
-    majorId: number;
-    /** 专业名称 */
-    majorName: string;
-    /** 邮箱 */
-    email: string;
-    /** 账号状态：1-正常 */
-    userState: number;
-    /** 备注 */
-    remark: string;
-    /** 排序权重 */
-    showOrder: number;
-    /** 创建时间（ISO） */
-    ctDate: string | null;
-    /** 最后修改时间（ISO） */
-    ltDate: string | null;
-    /** 角色名称（冗余） */
-    roleNames: string | null;
-    /**  */
-    userPassword: string | null;
-    /**  */
-    externalInfo: string | null;
-    /**  */
-    userWorkday: string | null;
-    /**  */
-    limitBegin: string | null;
-    /**  */
-    limitEnd: string | null;
-    /**  */
-    ctUserId: string | null;
-    /**  */
-    ltUserId: string | null;
-    /**  */
-    version: string | null;
-    /**  */
-    roleNos: string | null;
-}
+    /**
+     * 通用响应结果接口
+     * 用于封装API返回的通用结构
+     * @template T - 返回数据的具体类型
+     */
+    export interface ResRoot<T> {
+        /** 响应状态码 */
+        code: number;
+        /** 响应数据 */
+        data: T;
+        /** 响应消息 */
+        msg: string;
+    }
 
-/**
- * 学校考勤系统 - 人员扩展信息
- */
-export interface AttendanceSystemPersonExtra {
-    /** 固定为 jsonb */
-    type: 'jsonb';
-    /** 序列化后的 JSON：{email?:string,address?:string,telephone?:string} */
-    value: string;
-}
+    /**
+     * 分页响应结果接口
+     * 用于封装分页查询的响应结果
+     * @template T - 分页数据中每条记录的类型
+     */
+    export interface PageRes<T> {
+        /** 响应状态码 */
+        code: number;
+        /** 分页数据 */
+        data: {
+            /** 当前页记录列表 */
+            records: T[];
+            /** 总记录数 */
+            total_record: number;
+            /** 总页数 */
+            total_page: number;
+            /** 当前页码 */
+            page_index: number;
+            /** 当前页实际记录数 */
+            curren_records: number;
+            /** 每页显示记录数 */
+            page_size: number;
+        };
+        /** 响应消息 */
+        msg: string;
+    }
 
-/**
- * 学校考勤系统 - 学期校历
- */
-export interface AttendanceSystemCalendar {
-    /** 校历主键 */
-    calendarId: number;
-    /** 校历名称：2025-3 表示 2025 学年秋季学期 */
-    calendarName: string;
-    /** 第一周开始日期（YYYY-MM-DD） */
-    firstWeekBegin: string;
-    /** 最后一周结束日期（YYYY-MM-DD） */
-    lastWeekEnd: string;
-    /** 总周数 */
-    weekTotal: number;
-    /** 每天最大节次 */
-    periodMax: number;
-    /** 系统可用开始日期 */
-    systemBegin: string;
-    /** 系统可用结束日期 */
-    systemEnd: string;
-    /** 系统时间描述 */
-    systemTimeStr: string;
-    /** 其余字段保留，暂无业务含义 */
-    useStatusId: string | null;
-    remark: string | null;
-    holidayList: string | null;
-    sourceNo: string | null;
-    isCurrent: string | null;
-    holidayStr: string | null;
-    calendarDaysList: string | null;
-    monthDataList: string | null;
-}
+    /**
+     * 学校考勤系统 - 登录数据载荷
+     */
+    export interface LoginData {
+        /** 访问令牌（JWT） */
+        token: string;
+        /** 考勤人员档案 */
+        userInfo: User;
+        /** 当前人员角色编号列表 */
+        roleNos: string[];
+        /** 当前学期校历 */
+        currentCalendar: Calendar;
+        /** 当前学期第几周 */
+        currentWeek: number;
+        /** 学校档案列表 */
+        schoolInfo: School[];
+    }
 
-/**
- * 学校考勤系统 - 学校档案
- */
-export interface AttendanceSystemSchool {
-    /** 学校主键 */
-    schoolId: number;
-    /** 学校全称 */
-    schoolName: string;
-    /** 学校编号（保留） */
-    schoolNo: string | null;
-    /** Logo 相对路径 */
-    logoUrl: string;
-    /** 系统状态：1-启用 */
-    systemState: number;
-    /** 初始密码（首次登录强制修改） */
-    initPassword: string;
-    /** 首页附件路径（保留） */
-    homepageAttUrl: string;
-    /** 其余字段保留，暂无业务含义 */
-    systemVer: string | null;
-    address: string | null;
-    email: string | null;
-    telephone: string | null;
-    post: string | null;
-    homepageAttId: number;
-    diffServerTime: string | null;
+    /**
+     * 学校考勤系统 - 人员档案
+     */
+    export interface User {
+        /** 人员主键ID */
+        userId: number;
+        /** 学工号（考勤唯一标识） */
+        userNo: string;
+        /** 姓名 */
+        userName: string;
+        /** 人员类别：4-学生 */
+        userType: number;
+        /** 行政班/部门ID */
+        deptId: number;
+        /** 行政班/部门编号 */
+        deptNo: string;
+        /** 行政班/部门名称 */
+        deptName: string;
+        /** 职务（教师） */
+        userDuty: string | null;
+        /** 联系电话 */
+        phoneNo: string;
+        /** 身份证号（脱敏） */
+        userIdentity: string;
+        /** 性别：1-男 2-女 */
+        userSex: number;
+        /** 指纹特征串（占位） */
+        userFinger: string;
+        /** 是否有校园卡：1-有 */
+        userCard: number;
+        /** 人脸特征（Base64，空表示未采集） */
+        userPhoto: string | null;
+        /** 证件照相对路径（用于考勤比对） */
+        photoSrc: string;
+        /** 人脸特征路径（空表示未采集） */
+        userFace: string | null;
+        /** 扩展信息（邮箱、地址、固话） */
+        personInfo: PersonExtra;
+        /** 学院ID */
+        instituteId: number;
+        /** 学院名称 */
+        instituteName: string;
+        /** 年级ID */
+        gradeId: number;
+        /** 年级名称 */
+        gradeName: string;
+        /** 专业ID */
+        majorId: number;
+        /** 专业名称 */
+        majorName: string;
+        /** 邮箱 */
+        email: string;
+        /** 账号状态：1-正常 */
+        userState: number;
+        /** 备注 */
+        remark: string;
+        /** 排序权重 */
+        showOrder: number;
+        /** 创建时间（ISO） */
+        ctDate: string | null;
+        /** 最后修改时间（ISO） */
+        ltDate: string | null;
+        /** 角色名称（冗余） */
+        roleNames: string | null;
+        /**  */
+        userPassword: string | null;
+        /**  */
+        externalInfo: string | null;
+        /**  */
+        userWorkday: string | null;
+        /**  */
+        limitBegin: string | null;
+        /**  */
+        limitEnd: string | null;
+        /**  */
+        ctUserId: string | null;
+        /**  */
+        ltUserId: string | null;
+        /**  */
+        version: string | null;
+        /**  */
+        roleNos: string | null;
+    }
+
+    /**
+     * 学校考勤系统 - 人员扩展信息
+     */
+    export interface PersonExtra {
+        /** 固定为 jsonb */
+        type: "jsonb";
+        /** 序列化后的 JSON：{email?:string,address?:string,telephone?:string} */
+        value: string;
+    }
+
+    /**
+     * 学校考勤系统 - 学期校历
+     */
+    export interface Calendar {
+        /** 校历主键 */
+        calendarId: number;
+        /** 校历名称：2025-3 表示 2025 学年秋季学期 */
+        calendarName: string;
+        /** 第一周开始日期（YYYY-MM-DD） */
+        firstWeekBegin: string;
+        /** 最后一周结束日期（YYYY-MM-DD） */
+        lastWeekEnd: string;
+        /** 总周数 */
+        weekTotal: number;
+        /** 每天最大节次 */
+        periodMax: number;
+        /** 系统可用开始日期 */
+        systemBegin: string;
+        /** 系统可用结束日期 */
+        systemEnd: string;
+        /** 系统时间描述 */
+        systemTimeStr: string;
+        /** 其余字段保留，暂无业务含义 */
+        useStatusId: string | null;
+        remark: string | null;
+        holidayList: string | null;
+        sourceNo: string | null;
+        isCurrent: string | null;
+        holidayStr: string | null;
+        calendarDaysList: string | null;
+        monthDataList: string | null;
+    }
+
+    /**
+     * 学校考勤系统 - 学校档案
+     */
+    export interface School {
+        /** 学校主键 */
+        schoolId: number;
+        /** 学校全称 */
+        schoolName: string;
+        /** 学校编号（保留） */
+        schoolNo: string | null;
+        /** Logo 相对路径 */
+        logoUrl: string;
+        /** 系统状态：1-启用 */
+        systemState: number;
+        /** 初始密码（首次登录强制修改） */
+        initPassword: string;
+        /** 首页附件路径（保留） */
+        homepageAttUrl: string;
+        /** 其余字段保留，暂无业务含义 */
+        systemVer: string | null;
+        address: string | null;
+        email: string | null;
+        telephone: string | null;
+        post: string | null;
+        homepageAttId: number;
+        diffServerTime: string | null;
+    }
+
+    /**
+     * 考勤统计数据接口
+     * 用于描述单个用户的考勤统计信息
+     */
+    export interface AttendanceDataStatistic {
+        /** 统计日期 */
+        day: string | null;
+        /** 用户ID */
+        userId: string | null;
+        /** 用户姓名 */
+        userName: string | null;
+        /** 用户学工号 */
+        userNo: string | null;
+        /** 节次 */
+        period: string | null;
+        /** 分节次 */
+        periodSplit: string | null;
+        /** 连续节次描述 */
+        periodConnect: string | null;
+        /** 课程名称 */
+        courseName: string | null;
+        /** 教室名称 */
+        roomName: string | null;
+        /** 考勤状态ID */
+        atdStateId: string | null;
+        /** 考勤状态名称 */
+        atdStateName: string | null;
+        /** 考勤时间 */
+        atdTime: string | null;
+        /** 应到节次 */
+        stPeriod: number;
+        /** 实到节次 */
+        rtPeriod: number;
+        /** 未到节次 */
+        ntPeriod: number;
+        /** 是否正常 */
+        isNormal: null;
+        /** 是否迟到 */
+        isLate: number;
+        /** 是否早退 */
+        isLeaveearly: null;
+        /** 是否请假 */
+        isLeave: number;
+        /** 是否旷课 */
+        isTruant: null;
+        /** 出勤率 */
+        attendanceRate: `${number}%`;
+        /** 申诉次数 */
+        appealCount: number;
+    }
+
+    /**
+     * 考勤数据接口
+     * 用于描述单个用户的详细考勤记录
+     */
+    export interface AttendanceData {
+        /** 日期 */
+        day: string | null;
+        /** 用户ID */
+        userId: number | null;
+        /** 用户姓名 */
+        userName: string | null;
+        /** 用户学工号 */
+        userNo: string | null;
+        /** 节次 */
+        period: string | null;
+        /** 分节次 */
+        periodSplit: string | null;
+        /** 连续节次描述 */
+        periodConnect: string | null;
+        /** 课程名称 */
+        courseName: string | null;
+        /** 教室名称 */
+        roomName: string | null;
+        /** 考勤状态ID */
+        atdStateId: number | null;
+        /** 考勤状态名称 */
+        atdStateName: string | null;
+        /** 考勤时间 */
+        atdTime: string | null;
+        /** 应到节次 */
+        stPeriod: number | null;
+        /** 实到节次 */
+        rtPeriod: number | null;
+        /** 未到节次 */
+        ntPeriod: number | null;
+        /** 是否正常 */
+        isNormal: number | null;
+        /** 是否迟到 */
+        isLate: number | null;
+        /** 是否早退 */
+        isLeaveearly: number | null;
+        /** 是否请假 */
+        isLeave: number | null;
+        /** 是否旷课 */
+        isTruant: number | null;
+        /** 出勤率 */
+        attendanceRate: `${number}%` | null;
+        /** 申诉次数 */
+        appealCount: number | null;
+    }
 }

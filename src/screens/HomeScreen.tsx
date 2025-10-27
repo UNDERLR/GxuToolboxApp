@@ -1,7 +1,8 @@
 import {GestureResponderEvent, PanResponder, PanResponderGestureState, ScrollView, View} from "react-native";
 import {ScheduleCard} from "@/components/app/ScheduleCard.tsx";
-import React, {useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {UpdateCard} from "@/components/UpdateCard.tsx";
+import {attendanceSystemApi} from "@/js/auth/attendanceSystem.ts";
 
 export function HomeScreen() {
     // 滚动相关状态和引用
@@ -63,6 +64,10 @@ export function HomeScreen() {
         // 允许其他组件请求接管响应者
         onPanResponderTerminationRequest: () => true,
     });
+
+    useEffect(() => {
+        attendanceSystemApi.getPersonalData();
+    }, []);
 
     return (
         <View {...panResponder.panHandlers}>
