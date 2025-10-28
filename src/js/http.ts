@@ -25,7 +25,7 @@ http.interceptors.request.use(config => {
             ToastAndroid.show("未正确设置账号，请前往设置设置账号", ToastAndroid.SHORT);
         });
     console.log(
-        `%c[${moment().format("YYYY-MM-DD hh:mm:ss")}] %c${config.method?.toUpperCase()} %c->%c ${config.url}`,
+        `%c[${moment().utcOffset(8).format("YYYY-MM-DD HH:mm:ss")}] %c${config.method?.toUpperCase()} %c->%c ${config.url}`,
         "color: lightblue",
         "color: mediumorchid",
         "color: indianred",
@@ -40,7 +40,7 @@ http.interceptors.request.use(config => {
 http.interceptors.response.use(
     response => {
         console.log(
-            `%c[${moment().format("YYYY-MM-DD hh:mm:ss")}] %c${
+            `%c[${moment().utcOffset(8).format("YYYY-MM-DD HH:mm:ss")}] %c${
                 response.status
             } %c<- %c${response.config.method?.toUpperCase()}%c ${response.config.url}`,
             "color: lightblue",
