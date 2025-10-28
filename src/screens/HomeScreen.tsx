@@ -65,8 +65,12 @@ export function HomeScreen() {
         onPanResponderTerminationRequest: () => true,
     });
 
+    async function test(){
+        attendanceSystemApi.getIndexData();
+    }
+
     useEffect(() => {
-        attendanceSystemApi.getPersonalData();
+        test()
     }, []);
 
     return (

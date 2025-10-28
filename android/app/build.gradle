@@ -83,7 +83,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 10600
-        versionName "1.6.0"
+        versionName "beta 1.6.0"
     }
     signingConfigs {
         debug {
