@@ -18,7 +18,8 @@ import {
 import {ExamInfo} from "@/type/infoQuery/exam/examInfo.ts";
 import {ExamInfoQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
-import {courseApi, CourseScheduleClass, CourseScheduleContext} from "@/js/jw/course.ts";
+import {courseApi, CourseScheduleContext} from "@/js/jw/course.ts";
+import {CourseScheduleClass} from "@/class/jw/course.ts";
 import {examApi} from "@/js/jw/exam.ts";
 import {UserInfo} from "@/type/infoQuery/base.ts";
 import {userMgr} from "@/js/mgr/user.ts";

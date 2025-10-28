@@ -12,7 +12,8 @@ import {Course} from "@/type/infoQuery/course/course.ts";
 import {CourseDetail} from "@/components/tool/infoQuery/courseSchedule/CourseDetail.tsx";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 import {Color} from "@/js/color.ts";
-import {CourseScheduleClass, CourseScheduleContext} from "@/js/jw/course.ts";
+import {CourseScheduleContext} from "@/js/jw/course.ts";
+import {CourseScheduleClass} from "@/class/jw/course.ts";
 import {nextCourses} from "@/js/nextCourses.ts";
 
 export interface CourseScheduleViewProps<T> extends CourseScheduleTableProps<T> {

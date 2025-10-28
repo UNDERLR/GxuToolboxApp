@@ -6,7 +6,8 @@ import {Text, useTheme} from "@rneui/themed";
 import {ReactNode, useContext, useEffect, useState} from "react";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {CourseItem} from "@/components/tool/infoQuery/courseSchedule/CourseItem.tsx";
-import {CourseScheduleClass, CourseScheduleContext} from "@/js/jw/course.ts";
+import {CourseScheduleContext} from "@/js/jw/course.ts";
+import {CourseScheduleClass} from "@/class/jw/course.ts";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 
 export interface CourseScheduleTableProps<T> {
