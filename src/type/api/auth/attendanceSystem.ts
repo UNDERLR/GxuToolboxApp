@@ -345,4 +345,96 @@ export namespace AttendanceSystemType {
         /** 申诉次数 */
         appealCount: number | null;
     }
+
+    /**
+     * 考勤系统 - 首页数据接口
+     */
+    export interface IndexData {
+        /** 用户ID */
+        userId: null;
+        /** 菜单角色 */
+        menuRole: string;
+        /** 首页路由URL */
+        homeRouteUrl: string;
+        /** 角色编号列表 */
+        roleNos: string[];
+        /** 菜单列表 */
+        menuList: Menu[];
+        /** 所有菜单角色 */
+        allMenuRole: MenuRole[];
+        /** 校历列表 */
+        calendarList: Calendar[];
+    }
+
+    /**
+     * 菜单项接口
+     */
+    export interface Menu {
+        /** 菜单业务ID */
+        menuBusinessId: number;
+        /** 菜单业务名称 */
+        menuBusinessName: string;
+        /** 是否显示子菜单 */
+        isSubShow: null;
+        /** 路由URL */
+        routeUrl: string | null;
+        /** 图标路径 */
+        icon: string | null;
+        /** 激活状态图标路径 */
+        iconActive: string | null;
+        /** 子菜单列表 */
+        subMenus: SubMenu[];
+    }
+
+    /**
+     * 子菜单项接口
+     */
+    export interface SubMenu {
+        /** 菜单业务ID */
+        menuBusinessId: number;
+        /** 菜单业务名称 */
+        menuBusinessName: string;
+        /** 父级菜单业务ID */
+        ptMenuBusinessId: number;
+        /** 路由URL */
+        routeUrl: string;
+    }
+
+    /**
+     * 菜单角色接口
+     */
+    export interface MenuRole {
+        /** 菜单ID */
+        menuId: number;
+        /** 菜单名称 */
+        menuName: string;
+        /** 部门ID */
+        bsDeptId: null;
+        /** 显示顺序 */
+        showOrder: null;
+        /** 使用状态ID */
+        useStatusId: null;
+        /** 备注 */
+        remark: null;
+        /** 创建时间 */
+        ctDate: null;
+        /** 创建用户ID */
+        ctUserId: null;
+        /** 最后更新时间 */
+        ltDate: null;
+        /** 最后更新用户ID */
+        ltUserId: null;
+        /** 版本 */
+        version: null;
+        /** 业务角色编号 */
+        bsRoleNo: string;
+        /** 首页菜单业务ID */
+        homeMenuBusinessId: null;
+        /** 首页路由URL */
+        homeRouteUrl: string;
+        /** 菜单编号 */
+        menuNo: string;
+        /** 角色编号 */
+        roleNo: string;
+    }
 }
