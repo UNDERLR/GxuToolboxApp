@@ -43,7 +43,7 @@ export class AttendanceDataClass extends BaseClass<TermAttendanceData> implement
         if (!inTargetWeek) return; // 不在当周
         const day = moment(this.calenderData.firstWeekBegin).add({
             w: week - 1,
-            d: +course.xqj,
+            day: +course.xqj - 1,
         });
         const [startTime, endTime] = course.getAttendanceTimeSpan(day);
         return this.recordList.find(record => moment(record.atdTime).isBetween(startTime, endTime, null, "[]"));
@@ -61,19 +61,21 @@ export class AttendanceDataClass extends BaseClass<TermAttendanceData> implement
         // 获取指定课程在指定周次的考勤记录
         const record = this.getAttendanceRecord(course, week);
 
+        if (!record) return AST.AttendanceState.NotStarted;
+
         // 计算课程具体日期：从学期第一周开始日期加上周数和星期几的偏移量
         const day = moment(this.calenderData.firstWeekBegin).add({
             w: week - 1,
-            d: +course.xqj,
+            day: +course.xqj - 1,
         });
 
         // 获取课程的考勤时间范围
         const [startTime, endTime] = course.getAttendanceTimeSpan(day);
 
         // 根据当前时间判断考勤状态
-        const recordTime = moment(record?.atdTime);
+        const recordTime = moment(record.atdTime);
         const courseBeginTime = startTime.clone().add(20, "m");
-        if (record?.atdStateId === AST.AttendanceState.Absent) return AST.AttendanceState.Absent;
+        if (record.atdStateId === AST.AttendanceState.Absent) return AST.AttendanceState.Absent;
         else if (recordTime.isBefore(startTime)) return AST.AttendanceState.NotStarted;
         else if (recordTime.isBetween(startTime, courseBeginTime, null, "[]")) return AST.AttendanceState.Normal;
         else if (recordTime.isBetween(courseBeginTime, endTime, null, "(]")) return AST.AttendanceState.Late;

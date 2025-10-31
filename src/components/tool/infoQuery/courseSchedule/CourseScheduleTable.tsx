@@ -222,7 +222,10 @@ export function CourseScheduleTable<T = any>(props: CourseScheduleTableProps<T>)
                                 }
                             }
                             // 考勤状态
-                            const attendanceState = props.courseSchedule?.attendanceData?.getAttendanceState(course,currentWeek)
+                            const attendanceState = props.courseSchedule?.attendanceData?.getAttendanceState?.(
+                                course,
+                                currentWeek,
+                            );
                             return (
                                 <CourseItem
                                     style={props.courseStyle}

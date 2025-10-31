@@ -114,8 +114,8 @@ export function ScheduleCard() {
         }
     }, [attendanceData]);
     async function getAttendanceData() {
-        const attendanceDataRes = await attendanceSystemApi.getPersonalData();
         const calender = await attendanceSystemApi.calenderData.get(userConfig.jw.startDay);
+        const attendanceDataRes = await attendanceSystemApi.getPersonalData(calender?.calendarId, {page_size: 1000});
         if (attendanceDataRes?.data && calender) {
             setAttendanceData(new AttendanceDataClass(attendanceDataRes.data.records, calender));
         }
@@ -258,12 +258,12 @@ export function ScheduleCard() {
 
     async function loadData() {
         await getStartDay();
-        await getAttendanceData();
         await getTimeShift();
         await getCourseSchedule();
         await getExamList();
         getActivityList();
         await getEngTrainingSchedule();
+        await getAttendanceData();
     }
 
     useEffect(() => {
