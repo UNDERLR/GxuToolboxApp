@@ -1,4 +1,4 @@
-import {SchoolTermValue, SchoolValue, strNum} from "@/type/global.ts";
+import {QueryModel, SchoolTermValue, SchoolValue, strNum, UserModel} from "@/type/global.ts";
 
 export interface Course {
     /** 在课程表中显示的背景颜色 */
@@ -86,7 +86,7 @@ export interface Course {
     /** QQ群号 */
     qqqh: string;
     /** 查询模型 */
-    queryModel: IQueryModel;
+    queryModel: QueryModel;
     /** 可否范围内选择 */
     rangeable: boolean;
     /**  */
@@ -101,7 +101,7 @@ export interface Course {
     sxbj: string;
     /** 总结果 */
     totalResult: string;
-    userModel: IUserModel;
+    userModel: UserModel;
     /** 学分 */
     xf: string;
     /** 选课备注 */
@@ -149,32 +149,6 @@ export interface Course {
     zzmm: string;
     /**  */
     zzrl: string;
-}
-
-/* 自动生成的 Interface */
-
-interface IUserModel {
-    monitor: boolean;
-    roleCount: number;
-    roleKeys: string;
-    roleValues: string;
-    status: number;
-    usable: boolean;
-}
-
-interface IQueryModel {
-    currentPage: number;
-    currentResult: number;
-    entityOrField: boolean;
-    limit: number;
-    offset: number;
-    pageNo: number;
-    pageSize: number;
-    showCount: number;
-    sorts: void /* undefined */[];
-    totalCount: number;
-    totalPage: number;
-    totalResult: number;
 }
 
 export interface PracticalCourse {

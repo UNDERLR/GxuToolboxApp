@@ -32,6 +32,8 @@ export type SchoolYearLabel = typeof SchoolYears[number][1];
 export type strNum = string;
 /** `boolean` 的字符串类型，可直接转换  */
 export type strBool = string;
+/** `boolean` 的数字类型，`0` 为 false，`1` 为 true  */
+export type numBool = 0 | 1;
 
 export const SchoolTerms = [
     ["3", "秋季学期"],
