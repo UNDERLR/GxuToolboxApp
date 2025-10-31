@@ -1,6 +1,6 @@
 import {http, urlWithParams} from "@/js/http.ts";
 import {userMgr} from "@/js/mgr/user.ts";
-import {AttendanceSystemType} from "@/type/api/auth/attendanceSystem.ts";
+import {AttendanceSystemType as AST} from "@/type/api/auth/attendanceSystem.ts";
 import {store} from "@/js/store.ts";
 import moment from "moment";
 /**
@@ -11,7 +11,7 @@ export const attendanceSystemApi = {
      * 获取菜单数据，带有学期数据
      * @returns 返回首页数据
      */
-    getMenuData: async (): Promise<AST.ResRoot<AST.MenuData>> => {
+    getMenuData: async (): Promise<AST.ResRoot<AST.MenuData> | undefined> => {
         const queryParams = {
             rm: "SYS004", // 写死的
         };
@@ -104,7 +104,7 @@ export const attendanceSystemApi = {
     getPersonalData: async (
         termId?: AST.Calendar["calendarId"],
         data?: Partial<AST.PageQueryParam>,
-    ): Promise<AST.PageRes<AST.AttendanceData>> => {
+    ): Promise<AST.PageRes<AST.AttendanceData> | undefined> => {
         // 合并默认参数与传入参数
         const defaultData = {
             page_index: 1,
@@ -123,7 +123,7 @@ export const attendanceSystemApi = {
         if (!loginRes || !loginRes.data.token) return;
 
         // 发起POST请求获取个人考勤数据
-        const res = await http.post<AST.PageRes<AST.AttendanceData[]>>(
+        const res = await http.post<AST.PageRes<AST.AttendanceData>>(
             urlWithParams("https://yktuipweb.gxu.edu.cn/api/personalData/getPersonalData", {
                 cal: termId ?? "",
                 rm: "SYS004",
@@ -148,7 +148,7 @@ export const attendanceSystemApi = {
     getPersonalDataCount: async (
         termId?: AST.Calendar["calendarId"],
         data?: AST.SearchParam,
-    ): Promise<AST.ResRoot<AST.AttendanceDataStatistic[]>> => {
+    ): Promise<AST.ResRoot<AST.AttendanceDataStatistic[]> | undefined> => {
         // 合并默认参数与传入参数
         const defaultData = {
             ksrq: "",
@@ -178,5 +178,3 @@ export const attendanceSystemApi = {
         return res.data;
     },
 };
-
-import AST = AttendanceSystemType;

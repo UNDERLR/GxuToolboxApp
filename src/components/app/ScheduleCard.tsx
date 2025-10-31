@@ -32,6 +32,8 @@ import {ActivityDetail} from "@/components/app/activity/ActivityDetail.tsx";
 import {PhyExp} from "@/type/infoQuery/course/course.ts";
 import {http} from "@/js/http.ts";
 import {EngTrainingItem} from "@/components/tool/infoQuery/EngTraining/EngTrainingItem.tsx";
+import {AttendanceDataClass} from "@/class/auth/attendanceSystem.ts";
+import {attendanceSystemApi} from "@/js/auth/attendanceSystem.ts";
 
 export function ScheduleCard() {
     const {userConfig, updateUserConfig} = useContext(UserConfigContext);
@@ -104,11 +106,28 @@ export function ScheduleCard() {
         }
     }
 
+    const [attendanceData, setAttendanceData] = useState<AttendanceDataClass>();
+    useEffect(() => {
+        if (attendanceData instanceof AttendanceDataClass && courseSchedule) {
+            courseSchedule.setTermAttendanceData = attendanceData;
+            setCourseSchedule(new CourseScheduleClass(courseSchedule));
+        }
+    }, [attendanceData]);
+    async function getAttendanceData() {
+        const attendanceDataRes = await attendanceSystemApi.getPersonalData();
+        const calender = await attendanceSystemApi.calenderData.get(userConfig.jw.startDay);
+        if (attendanceDataRes?.data && calender) {
+            setAttendanceData(new AttendanceDataClass(attendanceDataRes.data.records, calender));
+        }
+    }
     // 获取课表
     async function getCourseSchedule() {
         const data = await courseApi.getCourseSchedule(year, term);
         if (data?.kbList) {
             ToastAndroid.show("获取课表成功", ToastAndroid.SHORT);
+            if (attendanceData instanceof AttendanceDataClass) {
+                data.setTermAttendanceData = attendanceData;
+            }
             setCourseSchedule(data);
             await store.save({key: "courseRes", data});
             if (data.kbList.findIndex(item => item.kcmc === "大学物理实验") > -1) {
@@ -126,7 +145,7 @@ export function ScheduleCard() {
                 key: "userInfo",
             })
             .catch(console.warn);
-        const account = await userMgr.getJWAccount();
+        const account = await userMgr.jw.getAccount();
         if (!userInfo || !account) return;
 
         const schoolId = Schools.filter(school => school[1] === userInfo.school)?.[0]?.[0];
@@ -238,11 +257,12 @@ export function ScheduleCard() {
     }
 
     async function loadData() {
+        await getStartDay();
+        await getAttendanceData();
         await getTimeShift();
         await getCourseSchedule();
         await getExamList();
         getActivityList();
-        await getStartDay();
         await getEngTrainingSchedule();
     }
 

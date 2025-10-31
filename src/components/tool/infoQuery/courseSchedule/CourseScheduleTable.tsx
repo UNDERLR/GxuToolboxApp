@@ -7,7 +7,7 @@ import {ReactNode, useContext, useEffect, useState} from "react";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {CourseItem} from "@/components/tool/infoQuery/courseSchedule/CourseItem.tsx";
 import {CourseScheduleContext} from "@/js/jw/course.ts";
-import {CourseScheduleClass} from "@/class/jw/course.ts";
+import {CourseClass, CourseScheduleClass} from "@/class/jw/course.ts";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 
 export interface CourseScheduleTableProps<T> {
@@ -48,7 +48,7 @@ export function CourseScheduleTable<T = any>(props: CourseScheduleTableProps<T>)
     const {userConfig} = useContext(UserConfigContext);
     const {courseScheduleData, courseScheduleStyle} = useContext(CourseScheduleContext)!;
     const {theme} = useTheme();
-    const [courseSchedule, setCourseSchedule] = useState<Course[][]>([[], [], [], [], [], [], []]);
+    const [courseSchedule, setCourseSchedule] = useState<CourseClass[][]>([[], [], [], [], [], [], []]);
     const startDay = moment(props.startDay ?? userConfig.jw.startDay);
     const [currentTime, setCurrentTime] = useState(moment().format());
     const currentWeek = props.currentWeek ?? Math.ceil(moment.duration(moment().diff(startDay)).asWeeks());
@@ -213,17 +213,20 @@ export function CourseScheduleTable<T = any>(props: CourseScheduleTableProps<T>)
                                 );
                                 if (phyExpIndex > -1) {
                                     const phyExp = props.phyExpList[phyExpIndex];
-                                    course = {
+                                    course = new CourseClass({
                                         ...course,
                                         kcmc: phyExp.xmmc,
                                         cdmc: phyExp.fjbh,
                                         xm: phyExp.zjjsxm,
-                                    };
+                                    });
                                 }
                             }
+                            // 考勤状态
+                            const attendanceState = props.courseSchedule?.attendanceData?.getAttendanceState(course,currentWeek)
                             return (
                                 <CourseItem
                                     style={props.courseStyle}
+                                    attendanceState={attendanceState}
                                     onCoursePress={props.onCoursePress}
                                     key={`day${index}-${course.jxb_id}-${i}`}
                                     course={course}

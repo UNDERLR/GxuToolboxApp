@@ -4,25 +4,34 @@ import {Course, PracticalCourse} from "@/type/infoQuery/course/course.ts";
 import moment from "moment/moment";
 import {CourseScheduleData} from "@/js/jw/course.ts";
 import {QueryModel, UserModel} from "@/type/global.ts";
+import {AttendanceSystemType} from "@/type/api/auth/attendanceSystem.ts";
+import {AttendanceDataClass} from "@/class/auth/attendanceSystem.ts";
 
 /** 课表类，从 `CourseScheduleQueryRes` 解析 */
 export class CourseScheduleClass extends BaseClass<CourseScheduleQueryRes> implements CourseScheduleQueryRes {
-    kbList!: Course[];
+    kbList!: CourseClass[];
     sjkList!: PracticalCourse[];
     xsbjList!: Array<any>;
 
+    attendanceData?: AttendanceDataClass;
+
     constructor(apiRes: CourseScheduleQueryRes) {
         super(apiRes);
+        this.kbList = apiRes.kbList.map(course => new CourseClass(course));
+    }
+
+    set setTermAttendanceData(data: AttendanceDataClass) {
+        this.attendanceData = data;
     }
 
     /**
      * 根据周数获取课表
      * @param week 1-20
      */
-    getCourseListByWeek(week: number): Course[][] {
-        const res = [[], [], [], [], [], [], []] as Course[][];
+    getCourseListByWeek(week: number): CourseClass[][] {
+        const res = [[], [], [], [], [], [], []] as CourseClass[][];
 
-        function testCourseWeek(course: Course): boolean {
+        function testCourseWeek(course: CourseClass): boolean {
             const weekSpans = course.zcd.split(",");
             let res = false;
             weekSpans.forEach(weekSpan => {
@@ -54,7 +63,7 @@ export class CourseScheduleClass extends BaseClass<CourseScheduleQueryRes> imple
      * @param date 目标日期
      * @param startDay 课表开始第一天
      */
-    getCourseListByDay(date: moment.MomentInput, startDay: moment.MomentInput): Course[] {
+    getCourseListByDay(date: moment.MomentInput, startDay: moment.MomentInput): CourseClass[] {
         const dateMoment = moment(date);
         const week = Math.ceil(moment.duration(dateMoment.diff(startDay)).asWeeks()) + 1;
         const weekCourseList = this.getCourseListByWeek(week);

@@ -1,22 +1,20 @@
 import {BaseClass} from "@/class/class.ts";
-import {AttendanceSystemType} from "@/type/api/auth/attendanceSystem.ts";
-import {attendanceSystemApi} from "@/js/auth/attendanceSystem.ts";
+import {AttendanceSystemType as AST} from "@/type/api/auth/attendanceSystem.ts";
 import moment from "moment/moment";
 import {CourseClass} from "@/class/jw/course.ts";
-import AST = AttendanceSystemType;
 
 export interface TermAttendanceData {
-    termId: number;
     recordList: AST.AttendanceData[];
+    calenderData: AST.Calendar;
 }
-export class TermAttendanceDataClass extends BaseClass<TermAttendanceData> implements TermAttendanceData {
+export class AttendanceDataClass extends BaseClass<TermAttendanceData> implements TermAttendanceData {
     recordList!: AST.AttendanceData[];
-    termId!: number;
+    calenderData!: AST.Calendar;
 
-    constructor(list: AST.AttendanceData[], termId: number = 1) {
+    constructor(list: AST.AttendanceData[], calenderData: AST.Calendar) {
         super({
-            termId,
             recordList: list,
+            calenderData,
         });
     }
 
@@ -25,7 +23,7 @@ export class TermAttendanceDataClass extends BaseClass<TermAttendanceData> imple
      * @param course 目标课程
      * @param week 目标周
      */
-    async getAttendanceRecord(course: CourseClass, week: number): Promise<AST.AttendanceData | undefined> {
+    getAttendanceRecord(course: CourseClass, week: number): AST.AttendanceData | undefined {
         const weekSpans = course.zcd.split(",");
         let inTargetWeek = false;
         // 判断目标周是否有这节课
@@ -43,10 +41,7 @@ export class TermAttendanceDataClass extends BaseClass<TermAttendanceData> imple
             }
         });
         if (!inTargetWeek) return; // 不在当周
-        // 获取学期日历
-        const calender = await attendanceSystemApi.calenderData.getByTermId(this.termId);
-        if (!calender) return;
-        const day = moment(calender.firstWeekBegin).add({
+        const day = moment(this.calenderData.firstWeekBegin).add({
             w: week - 1,
             d: +course.xqj,
         });
@@ -62,16 +57,12 @@ export class TermAttendanceDataClass extends BaseClass<TermAttendanceData> imple
      * @param week 周数，表示要查询的课程所在周次
      * @returns 返回指定课程在指定周次的课程安排信息
      */
-    async getAttendanceState(course: CourseClass, week: number): Promise<AST.AttendanceState> {
+    getAttendanceState(course: CourseClass, week: number): AST.AttendanceState {
         // 获取指定课程在指定周次的考勤记录
-        const record = await this.getAttendanceRecord(course, week);
-
-        // 获取当前学期的日历数据
-        const calender = await attendanceSystemApi.calenderData.getByTermId(this.termId);
-        if (!calender) return AST.AttendanceState.NotStarted;
+        const record = this.getAttendanceRecord(course, week);
 
         // 计算课程具体日期：从学期第一周开始日期加上周数和星期几的偏移量
-        const day = moment(calender.firstWeekBegin).add({
+        const day = moment(this.calenderData.firstWeekBegin).add({
             w: week - 1,
             d: +course.xqj,
         });
