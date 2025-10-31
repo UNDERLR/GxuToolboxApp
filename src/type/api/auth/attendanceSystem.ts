@@ -1,3 +1,5 @@
+import {numBool, strNum} from "@/type/global.ts";
+
 /**
  * 考勤系统类型定义命名空间
  */
@@ -210,7 +212,7 @@ export namespace AttendanceSystemType {
         remark: string | null;
         holidayList: string | null;
         sourceNo: string | null;
-        isCurrent: string | null;
+        isCurrent: numBool | null;
         holidayStr: string | null;
         calendarDaysList: string | null;
         monthDataList: string | null;
@@ -301,13 +303,13 @@ export namespace AttendanceSystemType {
      */
     export interface AttendanceData {
         /** 日期 */
-        day: string | null;
+        day: `${number}-${number}-${number}` | null;
         /** 用户ID */
         userId: number | null;
         /** 用户姓名 */
         userName: string | null;
         /** 用户学工号 */
-        userNo: string | null;
+        userNo: strNum | null;
         /** 节次 */
         period: string | null;
         /** 分节次 */
@@ -319,9 +321,9 @@ export namespace AttendanceSystemType {
         /** 教室名称 */
         roomName: string | null;
         /** 考勤状态ID */
-        atdStateId: number | null;
+        atdStateId: AttendanceState | null;
         /** 考勤状态名称 */
-        atdStateName: string | null;
+        atdStateName: "正常" | "迟到" | "未到" | string | null;
         /** 考勤时间 */
         atdTime: string | null;
         /** 应到节次 */
@@ -344,6 +346,20 @@ export namespace AttendanceSystemType {
         attendanceRate: `${number}%` | null;
         /** 申诉次数 */
         appealCount: number | null;
+    }
+
+    /**
+     * 考勤状态枚举
+     */
+    export enum AttendanceState {
+        /** 正常 */
+        Normal = 1,
+        /** 迟到 */
+        Late = 2,
+        /** 缺席 */
+        Absent = 4,
+        /** 未开始 */
+        NotStarted = 5,
     }
 
     /**

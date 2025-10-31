@@ -65,14 +65,6 @@ export function HomeScreen() {
         onPanResponderTerminationRequest: () => true,
     });
 
-    async function test(){
-        attendanceSystemApi.getIndexData();
-    }
-
-    useEffect(() => {
-        test()
-    }, []);
-
     return (
         <View {...panResponder.panHandlers}>
             <ScrollView
