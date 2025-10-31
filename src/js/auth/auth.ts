@@ -6,6 +6,7 @@ import axios, {AxiosResponse} from "axios";
 import {EngTrainingTokenRes, EngTrainingTokenResData} from "@/type/api/infoQuery/EngTraining.ts";
 import CryptoJS from "crypto-js";
 import {AttendanceSystemType} from "@/type/api/auth/attendanceSystem.ts";
+import {attendanceSystemApi} from "@/js/auth/attendanceSystem.ts";
 import AST = AttendanceSystemType;
 
 export const authApi = {
@@ -145,6 +146,10 @@ export const authApi = {
                 headers: {"Content-Type": "application/json;charset=UTF-8"},
             },
         );
+
+        if (res.data.code === 600) {
+            attendanceSystemApi.getMenuData();
+        }
         return res.data;
     },
 };

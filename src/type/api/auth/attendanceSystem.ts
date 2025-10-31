@@ -349,7 +349,7 @@ export namespace AttendanceSystemType {
     /**
      * 考勤系统 - 首页数据接口
      */
-    export interface IndexData {
+    export interface MenuData {
         /** 用户ID */
         userId: null;
         /** 菜单角色 */
