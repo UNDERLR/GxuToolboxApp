@@ -360,6 +360,8 @@ export namespace AttendanceSystemType {
         Absent = 4,
         /** 未开始 */
         NotStarted = 5,
+        /** 不需要打卡，自定义类型 */
+        NoNeed = 100,
     }
 
     /**

@@ -103,6 +103,7 @@ export function AttendanceStateIcon(props: AttendanceStateIconProps) {
         [AST.AttendanceState.Late]: <Icon name="clock" color={theme.colors.warning} />,
         [AST.AttendanceState.Absent]: <Icon name="close-circle" color={theme.colors.error} />,
         [AST.AttendanceState.NotStarted]: <Icon name="circle-outline" color={props.defaultColor} />,
+        [AST.AttendanceState.NoNeed]: <Icon name="minus-circle" color={props.defaultColor} />,
     };
     return iconMap[props.state];
 }

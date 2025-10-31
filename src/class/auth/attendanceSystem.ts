@@ -60,14 +60,13 @@ export class AttendanceDataClass extends BaseClass<TermAttendanceData> implement
     getAttendanceState(course: CourseClass, week: number): AST.AttendanceState {
         // 获取指定课程在指定周次的考勤记录
         const record = this.getAttendanceRecord(course, week);
-
-        if (!record) return AST.AttendanceState.NotStarted;
-
         // 计算课程具体日期：从学期第一周开始日期加上周数和星期几的偏移量
         const day = moment(this.calenderData.firstWeekBegin).add({
             w: week - 1,
             day: +course.xqj - 1,
         });
+
+        if (!record) return day.isBefore(moment()) ? AST.AttendanceState.NoNeed : AST.AttendanceState.NotStarted;
 
         // 获取课程的考勤时间范围
         const [startTime, endTime] = course.getAttendanceTimeSpan(day);
