@@ -7,10 +7,12 @@ import {Icon} from "@/components/un-ui/Icon.tsx";
 import {Course} from "@/type/infoQuery/course/course.ts";
 import {CourseScheduleContext} from "@/js/jw/course.ts";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
+import {AttendanceSystemType as AST} from "@/type/api/auth/attendanceSystem.ts";
 
 interface Props {
     style?: ViewStyle;
     course: Course;
+    attendanceState?: AST.AttendanceState;
     index: number;
     onCoursePress?: (course: Course) => void;
 }
@@ -57,13 +59,21 @@ export function CourseItem(props: Props) {
                 props.onCoursePress?.(course);
             }}
             android_ripple={userConfig.theme.ripple}
-            style={[props.style,itemStyle.course, courseScheduleStyle.courseItem]}>
+            style={[props.style, itemStyle.course, courseScheduleStyle.courseItem]}>
             <Flex direction="column" gap={5}>
-                {courseScheduleData.courseInfoVisible.name && course.jxbsftkbj === "1" && (
-                    <Text style={itemStyle.text}>调</Text>
-                )}
                 {courseScheduleData.courseInfoVisible.name && (
-                    <Text style={[itemStyle.text, {fontWeight: 700}]}>{course.kcmc}</Text>
+                    <Text style={[itemStyle.text, {fontWeight: 700}]}>
+                        <AttendanceStateIcon
+                            defaultColor={itemStyle.text.color}
+                            state={props.attendanceState ?? AST.AttendanceState.NotStarted}
+                        />
+                        {courseScheduleData.courseInfoVisible.name && course.jxbsftkbj === "1" && (
+                            <Text style={itemStyle.text}>
+                                <Icon name="clock-star-four-points" color={itemStyle.text.color} />调
+                            </Text>
+                        )}
+                        {course.kcmc}
+                    </Text>
                 )}
                 {courseScheduleData.courseInfoVisible.position && (
                     <Text style={itemStyle.text}>
@@ -80,4 +90,19 @@ export function CourseItem(props: Props) {
             </Flex>
         </Pressable>
     );
+}
+
+export interface AttendanceStateIconProps {
+    state: AST.AttendanceState;
+    defaultColor: string;
+}
+export function AttendanceStateIcon(props: AttendanceStateIconProps) {
+    const {theme} = useTheme();
+    const iconMap: Record<AST.AttendanceState, React.ReactElement> = {
+        [AST.AttendanceState.Normal]: <Icon name="check-circle" color={theme.colors.success} />,
+        [AST.AttendanceState.Late]: <Icon name="clock" color={theme.colors.warning} />,
+        [AST.AttendanceState.Absent]: <Icon name="close-circle" color={theme.colors.error} />,
+        [AST.AttendanceState.NotStarted]: <Icon name="circle-outline" color={props.defaultColor} />,
+    };
+    return iconMap[props.state];
 }
