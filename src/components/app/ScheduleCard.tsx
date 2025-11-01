@@ -114,10 +114,12 @@ export function ScheduleCard() {
         }
     }, [attendanceData]);
     async function getAttendanceData() {
+        console.log("awa");
         const calender = await attendanceSystemApi.calenderData.get(userConfig.jw.startDay);
         const attendanceDataRes = await attendanceSystemApi.getPersonalData(calender?.calendarId, {page_size: 1000});
         if (attendanceDataRes?.data && calender) {
             setAttendanceData(new AttendanceDataClass(attendanceDataRes.data.records, calender));
+            console.log(attendanceDataRes.data.records.filter(record=>record.atdStateId ===4));
         }
     }
     // 获取课表
@@ -257,13 +259,13 @@ export function ScheduleCard() {
     }
 
     async function loadData() {
+        await getAttendanceData();
         await getStartDay();
-        await getTimeShift();
+        getTimeShift();
         await getCourseSchedule();
         await getExamList();
         getActivityList();
         await getEngTrainingSchedule();
-        await getAttendanceData();
     }
 
     useEffect(() => {

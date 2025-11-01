@@ -46,7 +46,10 @@ export class AttendanceDataClass extends BaseClass<TermAttendanceData> implement
             day: +course.xqj - 1,
         });
         const [startTime, endTime] = course.getAttendanceTimeSpan(day);
-        return this.recordList.find(record => moment(record.atdTime).isBetween(startTime, endTime, null, "[]"));
+        return this.recordList.find(
+            record =>
+                moment(record.day).isSame(startTime, "D") && course.jcs.split("-").join(",") === record.periodSplit,
+        );
     }
 
     /**
