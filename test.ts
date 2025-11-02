@@ -1,4 +1,4 @@
-const CryptoJS = require("crypto-js");
+import CryptoJS from "crypto-js";
 
 async function test() {
     const t = CryptoJS.enc.Utf8.parse("k;)*(+nmjdsf$#@d"),

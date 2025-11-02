@@ -6,6 +6,7 @@ import {useNavigation} from "@react-navigation/native";
 import {authApi} from "@/js/auth/auth.ts";
 import {http} from "@/js/http.ts";
 import {userMgr} from "@/js/mgr/user.ts";
+import {AttendanceSystemType} from "@/type/api/auth/attendanceSystem.ts";
 
 export function AttendanceSystemAccountScreen() {
     const [username, setUsername] = useState("");
@@ -14,6 +15,7 @@ export function AttendanceSystemAccountScreen() {
     const [captchaCodeUri, setCaptchaCodeUri] = useState("");
     const [showPwd, setShowPwd] = useState(false);
     const navigation = useNavigation();
+    const [loginres, setLoginres] = useState<string>();
 
     async function refreshCaptchaCode() {
         const res = await http.get("https://yktuipweb.gxu.edu.cn/api/account/getVerify?num=666", {
@@ -33,6 +35,7 @@ export function AttendanceSystemAccountScreen() {
         if (res.code === 600) {
             ToastAndroid.show("登录成功", ToastAndroid.SHORT);
             await userMgr.attendanceSystem.storeLoginRes(res);
+            setLoginres(res.data.userInfo.userName);
         } else {
             ToastAndroid.show("登录失败，" + res.msg, ToastAndroid.SHORT);
         }

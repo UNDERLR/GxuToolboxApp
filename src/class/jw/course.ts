@@ -31,27 +31,8 @@ export class CourseScheduleClass extends BaseClass<CourseScheduleQueryRes> imple
     getCourseListByWeek(week: number): CourseClass[][] {
         const res = [[], [], [], [], [], [], []] as CourseClass[][];
 
-        function testCourseWeek(course: CourseClass): boolean {
-            const weekSpans = course.zcd.split(",");
-            let res = false;
-            weekSpans.forEach(weekSpan => {
-                const weeks = weekSpan
-                    .replace(/[^0-9-]/g, "")
-                    .split("-")
-                    .map(weekItem => parseInt(weekItem, 10));
-                if (
-                    ((weeks.length === 1 && weeks[0] === week) || (weeks[0] <= week && week <= weeks[1])) &&
-                    !((/单/.test(weekSpan) && week % 2 === 0) || (/双/.test(weekSpan) && week % 2 === 1))
-                ) {
-                    res = true;
-                    return;
-                }
-            });
-            return res;
-        }
-
         this.kbList.forEach(course => {
-            if (testCourseWeek(course)) {
+            if (course.getCourseAllWeeksList.includes(week)) {
                 res[parseInt(course.xqj, 10) - 1].push(course);
             }
         });
@@ -70,6 +51,11 @@ export class CourseScheduleClass extends BaseClass<CourseScheduleQueryRes> imple
         const weekday = dateMoment.weekday();
         return weekCourseList[weekday > 0 ? weekday - 1 : 6];
     }
+
+    /**
+     * 获取某一个课程的所有上课周
+     * @param course 目标课程
+     */
 }
 
 export class CourseClass extends BaseClass<Course> implements Course {
@@ -149,8 +135,11 @@ export class CourseClass extends BaseClass<Course> implements Course {
     zzmm!: string;
     zzrl!: string;
 
+    weekPeriod: number[];
+
     constructor(ori: Course) {
         super(ori);
+        this.weekPeriod = this.getCourseAllWeeksList;
     }
 
     /**
@@ -174,5 +163,23 @@ export class CourseClass extends BaseClass<Course> implements Course {
             .map(num => +num);
         const endTime = day.clone().hour(endTimeSpan[0]).minute(endTimeSpan[1]).second(0);
         return [startTime, endTime];
+    }
+
+    get getCourseAllWeeksList(): number[] {
+        const res = new Set<number>();
+        this.zcd.split(",").forEach(weekSpanStr => {
+            const weekSpan = weekSpanStr
+                .replace(/[^0-9-]/g, "")
+                .split("-")
+                .map(weekItem => parseInt(weekItem, 10));
+            const weekList = new Array(weekSpan[1] - weekSpan[0] + 1).fill(weekSpan[0]).map((v, i) => v + i);
+            if (!/^[单双]/.test(weekSpanStr)) {
+                weekList.forEach(v => res.add(v));
+            } else {
+                weekList.filter(v => v % 2 === (weekSpanStr.startsWith("单") ? 1 : 0))
+                        .forEach((v, i) => res.add(v + i));
+            }
+        });
+        return Array.from(res);
     }
 }

@@ -44,7 +44,7 @@ export const authApi = {
         // 获取execution属性的值
         const html = await http.get("https://ca.gxu.edu.cn:8443/zfca/login");
         const $ = cheerio.load(html.data);
-        const execution = $('#fm1 > input[name="execution"]').attr("value");
+        const execution = $("#fm1 > input[name=\"execution\"]").attr("value");
 
         const res = await http.post(
             urlWithParams("https://ca.gxu.edu.cn:8443/zfca/login", {
