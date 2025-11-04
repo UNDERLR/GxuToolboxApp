@@ -32,7 +32,6 @@ export function AttendanceSystemAccountScreen() {
         const res = await authApi.loginAttendanceSystem(username, password, captchaCode);
         if (res.code === 600) {
             ToastAndroid.show("登录成功", ToastAndroid.SHORT);
-            await userMgr.attendanceSystem.storeLoginRes(res);
         } else {
             ToastAndroid.show("登录失败，" + res.msg, ToastAndroid.SHORT);
         }
