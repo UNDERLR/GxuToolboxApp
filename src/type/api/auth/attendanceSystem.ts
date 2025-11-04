@@ -459,7 +459,7 @@ export namespace AttendanceSystemType {
     /**
      * 学生课表
      */
-    export interface StudentClassTable {
+    export interface AttendanceCourseSchedule {
         periodMax: number;
         periodTime: null;
         roomRankList: null;

@@ -8,8 +8,10 @@ import {Color} from "@/js/color.ts";
 import {Row, Rows, Table} from "react-native-reanimated-table";
 import {AttendanceSystemType as AST} from "@/type/api/auth/attendanceSystem.ts";
 import {attendanceSystemApi} from "@/js/auth/attendanceSystem.ts";
-import {UnTermSelector} from "@/components/un-ui/UnTermSelector.tsx";
 import {SchoolTermValue, SchoolYearValue} from "@/type/global.ts";
+import {AttendanceCourseClass} from "@/class/auth/attendanceSystem.ts";
+import moment from "moment/moment";
+import {AttendanceCourseItem} from "@/components/tool/auth/AttendanceCourseItem.tsx";
 
 export default function AttendanceInfoQueryScreen() {
     const [year, setYear] = useState<SchoolYearValue | number>();
@@ -62,7 +64,7 @@ export default function AttendanceInfoQueryScreen() {
                 animationType="timing"
                 onChange={setTabIndex}>
                 <TabView.Item style={style.tab}>
-                    <TabelScreen />
+                    <TableScreen />
                 </TabView.Item>
                 <TabView.Item style={style.tab}>
                     <RecordScreen />
@@ -72,8 +74,26 @@ export default function AttendanceInfoQueryScreen() {
     );
 }
 
-function TabelScreen() {
+function TableScreen() {
     const [week, setWeek] = useState(1);
+    const [calender, setCalender] = useState<AST.Calendar>();
+
+    const [courseList, setCourseList] = useState<AttendanceCourseClass[]>([]);
+
+    async function getData() {
+        const calender = await attendanceSystemApi.calenderData.getCurrent();
+        const res = await attendanceSystemApi.getAttendanceTable(week, calender?.calendarId);
+        if (res) {
+            console.log(res.getCourseList.flat());
+            setCourseList(res.getCourseList.flat());
+        }
+        if (calender) setCalender(calender);
+    }
+
+    useEffect(() => {
+        getData();
+    }, [week]);
+
     return (
         <ScrollView>
             <Flex>
@@ -82,7 +102,16 @@ function TabelScreen() {
                 </Flex>
                 <NumberInput value={week} onChange={setWeek} max={20} min={1} />
             </Flex>
-            <CourseScheduleTable currentWeek={week} />
+            <CourseScheduleTable<AttendanceCourseClass>
+                currentWeek={week}
+                itemList={courseList}
+                isItemShow={(item, day) => moment(item.weekDay).isSame(day, "d")}
+                itemRender={item => <AttendanceCourseItem course={item} />}
+                startDay={calender?.firstWeekBegin}
+                showDate
+                showDayHighlight
+                showTimeSpanHighlight
+            />
         </ScrollView>
     );
 }

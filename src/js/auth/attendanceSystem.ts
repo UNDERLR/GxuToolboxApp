@@ -3,6 +3,7 @@ import {userMgr} from "@/js/mgr/user.ts";
 import {AttendanceSystemType as AST} from "@/type/api/auth/attendanceSystem.ts";
 import {store} from "@/js/store.ts";
 import moment from "moment";
+import {AttendanceCourseScheduleClass} from "@/class/auth/attendanceSystem.ts";
 /**
  * 考勤系统相关的API接口封装
  */
@@ -195,14 +196,14 @@ export const attendanceSystemApi = {
     getAttendanceTable: async (
         week: number,
         termId = 18
-    ): Promise<AST.ResRoot<AST.StudentClassTable> | undefined> => {
+    ): Promise<AttendanceCourseScheduleClass | undefined> => {
         const loginRes = await userMgr.attendanceSystem.getLoginRes();
         if (!loginRes || !loginRes.data.token) return;
         const defaultData = {
             currentWeek: week,
             userId: loginRes.data.userInfo.userId,
         };
-        const res = await http.post<AST.ResRoot<any>>(
+        const res = await http.post<AST.ResRoot<AST.AttendanceCourseSchedule>>(
             urlWithParams("https://yktuipweb.gxu.edu.cn/api/rank/selectByStudent", {
                 cal: termId,
                 rm: "SYS004",
@@ -215,6 +216,6 @@ export const attendanceSystemApi = {
                 },
             },
         );
-        return res.data;
+        return new AttendanceCourseScheduleClass(res.data.data);
     },
 };
