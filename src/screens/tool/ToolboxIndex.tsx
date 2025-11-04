@@ -132,7 +132,7 @@ export function ToolboxIndex() {
             paddingHorizontal: "3%",
             paddingTop: "2%",
             paddingBottom: "5%",
-            borderRadius: 5,
+            borderRadius: 16,
             backgroundColor: data.style.cardBg,
             marginBottom: 10,
         },

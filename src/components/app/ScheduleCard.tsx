@@ -53,11 +53,11 @@ export function ScheduleCard() {
 
     const style = StyleSheet.create({
         card: {
-            backgroundColor: Color(theme.colors.background).setAlpha(
-                0.05 + ((theme.mode === "dark" ? 0.6 : 0.7) * userConfig.theme.bgOpacity) / 100,
+            backgroundColor: Color(theme.mode === "light" ? theme.colors.background : theme.colors.grey5).setAlpha(
+                0.1 + ((theme.mode === "light" ? 0.7 : 0.1) * userConfig.theme.bgOpacity) / 100,
             ).rgbaString,
             borderColor: Color.mix(theme.colors.primary, theme.colors.background, 0.7).rgbaString,
-            borderRadius: 5,
+            borderRadius: 16,
             paddingHorizontal: 0,
             marginHorizontal: 5,
             elevation: 0, // Android 去除阴影

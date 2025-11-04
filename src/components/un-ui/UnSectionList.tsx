@@ -30,7 +30,7 @@ export function UnSectionList(props: Props & SectionListProps<UnListItem, UnList
     const bgColor = Color(theme.mode === "light" ? theme.colors.background : theme.colors.grey5).setAlpha(
         0.1 + ((theme.mode === "light" ? 0.7 : 0.1) * userConfig.theme.bgOpacity) / 100,
     ).rgbaString;
-    const borderRadius = 8;
+    const borderRadius = 16;
     const span = 5;
     const style = StyleSheet.create({
         settingSectionContainer: {
@@ -48,6 +48,7 @@ export function UnSectionList(props: Props & SectionListProps<UnListItem, UnList
         settingSectionFooter: {
             marginBottom: span,
             backgroundColor: bgColor,
+            height: borderRadius,
             paddingHorizontal: "3%",
             borderBottomLeftRadius: borderRadius,
             borderBottomRightRadius: borderRadius,
