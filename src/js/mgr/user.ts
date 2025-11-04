@@ -1,5 +1,5 @@
 import {store} from "@/js/store.ts";
-import {AttendanceSystemLoginResp} from "@/type/api/auth/attendanceSystem.ts";
+import {AttendanceSystemType as AST} from "@/type/api/auth/attendanceSystem.ts";
 
 export const userMgr = {
     // 教务系统相关
@@ -67,7 +67,7 @@ export const userMgr = {
                 return null;
             }
         },
-        storeLoginRes: (res: AttendanceSystemLoginResp) => {
+        storeLoginRes: (res: AST.ResRoot<AST.LoginData>) => {
             return store.save({
                 key: "attendanceSystemLoginRes",
                 data: res,
@@ -75,7 +75,7 @@ export const userMgr = {
         },
         getLoginRes: async () => {
             try {
-                return await store.load<AttendanceSystemLoginResp>({
+                return await store.load<AST.ResRoot<AST.LoginData>>({
                     key: "attendanceSystemLoginRes",
                 });
             } catch (e) {

@@ -546,7 +546,7 @@ export namespace AttendanceSystemType {
         /** 节次序号 */
         period: number;
         /** 节次名称 */
-        periodName: string;
+        periodName: number;
     }
 
     /**

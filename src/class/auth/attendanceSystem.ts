@@ -84,3 +84,50 @@ export class AttendanceDataClass extends BaseClass<TermAttendanceData> implement
         else return AST.AttendanceState.Absent;
     }
 }
+
+export class AttendanceCourseScheduleClass extends BaseClass<AST.StudentClassTable> {
+    courseList!: AttendanceCourseClass[][];
+
+    constructor(ori: AST.StudentClassTable) {
+        super(ori);
+    }
+
+    /**
+     * 获取某一天的所有课程
+     * @param day 星期几
+     */
+    getCourseListByDay(day:number): AttendanceCourseClass[]{
+        const res = [];
+        for (let timeSpan = 0; timeSpan < this._ori.resTableRankList.length; timeSpan++) {
+            const item = this._ori.resTableRankList[timeSpan].courses[day];
+            if (item.subjectName){
+                if (item.connectCount > 0){
+                    item.periodArry = new Array(2)
+                        .fill(0)
+                        .map((_,i)=> timeSpan + i + 1);
+                    res.push(new AttendanceCourseClass(item));
+                }
+            }
+        }
+        return res;
+    }
+
+    /**
+     * @return 返回某一周的所有课（如果当天无课，返回空数组）
+     */
+    get getCourseList() {
+        const res: AttendanceCourseClass[][] = [];
+        for (let day = 1; day <= 7; day++) {
+            if (this.getCourseListByDay(day)){
+                res.push(this.getCourseListByDay(day));
+            }
+        }
+        return res;
+    }
+}
+
+export class AttendanceCourseClass extends BaseClass<AST.CourseItem> {
+    constructor(ori: AST.CourseItem) {
+        super(ori);
+    }
+}

@@ -184,12 +184,13 @@ export const attendanceSystemApi = {
      * @return 返回考勤系统学生课表数据
      */
     getAttendanceTable: async (
+        week: number,
         termId = 18
     ): Promise<AST.ResRoot<AST.StudentClassTable> | undefined> => {
         const loginRes = await userMgr.attendanceSystem.getLoginRes();
         if (!loginRes || !loginRes.data.token) return;
         const defaultData = {
-            currentWeek: loginRes.data.currentWeek,
+            currentWeek: week,
             userId: loginRes.data.userInfo.userId,
         };
         const res = await http.post<AST.ResRoot<any>>(
