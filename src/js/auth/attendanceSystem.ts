@@ -177,4 +177,34 @@ export const attendanceSystemApi = {
         );
         return res.data;
     },
+
+    /**
+     * 获取考勤系统学生课表数据
+     * @param termId 学期ID，为空时获取全部
+     * @return 返回考勤系统学生课表数据
+     */
+    getAttendanceTable: async (
+        termId = 18
+    ): Promise<AST.ResRoot<AST.StudentClassTable> | undefined> => {
+        const loginRes = await userMgr.attendanceSystem.getLoginRes();
+        if (!loginRes || !loginRes.data.token) return;
+        const defaultData = {
+            currentWeek: loginRes.data.currentWeek,
+            userId: loginRes.data.userInfo.userId,
+        };
+        const res = await http.post<AST.ResRoot<any>>(
+            urlWithParams("https://yktuipweb.gxu.edu.cn/api/rank/selectByStudent",{
+                cal: termId,
+                rm: "SYS004",
+            }),
+            defaultData,
+            {
+                headers: {
+                    "Content-Type": "application/json;charset=UTF-8",
+                    Authorization: "Token " + loginRes.data.token,
+                },
+            },
+        );
+        return res.data;
+    },
 };

@@ -455,4 +455,109 @@ export namespace AttendanceSystemType {
         /** 角色编号 */
         roleNo: string;
     }
+
+    /**
+     * 学生课表
+     */
+    export interface StudentClassTable {
+        periodMax: number;
+        periodTime: null;
+        roomRankList: null;
+        studentRankList: null;
+        teacherRankList: null;
+        weekTotal: number;
+        periodTimeAll: PeriodTimeItem[];
+        resTableRankList: DayInfo[];
+        weekList: WeekItem[];
+    }
+
+    /**
+     * 日课表信息
+     */
+    export interface DayInfo {
+        /** 星期（日期）yyyy-MM-dd */
+        weekDay: string | null;
+        /** 星期几 0-6 */
+        dayOfWeek: number | null;
+        /** 星期描述 */
+        dayOfWeekStr: string | null;
+        /** 当日所有课程 */
+        courses: CourseItem[];
+    }
+
+    /**
+     * 课程信息(数组元素类)
+     */
+    export interface CourseItem {
+        /** 星期（日期）yyyy-MM-dd */
+        weekDay: string | null;
+        /** 星期几 0-6 */
+        dayOfWeek: number | null;
+        /** 星期描述 */
+        dayOfWeekStr: string | null;
+        /** 学科 ID */
+        subjectId: number | null;
+        /** 学科名称 */
+        subjectName: string | null;
+        /** 连堂次数 */
+        connectCount: number;
+        /** 课程名称 */
+        courseName: string | null;
+        /** 课程状态 */
+        courseState: number | null;
+        /** 课程类型 */
+        courseType: number | null;
+        /** 是否连堂 -1=否 其他=是 */
+        isConnect: number;
+        /** 节次 */
+        period: number | null;
+        /** 节次数组 */
+        periodArry: number[] | null;
+        /** 节次数组描述 */
+        periodArryStr: string | null;
+        /** 修正考勤结果 */
+        reviseAtdResult: number | null;
+        /** 教室 ID */
+        roomId: number | null;
+        /** 教室名称 */
+        roomName: string | null;
+        /** 教师名称 */
+        teacherName: string | null;
+    }
+
+    /**
+     * 考勤时间段信息(数组元素类)
+     */
+    export interface PeriodTimeItem {
+        /** 考勤开始时间 HH:mm */
+        atdBegin: string;
+        /** 考勤结束时间 HH:mm */
+        atdEnd: string;
+        /** 部门/校区 ID */
+        bsDeptId: number;
+        /** 上课开始时间 HH:mm */
+        courseBegin: string;
+        /** 上课结束时间 HH:mm */
+        courseEnd: string;
+        /** 单节课时长（分钟） */
+        courseMinute: number;
+        /** 是否首节 1=是 0=否 */
+        firstPeriod: number;
+        /** 节次序号 */
+        period: number;
+        /** 节次名称 */
+        periodName: string;
+    }
+
+    /**
+     * 周次信息(数组元素类)
+     */
+    export interface WeekItem {
+        /** 星期（日期）yyyy-MM-dd */
+        weekDay: string;
+        /** 星期几 0-6，null 表示未赋值 */
+        dayOfWeek: number | null;
+        /** 星期描述，如“星期一” */
+        dayOfWeekStr: string | null;
+    }
 }
