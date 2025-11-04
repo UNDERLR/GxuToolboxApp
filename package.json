@@ -1,6 +1,6 @@
 {
     "name": "gxu_tool_app",
-    "version": "beta 1.6.0",
+    "version": "1.6.0 beta",
     "versionCode": 10600,
     "private": true,
     "scripts": {
