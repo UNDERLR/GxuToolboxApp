@@ -4,7 +4,6 @@ import {Course, PracticalCourse} from "@/type/infoQuery/course/course.ts";
 import moment from "moment/moment";
 import {CourseScheduleData} from "@/js/jw/course.ts";
 import {QueryModel, UserModel} from "@/type/global.ts";
-import {AttendanceSystemType} from "@/type/api/auth/attendanceSystem.ts";
 import {AttendanceDataClass} from "@/class/auth/attendanceSystem.ts";
 
 /** 课表类，从 `CourseScheduleQueryRes` 解析 */
@@ -32,7 +31,7 @@ export class CourseScheduleClass extends BaseClass<CourseScheduleQueryRes> imple
         const res = [[], [], [], [], [], [], []] as CourseClass[][];
 
         this.kbList.forEach(course => {
-            if (course.getCourseAllWeeksList.includes(week)) {
+            if (course.getWeeksList.includes(week)) {
                 res[parseInt(course.xqj, 10) - 1].push(course);
             }
         });
@@ -139,7 +138,7 @@ export class CourseClass extends BaseClass<Course> implements Course {
 
     constructor(ori: Course) {
         super(ori);
-        this.weekPeriod = this.getCourseAllWeeksList;
+        this.weekPeriod = this.getWeeksList;
     }
 
     /**
@@ -165,19 +164,25 @@ export class CourseClass extends BaseClass<Course> implements Course {
         return [startTime, endTime];
     }
 
-    get getCourseAllWeeksList(): number[] {
+    get getWeeksList(): number[] {
         const res = new Set<number>();
         this.zcd.split(",").forEach(weekSpanStr => {
             const weekSpan = weekSpanStr
                 .replace(/[^0-9-]/g, "")
                 .split("-")
-                .map(weekItem => parseInt(weekItem, 10));
+                .map(weekItem => +weekItem);
+            // 单周情况，如10周
+            if (weekSpan.length === 1) {
+                res.add(weekSpan[0]);
+                return;
+            }
             const weekList = new Array(weekSpan[1] - weekSpan[0] + 1).fill(weekSpan[0]).map((v, i) => v + i);
             if (!/^[单双]/.test(weekSpanStr)) {
                 weekList.forEach(v => res.add(v));
             } else {
-                weekList.filter(v => v % 2 === (weekSpanStr.startsWith("单") ? 1 : 0))
-                        .forEach((v, i) => res.add(v + i));
+                weekList
+                    .filter(v => v % 2 === (weekSpanStr.startsWith("单") ? 1 : 0))
+                    .forEach((v, i) => res.add(v + i));
             }
         });
         return Array.from(res);

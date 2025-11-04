@@ -13,7 +13,7 @@ import {HomeStack} from "@/route/screens/HomeStack.tsx";
 
 const Tab = createBottomTabNavigator();
 
-export function MainTab() {
+export default function MainTab() {
     const {theme} = useTheme();
     const {userConfig} = useContext(UserConfigContext);
     const navigation = useNavigation();

@@ -114,12 +114,10 @@ export function ScheduleCard() {
         }
     }, [attendanceData]);
     async function getAttendanceData() {
-        console.log("awa");
         const calender = await attendanceSystemApi.calenderData.get(userConfig.jw.startDay);
         const attendanceDataRes = await attendanceSystemApi.getPersonalData(calender?.calendarId, {page_size: 1000});
         if (attendanceDataRes?.data && calender) {
             setAttendanceData(new AttendanceDataClass(attendanceDataRes.data.records, calender));
-            console.log(attendanceDataRes.data.records.filter(record=>record.atdStateId ===4));
         }
     }
     // 获取课表
@@ -186,7 +184,7 @@ export function ScheduleCard() {
         name: string;
         y: number;
         span: number;
-        backgroundColor?: string;
+        backgroundColor: string;
         type: "engTrainingExp";
     };
     const [engTrainingExpList, setEngTrainingExpList] = useState<EngTrainingExp[]>([]);
@@ -208,7 +206,7 @@ export function ScheduleCard() {
                 name: exp?.content ?? "",
                 y: 0,
                 span: 8,
-                backgroundColor: undefined,
+                backgroundColor: theme.colors.primary,
             };
         });
         await store.save({
