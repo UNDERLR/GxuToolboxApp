@@ -71,7 +71,8 @@ export function CourseScheduleTable<T = any>(props: CourseScheduleTableProps<T>)
 
     // 从接口返回的数据解析出当周每天的课程
     function parseCourses() {
-        const res = props.courseSchedule!.getCourseListByWeek(currentWeek);
+        if (!props.courseSchedule?.getCourseListByWeek) return;
+        const res = props.courseSchedule.getCourseListByWeek(currentWeek);
         if (Array.isArray(res)) {
             // 调课判断
             res.forEach((day, index) => {

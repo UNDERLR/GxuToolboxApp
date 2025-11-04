@@ -19,6 +19,7 @@ import {courseApi} from "@/js/jw/course.ts";
 import {jwxt} from "@/js/jw/jwxt.ts";
 import {useNavigation} from "@react-navigation/native";
 import {UnTermSelector} from "@/components/un-ui/UnTermSelector.tsx";
+import {CourseScheduleClass} from "@/class/jw/course.ts";
 
 export function ClassCourseSchedule() {
     const {userConfig} = useContext(UserConfigContext);
@@ -246,7 +247,7 @@ export function ClassCourseSchedule() {
                         <CourseScheduleView
                             startDay={classScheduleApiRes.weekNum[0].rq.split("/")[0]}
                             pageView={pageView}
-                            courseSchedule={classScheduleApiRes}
+                            courseSchedule={new CourseScheduleClass(classScheduleApiRes)}
                         />
                         {classScheduleApiRes?.sjkList && (
                             <>
