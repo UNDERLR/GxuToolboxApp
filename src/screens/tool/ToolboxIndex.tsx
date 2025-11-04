@@ -5,7 +5,7 @@ import {useNavigation} from "@react-navigation/native";
 import {Icon} from "@/components/un-ui/Icon.tsx";
 import {useContext} from "react";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
-import Flex from "@/components/un-ui/Flex.tsx";
+import Flex from "@/components/un-ui";
 
 interface settingSection {
     title: string;

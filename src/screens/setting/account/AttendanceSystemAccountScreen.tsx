@@ -1,7 +1,7 @@
 import {ActivityIndicator, Pressable, StyleSheet, ToastAndroid, View} from "react-native";
 import {Button, Image, Input, Text} from "@rneui/themed";
 import {useEffect, useState} from "react";
-import {Icon} from "@/components/un-ui/Icon.tsx";
+import {Icon} from "@/components/un-ui";
 import {useNavigation} from "@react-navigation/native";
 import {authApi} from "@/js/auth/auth.ts";
 import {http} from "@/js/http.ts";

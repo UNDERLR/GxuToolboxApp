@@ -5,7 +5,7 @@ import FontAwesome6, {FontAwesome6RegularIconName} from "@react-native-vector-ic
 import {MaterialDesignIcons, MaterialDesignIconsIconName} from "@react-native-vector-icons/material-design-icons";
 import {FontAwesome6IconProps} from "react-native-vector-icons/FontAwesome6";
 
-type Props = Omit<IconProps, "type"> & {
+export type UnIconProps = Omit<IconProps, "type"> & {
     size?: number;
     color?: string;
 } & (
@@ -28,7 +28,7 @@ type Props = Omit<IconProps, "type"> & {
     );
 
 
-export function Icon({type = "material", name, size = 12, color, ...props}: Props) {
+export function Icon({type = "material", name, size = 12, color, ...props}: UnIconProps) {
     const {theme} = useTheme();
     const iconColor = color || theme.colors.black;
 
