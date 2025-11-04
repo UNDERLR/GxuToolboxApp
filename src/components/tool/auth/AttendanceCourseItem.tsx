@@ -34,7 +34,7 @@ export function AttendanceCourseItem(props: Props) {
                 height: span * userConfig.theme.course.timeSpanHeight - userConfig.theme.course.courseItemMargin * 2,
                 position: "absolute",
                 backgroundColor: Color(
-                    ColorMap[course.courseState ?? AST.AttendanceState.NoNeed] ?? theme.colors.primary,
+                    theme.colors.primary,
                 ).setAlpha(theme.mode === "light" ? 0.3 : 0.1).rgbaString,
                 top:
                     userConfig.theme.course.weekdayHeight +
@@ -44,7 +44,7 @@ export function AttendanceCourseItem(props: Props) {
             text: {
                 textAlign: "center",
                 color: Color.mix(
-                    ColorMap[course.courseState ?? AST.AttendanceState.NoNeed] ?? theme.colors.primary,
+                    theme.colors.primary,
                     theme.colors.black,
                     0.5,
                 ).rgbaString,
@@ -70,15 +70,10 @@ export function AttendanceCourseItem(props: Props) {
             <Flex direction="column" gap={5}>
                 {courseScheduleData.courseInfoVisible.name && (
                     <Text style={[itemStyle.text, {fontWeight: 700}]}>
-                        <AttendanceStateIcon
-                            defaultColor={itemStyle.text.color}
-                            state={props.course.courseState ?? AST.AttendanceState.NotStarted}
-                        />
-                        {courseScheduleData.courseInfoVisible.name && (
-                            <Text style={itemStyle.text}>
-                                <Icon name="clock-star-four-points" color={itemStyle.text.color} />调
-                            </Text>
-                        )}
+                        {/*<AttendanceStateIcon*/}
+                        {/*    defaultColor={itemStyle.text.color}*/}
+                        {/*    state={props.course.courseState ?? AST.AttendanceState.NotStarted}*/}
+                        {/*/>*/}
                         {course.subjectName}
                     </Text>
                 )}
