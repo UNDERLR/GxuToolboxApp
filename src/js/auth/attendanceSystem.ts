@@ -7,6 +7,15 @@ import moment from "moment";
  * 考勤系统相关的API接口封装
  */
 export const attendanceSystemApi = {
+    testTokenExpired: async (): Promise<boolean> => {
+        try {
+            const res = await attendanceSystemApi.getMenuData();
+            return res?.code === 600;
+        } catch (e) {
+            return false;
+        }
+    },
+
     /**
      * 获取菜单数据，带有学期数据
      * @returns 返回首页数据
@@ -194,7 +203,7 @@ export const attendanceSystemApi = {
             userId: loginRes.data.userInfo.userId,
         };
         const res = await http.post<AST.ResRoot<any>>(
-            urlWithParams("https://yktuipweb.gxu.edu.cn/api/rank/selectByStudent",{
+            urlWithParams("https://yktuipweb.gxu.edu.cn/api/rank/selectByStudent", {
                 cal: termId,
                 rm: "SYS004",
             }),

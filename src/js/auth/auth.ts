@@ -146,6 +146,7 @@ export const authApi = {
             },
         );
 
+        await userMgr.attendanceSystem.storeLoginRes(res.data);
         if (res.data.code === 600) {
             attendanceSystemApi.getMenuData();
         }

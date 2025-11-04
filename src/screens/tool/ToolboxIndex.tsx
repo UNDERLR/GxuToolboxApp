@@ -47,7 +47,7 @@ const toolList = [
             {
                 label: "考勤信息查询",
                 icon: <Icon name="clock" size={iconSize} />,
-                navigation: "attendanceInfoScreen",
+                navigation: "AttendanceInfoQueryScreen",
             },
             // {
             //     label: "自主选课",

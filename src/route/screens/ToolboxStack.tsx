@@ -21,6 +21,7 @@ import {SelfCourseSelection} from "@/screens/tool/jw/selfSelectedCourses/SelfCou
 import {GPAcalculator} from "@/screens/tool/jw/GPAcalculator/GPAcalculator.tsx";
 import {RescheduleNotificationScreen} from "@/screens/tool/jw/notification/RescheduleNotificationScreen.tsx";
 import {TimeShiftScreen} from "@/screens/tool/jw/notification/TimeShiftScreen.tsx";
+import AttendanceInfoQueryScreen from "@/screens/tool/auth/attendanceSystem/AttendanceInfoQueryScreen.tsx";
 
 const Stack = createNativeStackNavigator();
 
@@ -82,7 +83,7 @@ export function ToolboxStack() {
                 component={ClassCourseSchedule}
                 options={{title: "班级课表查询"}}
             />
-            <Stack.Screen name="attendanceInfoScreen" component={SelfCourseSelection} options={{title: "考勤信息查询"}} />
+            <Stack.Screen name="AttendanceInfoQueryScreen" component={AttendanceInfoQueryScreen} options={{title: "考勤信息查询"}} />
 
             <Stack.Screen name="examInfo" component={ExamInfo} options={{title: "考试信息查询"}} />
             <Stack.Screen name="examScore" component={ExamScore} options={{title: "考试成绩查询"}} />
