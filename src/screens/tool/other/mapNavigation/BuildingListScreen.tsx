@@ -1,4 +1,4 @@
-import BuildingListItem from "@/screens/tool/mapNavigation/BuildingListItem.tsx";
+import BuildingListItem from "@/screens/tool/other/mapNavigation/BuildingListItem.tsx";
 import {FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {BuildingList} from "@/type/pos.ts";
 import {useState} from "react";

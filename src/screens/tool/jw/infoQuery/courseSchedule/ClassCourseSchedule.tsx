@@ -12,7 +12,7 @@ import {CourseScheduleView} from "@/components/tool/infoQuery/courseSchedule/Cou
 import {usePagerView} from "react-native-pager-view";
 import {PracticalCourseList} from "@/components/tool/infoQuery/courseSchedule/PracticalCourseList.tsx";
 import {UnSlider} from "@/components/un-ui/UnSlider.tsx";
-import {UnPicker} from "@/components/un-ui/UnPicker";
+import {UnPicker} from "@/components/un-ui/UnPicker.tsx";
 import {Picker} from "@react-native-picker/picker";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 import {courseApi} from "@/js/jw/course.ts";

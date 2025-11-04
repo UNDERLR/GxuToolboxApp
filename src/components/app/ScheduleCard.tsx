@@ -18,7 +18,7 @@ import {
 import {ExamInfo} from "@/type/infoQuery/exam/examInfo.ts";
 import {ExamInfoQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
-import {courseApi, CourseScheduleContext} from "@/js/jw/course.ts";
+import {courseApi} from "@/js/jw/course.ts";
 import {CourseScheduleClass} from "@/class/jw/course.ts";
 import {examApi} from "@/js/jw/exam.ts";
 import {UserInfo} from "@/type/infoQuery/base.ts";
@@ -37,7 +37,6 @@ import {attendanceSystemApi} from "@/js/auth/attendanceSystem.ts";
 
 export function ScheduleCard() {
     const {userConfig, updateUserConfig} = useContext(UserConfigContext);
-    const {courseScheduleData, courseScheduleStyle} = useContext(CourseScheduleContext)!;
     const navigation = useNavigation();
     const {theme} = useTheme();
     const pagerView = usePagerView({pagesAmount: 20});

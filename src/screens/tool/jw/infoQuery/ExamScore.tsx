@@ -2,31 +2,29 @@ import {ScrollView, StyleSheet, ToastAndroid, View} from "react-native";
 import {Button, Divider, Text, useTheme} from "@rneui/themed";
 import React, {useContext, useEffect, useState} from "react";
 import Flex from "@/components/un-ui/Flex.tsx";
-import {Picker} from "@react-native-picker/picker";
 import {SchoolTerms, SchoolTermValue, SchoolYears} from "@/type/global.ts";
 import {NumberInput} from "@/components/un-ui/NumberInput.tsx";
-import {Row, Rows, Table} from "react-native-reanimated-table";
-import {ExamInfoQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
+import {ExamScoreQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
 import {store} from "@/js/store.ts";
 import {Color} from "@/js/color.ts";
-import {UnPicker} from "@/components/un-ui/UnPicker.tsx";
+import {ExamScoreTable} from "@/screens/tool/jw/infoQuery/ExamScoreTable.tsx";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 import {examApi} from "@/js/jw/exam.ts";
-import {jwxt} from "@/js/jw/jwxt.ts";
 import {useNavigation} from "@react-navigation/native";
+import {jwxt} from "@/js/jw/jwxt.ts";
 import {UnTermSelector} from "@/components/un-ui/UnTermSelector.tsx";
 
-export function ExamInfo() {
-    const {theme} = useTheme();
+export function ExamScore() {
     const {userConfig} = useContext(UserConfigContext);
+    const {theme} = useTheme();
     const navigation = useNavigation();
-    const [apiRes, setApiRes] = useState<ExamInfoQueryRes>({} as ExamInfoQueryRes);
+    const [apiRes, setApiRes] = useState<ExamScoreQueryRes>({} as ExamScoreQueryRes);
     const [year, setYear] = useState(+userConfig.jw.year);
     const [term, setTerm] = useState<SchoolTermValue>(userConfig.jw.term);
     const [page, setPage] = useState(1);
     const [tableData, setTableData] = useState({
-        header: ["课程名称", "考试时间", "考试校区", "考试地点", "考试座号", "学年", "学期", "教学班", "考试名称"],
-        width: [170, 200, 80, 100, 80, 100, 70, 190, 300],
+        header: ["学年", "课程名称", "成绩", "发布时间", "学分", "绩点", "教学班", "教师", "教学班ID"],
+        width: [120, 200, 80, 150, 100, 80, 200, 140, 300],
         body: [] as string[][],
     });
 
@@ -38,6 +36,9 @@ export function ExamInfo() {
     const style = StyleSheet.create({
         container: {
             padding: "5%",
+        },
+        table: {
+            width: "100%",
         },
         tableText: {
             color: theme.colors.black,
@@ -57,35 +58,55 @@ export function ExamInfo() {
         tableHeaderText: {},
     });
 
-    function init() {
-        store.load({key: "examInfo"}).then(data => {
+    async function init() {
+        const data = await store.load<ExamScoreQueryRes>({key: "examScore"}).catch(e => {
+            console.warn(e);
+            return null;
+        });
+        if (data) {
             setApiRes(data);
-        }).catch(console.warn);
+            setTableData({
+                ...tableData,
+                body: data.items.map((item, index) => [
+                    item.xnmmc,
+                    item.kcmc,
+                    item.cj,
+                    item.cjbdsj,
+                    item.xf,
+                    item.jd,
+                    item.jxbmc,
+                    item.jsxm,
+                    item.jxb_id,
+                ]),
+            });
+        }
     }
 
     async function query() {
-        const res = await examApi.getExamInfo(year, term, page);
+        const res = await examApi.getExamScore(year, term, page);
         if (res) {
             const tableBody = res.items.map(item => [
+                item.xnmmc,
                 item.kcmc,
-                item.kssj,
-                item.cdxqmc,
-                item.cdmc,
-                item.zwh,
-                item.xnmc,
-                item.xqmmc,
+                item.cj,
+                item.cjbdsj,
+                item.xf,
+                item.jd,
                 item.jxbmc,
-                item.ksmc,
+                item.jsxm,
+                item.jxb_id,
             ]);
-            ToastAndroid.show("获取考试信息成功", ToastAndroid.SHORT);
+            ToastAndroid.show("获取考试成绩成功", ToastAndroid.SHORT);
             setTableData({
                 ...tableData,
                 body: tableBody,
             });
             setApiRes(res);
-            await store.save({key: "examInfo", data: res});
+            await store.save({key: "examScore", data: res});
         }
     }
+
+    function usual(id: string) {}
 
     useEffect(() => {
         init();
@@ -95,8 +116,8 @@ export function ExamInfo() {
     return (
         <ScrollView>
             <View style={style.container}>
+                <Text h4>查询参数</Text>
                 <Flex gap={10} direction="column" align="flex-start">
-                    <Text h4>查询参数</Text>
                     <Flex gap={10}>
                         <Text>学期</Text>
                         <View style={{flex: 1}}>
@@ -111,10 +132,15 @@ export function ExamInfo() {
                         </View>
                     </Flex>
                     <Flex gap={10}>
-                        <Button containerStyle={{flex: 1}} onPress={query}>查询</Button>
+                        <Button containerStyle={{flex: 1}} onPress={query}>
+                            查询
+                        </Button>
                         <Button
                             onPress={() => {
-                                jwxt.openPageInWebView("/kwgl/kscx_cxXsksxxIndex.html?gnmkdm=N358105&layout=default", navigation);
+                                jwxt.openPageInWebView(
+                                    "/cjcx/cjcx_cxDgXscj.html?gnmkdm=N305005&layout=default",
+                                    navigation,
+                                );
                             }}>
                             前往教务查询
                         </Button>
@@ -128,35 +154,20 @@ export function ExamInfo() {
                             apiRes.totalCount ?? 0
                         }条结果`}</Text>
                     </Flex>
-                    <Flex gap={10}>
-                        <Text>页数</Text>
-                        <Flex inline>
+                    <Flex gap={10} justify="space-between" align="center">
+                        <Flex gap={10} align="center">
+                            <Text>页数</Text>
                             <NumberInput value={page} onChange={setPage} min={1} max={apiRes.totalPage ?? 1} />
+                            <Text>每页15条记录</Text>
                         </Flex>
-                        <Text>每页15条记录</Text>
+                        <Button onPress={() => navigation.navigate("gpaCalculator")}>绩点计算器</Button>
                     </Flex>
-                    <ScrollView horizontal>
-                        <Table borderStyle={style.tableBorder}>
-                            <Row
-                                data={tableData.header}
-                                widthArr={tableData.width}
-                                textStyle={style.tableText}
-                                style={style.tableHeader}
-                                height={50}
-                            />
-                            <Rows
-                                heightArr={new Array(tableData.body.length).fill(50)}
-                                data={tableData.body}
-                                widthArr={tableData.width}
-                                textStyle={style.tableText}
-                            />
-                        </Table>
-                    </ScrollView>
-                    <Flex gap={10}>
+                    <Flex>
+                        <ExamScoreTable data={apiRes.items ?? []} year={year} term={term} />
+                    </Flex>
+                    <Flex gap={10} align="center">
                         <Text>页数</Text>
-                        <Flex inline>
-                            <NumberInput value={page} onChange={setPage} min={1} max={apiRes.totalPage ?? 1} />
-                        </Flex>
+                        <NumberInput value={page} onChange={setPage} min={1} max={apiRes.totalPage ?? 1} />
                         <Text>每页15条记录</Text>
                     </Flex>
                 </Flex>

@@ -5,7 +5,7 @@ import {useNavigation} from "@react-navigation/native";
 import {Icon} from "@/components/un-ui/Icon.tsx";
 import {useContext} from "react";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
-import Flex from "@/components/un-ui";
+import {Flex} from "@/components/un-ui";
 
 interface settingSection {
     title: string;
@@ -43,6 +43,11 @@ const toolList = [
                 label: "考试成绩查询",
                 icon: <Icon name="chart-box" size={iconSize} />,
                 navigation: "examScore",
+            },
+            {
+                label: "考勤信息查询",
+                icon: <Icon name="clock" size={iconSize} />,
+                navigation: "attendanceInfoScreen",
             },
             // {
             //     label: "自主选课",
