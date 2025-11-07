@@ -1,8 +1,8 @@
-import {ScrollView, StyleSheet} from "react-native";
+import {ScrollView, StyleSheet, ToastAndroid} from "react-native";
 import {Tab, TabView, Text, useTheme} from "@rneui/themed";
 import React, {useEffect, useState} from "react";
 import {CourseScheduleTable} from "@/components/tool/infoQuery/courseSchedule/CourseScheduleTable.tsx";
-import {Flex, NumberInput, vw} from "@/components/un-ui";
+import {Flex, NumberInput, UnRefreshControl, vw} from "@/components/un-ui";
 import {AttendanceQuickLogin} from "@/components/tool/auth/AttendanceQuickLogin.tsx";
 import {Color} from "@/js/color.ts";
 import {Row, Rows, Table} from "react-native-reanimated-table";
@@ -30,9 +30,20 @@ export default function AttendanceInfoQueryScreen() {
 
     const [quickLoginShow, setQuickLoginShow] = useState(false);
 
-    async function init() {
-        if (!(await attendanceSystemApi.testTokenExpired())) setQuickLoginShow(true);
+    async function init() {}
+
+    async function testToken() {
+        const testRes = await attendanceSystemApi.testTokenExpired();
+        if (!testRes) {
+            setQuickLoginShow(true);
+            ToastAndroid.show("考勤系统Token已过期，请输入验证码进行快速登录", ToastAndroid.SHORT);
+        }
+        return testRes;
     }
+
+    useEffect(() => {
+        testToken();
+    }, []);
 
     useEffect(() => {
         init();
@@ -64,17 +75,21 @@ export default function AttendanceInfoQueryScreen() {
                 animationType="timing"
                 onChange={setTabIndex}>
                 <TabView.Item style={style.tab}>
-                    <TableScreen />
+                    <TableScreen onTestToken={testToken} />
                 </TabView.Item>
                 <TabView.Item style={style.tab}>
-                    <RecordScreen />
+                    <RecordScreen onTestToken={testToken} />
                 </TabView.Item>
             </TabView>
         </>
     );
 }
 
-function TableScreen() {
+interface ScreenType {
+    onTestToken: () => Promise<boolean>;
+}
+
+function TableScreen(props: ScreenType) {
     const [week, setWeek] = useState(1);
     const [calender, setCalender] = useState<AST.Calendar>();
 
@@ -84,10 +99,19 @@ function TableScreen() {
         const calender = await attendanceSystemApi.calenderData.getCurrent();
         const res = await attendanceSystemApi.getAttendanceTable(week, calender?.calendarId);
         if (res) {
-            console.log(res.getCourseList.flat());
             setCourseList(res.getCourseList.flat());
         }
         if (calender) setCalender(calender);
+    }
+
+    const [refreshing, setRefreshing] = useState(false);
+    async function onRefresh() {
+        setRefreshing(true);
+        const testToken = await props.onTestToken();
+        if (testToken) {
+            await getData();
+        }
+        setRefreshing(false);
     }
 
     useEffect(() => {
@@ -95,7 +119,7 @@ function TableScreen() {
     }, [week]);
 
     return (
-        <ScrollView>
+        <ScrollView refreshControl={<UnRefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
             <Flex>
                 <Flex>
                     <Text>周数</Text>
@@ -116,7 +140,7 @@ function TableScreen() {
     );
 }
 
-function RecordScreen() {
+function RecordScreen(props: ScreenType) {
     const {theme} = useTheme();
     const [page, setPage] = useState(1);
     const [apiRes, setApiRes] = useState<AST.PageRes<AST.AttendanceData>>();
@@ -126,26 +150,16 @@ function RecordScreen() {
         width: [100, 200, 50, 150, 80, 80],
         body: [] as string[][],
     });
-    const style = StyleSheet.create({
-        container: {
-            padding: "5%",
-        },
-        tableText: {
-            color: theme.colors.black,
-            margin: 5,
-        },
-        tableBorder: {
-            borderWidth: 2,
-            borderColor: Color.mix(theme.colors.primary, theme.colors.grey4, 0.4).rgbaString,
-        },
-        tableHeader: {
-            backgroundColor: Color.mix(
-                Color(theme.colors.primary),
-                Color(theme.colors.background),
-                theme.mode === "dark" ? 0.7 : 0.2,
-            ).setAlpha(theme.mode === "dark" ? 0.3 : 0.6).rgbaString,
-        },
-    });
+
+    const [refreshing, setRefreshing] = useState(false);
+    async function onRefresh() {
+        setRefreshing(true);
+        const testToken = await props.onTestToken();
+        if (testToken) {
+            await getData();
+        }
+        setRefreshing(false);
+    }
 
     async function getData() {
         const calender = await attendanceSystemApi.calenderData.getCurrent();
@@ -170,8 +184,30 @@ function RecordScreen() {
     useEffect(() => {
         getData();
     }, [page]);
+
+    const style = StyleSheet.create({
+        container: {
+            padding: "5%",
+        },
+        tableText: {
+            color: theme.colors.black,
+            margin: 5,
+        },
+        tableBorder: {
+            borderWidth: 2,
+            borderColor: Color.mix(theme.colors.primary, theme.colors.grey4, 0.4).rgbaString,
+        },
+        tableHeader: {
+            backgroundColor: Color.mix(
+                Color(theme.colors.primary),
+                Color(theme.colors.background),
+                theme.mode === "dark" ? 0.7 : 0.2,
+            ).setAlpha(theme.mode === "dark" ? 0.3 : 0.6).rgbaString,
+        },
+    });
+
     return (
-        <ScrollView>
+        <ScrollView refreshControl={<UnRefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
             <Flex direction="column" align="flex-start" gap={15} justify="flex-start">
                 <Text>
                     {`第${apiRes?.data.page_index ?? 1}/${apiRes?.data.total_page ?? 1}页，共有${

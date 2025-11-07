@@ -177,7 +177,7 @@ export class CourseClass extends BaseClass<Course> implements Course {
                 return;
             }
             const weekList = new Array(weekSpan[1] - weekSpan[0] + 1).fill(weekSpan[0]).map((v, i) => v + i);
-            if (!/^[单双]/.test(weekSpanStr)) {
+            if (!/[单双]/.test(weekSpanStr)) {
                 weekList.forEach(v => res.add(v));
             } else {
                 weekList
