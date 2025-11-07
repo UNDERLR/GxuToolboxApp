@@ -140,7 +140,7 @@ export function CourseScheduleTable<T = any>(props: CourseScheduleTableProps<T>)
                 <View style={courseScheduleStyle.weekdayItem}>
                     <Text style={courseScheduleStyle.weekdayText}>
                         {props.showDate
-                            ? moment(userConfig.jw.startDay).add(currentWeek, "w").month() + 1 + "月"
+                            ? startDay.clone().add(currentWeek, "w").month() + 1 + "月"
                             : `第${props.currentWeek}周`}
                     </Text>
                 </View>
@@ -171,7 +171,7 @@ export function CourseScheduleTable<T = any>(props: CourseScheduleTableProps<T>)
             {/*课表*/}
             {courseScheduleData.weekdayList.map((weekday, index) => {
                 // 判断是否为当天
-                const currentDay = moment(userConfig.jw.startDay).add({
+                const currentDay = startDay.clone().add({
                     week: currentWeek - 1,
                     day: index,
                 });
@@ -240,7 +240,7 @@ export function CourseScheduleTable<T = any>(props: CourseScheduleTableProps<T>)
                         })}
 
                         {/*课表其他元素*/}
-                        {currentDayItemList.map(examInfo => props.itemRender?.(examInfo, props.onItemPress))}
+                        {currentDayItemList.map(item => props.itemRender?.(item, props.onItemPress))}
                     </View>
                 );
             })}
