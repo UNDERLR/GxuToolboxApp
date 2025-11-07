@@ -2,31 +2,31 @@ import {ScrollView, StyleSheet, ToastAndroid} from "react-native";
 import {Tab, TabView, Text, useTheme} from "@rneui/themed";
 import React, {useEffect, useState} from "react";
 import {CourseScheduleTable} from "@/components/tool/infoQuery/courseSchedule/CourseScheduleTable.tsx";
-import {Flex, NumberInput, UnRefreshControl, vw} from "@/components/un-ui";
+import {Flex, NumberInput, UnRefreshControl, UnTermSelector, vw} from "@/components/un-ui";
 import {AttendanceQuickLogin} from "@/components/tool/auth/AttendanceQuickLogin.tsx";
 import {Color} from "@/js/color.ts";
 import {Row, Rows, Table} from "react-native-reanimated-table";
 import {AttendanceSystemType as AST} from "@/type/api/auth/attendanceSystem.ts";
 import {attendanceSystemApi} from "@/js/auth/attendanceSystem.ts";
-import {SchoolTermValue, SchoolYearValue} from "@/type/global.ts";
-import {AttendanceCourseClass} from "@/class/auth/attendanceSystem.ts";
+import {AttendanceCourseClass, AttendanceDataClass} from "@/class/auth/attendanceSystem.ts";
 import moment from "moment/moment";
 import {AttendanceCourseItem} from "@/components/tool/auth/AttendanceCourseItem.tsx";
+import {useSchoolTerm} from "@/hooks/jw.ts";
+
+const style = StyleSheet.create({
+    container: {
+        padding: vw(5),
+    },
+    tab: {
+        width: "100%",
+    },
+});
 
 export default function AttendanceInfoQueryScreen() {
-    const [year, setYear] = useState<SchoolYearValue | number>();
-    const [term, setTerm] = useState<SchoolTermValue>();
+    const {year, term, setBoth} = useSchoolTerm();
+    const [calender, setCalender] = useState<AST.Calendar>();
     const [tabIndex, setTabIndex] = useState(0);
     const {theme} = useTheme();
-
-    const style = StyleSheet.create({
-        container: {
-            padding: vw(5),
-        },
-        tab: {
-            width: "95%",
-        },
-    });
 
     const [quickLoginShow, setQuickLoginShow] = useState(false);
 
@@ -49,17 +49,14 @@ export default function AttendanceInfoQueryScreen() {
         init();
     }, [quickLoginShow]);
 
+    useEffect(() => {
+        attendanceSystemApi.calenderData.getBySchoolTerm(year, term).then(setCalender);
+    }, [year, term]);
+
     return (
         <>
             <AttendanceQuickLogin visible={quickLoginShow} onClose={() => setQuickLoginShow(false)} />
-            {/*<UnTermSelector*/}
-            {/*    year={year}*/}
-            {/*    term={term}*/}
-            {/*    onChange={(year, term) => {*/}
-            {/*        setYear(year);*/}
-            {/*        setTerm(term);*/}
-            {/*    }}*/}
-            {/*/>*/}
+            <UnTermSelector year={year} term={term} onChange={setBoth} />
             <Tab
                 value={tabIndex}
                 dense={true}
@@ -71,14 +68,14 @@ export default function AttendanceInfoQueryScreen() {
             </Tab>
             <TabView
                 value={tabIndex}
-                tabItemContainerStyle={style.container}
+                tabItemContainerStyle={{overflow: "hidden"}}
                 animationType="timing"
                 onChange={setTabIndex}>
                 <TabView.Item style={style.tab}>
-                    <TableScreen onTestToken={testToken} />
+                    <TableScreen calender={calender} onTestToken={testToken} />
                 </TabView.Item>
                 <TabView.Item style={style.tab}>
-                    <RecordScreen onTestToken={testToken} />
+                    <RecordScreen calender={calender} onTestToken={testToken} />
                 </TabView.Item>
             </TabView>
         </>
@@ -87,22 +84,31 @@ export default function AttendanceInfoQueryScreen() {
 
 interface ScreenType {
     onTestToken: () => Promise<boolean>;
+    calender?: AST.Calendar;
 }
 
 function TableScreen(props: ScreenType) {
     const [week, setWeek] = useState(1);
-    const [calender, setCalender] = useState<AST.Calendar>();
-
+    const [attendanceData, setAttendanceData] = useState<AttendanceDataClass>();
     const [courseList, setCourseList] = useState<AttendanceCourseClass[]>([]);
 
     async function getData() {
-        const calender = await attendanceSystemApi.calenderData.getCurrent();
-        const res = await attendanceSystemApi.getAttendanceTable(week, calender?.calendarId);
+        const res = await attendanceSystemApi.getAttendanceTable(week, props.calender?.calendarId);
         if (res) {
             setCourseList(res.getCourseList.flat());
         }
-        if (calender) setCalender(calender);
     }
+
+    async function getAttendanceData() {
+        if (!props.calender) return;
+        const res = await attendanceSystemApi.getPersonalData(props.calender?.calendarId, {
+            page_size: 1000,
+        });
+        if (res) setAttendanceData(new AttendanceDataClass(res.data.records, props.calender));
+    }
+    useEffect(() => {
+        getAttendanceData();
+    }, [props.calender]);
 
     const [refreshing, setRefreshing] = useState(false);
     async function onRefresh() {
@@ -116,10 +122,12 @@ function TableScreen(props: ScreenType) {
 
     useEffect(() => {
         getData();
-    }, [week]);
+    }, [week, props.calender]);
 
     return (
-        <ScrollView refreshControl={<UnRefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+        <ScrollView
+            contentContainerStyle={style.container}
+            refreshControl={<UnRefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
             <Flex>
                 <Flex>
                     <Text>周数</Text>
@@ -130,8 +138,8 @@ function TableScreen(props: ScreenType) {
                 currentWeek={week}
                 itemList={courseList}
                 isItemShow={(item, day) => moment(item.weekDay).isSame(day, "d")}
-                itemRender={item => <AttendanceCourseItem course={item} />}
-                startDay={calender?.firstWeekBegin}
+                itemRender={item => <AttendanceCourseItem attendanceData={attendanceData} course={item} />}
+                startDay={props.calender?.firstWeekBegin}
                 showDate
                 showDayHighlight
                 showTimeSpanHighlight
@@ -162,20 +170,19 @@ function RecordScreen(props: ScreenType) {
     }
 
     async function getData() {
-        const calender = await attendanceSystemApi.calenderData.getCurrent();
-        const res = await attendanceSystemApi.getPersonalData(calender?.calendarId ?? 18, {
+        const res = await attendanceSystemApi.getPersonalData(props.calender?.calendarId ?? 18, {
             page_index: page,
             page_size: 20,
         });
         if (res?.code === 600) {
             setApiRes(res);
-            tableData.body = res.data.records!.map(record => [
-                record.day,
-                record.courseName,
-                record.atdStateName,
-                record.atdTime,
-                record.roomName,
-                record.periodConnect,
+            tableData.body = res.data.records.map<string[]>(record => [
+                record.day!,
+                record.courseName!,
+                record.atdStateName!,
+                record.atdTime!,
+                record.roomName!,
+                record.periodConnect!,
             ]);
             setTableData({...tableData});
         }
@@ -183,7 +190,7 @@ function RecordScreen(props: ScreenType) {
 
     useEffect(() => {
         getData();
-    }, [page]);
+    }, [page, props.calender]);
 
     const style = StyleSheet.create({
         container: {
@@ -207,7 +214,9 @@ function RecordScreen(props: ScreenType) {
     });
 
     return (
-        <ScrollView refreshControl={<UnRefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+        <ScrollView
+            contentContainerStyle={style.container}
+            refreshControl={<UnRefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
             <Flex direction="column" align="flex-start" gap={15} justify="flex-start">
                 <Text>
                     {`第${apiRes?.data.page_index ?? 1}/${apiRes?.data.total_page ?? 1}页，共有${
