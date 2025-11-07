@@ -4,14 +4,14 @@ import {useContext, useEffect, useState} from "react";
 import {Picker, PickerItemProps} from "@react-native-picker/picker";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 
-interface Props {
+export interface UnTermSelectorProps {
     year?: SchoolYearValue | number;
     term?: SchoolTermValue;
     thirdTerm?: boolean;
     onChange?: (year: SchoolYearValue | number, term: SchoolTermValue) => void;
 }
 
-export function UnTermSelector(props: Props) {
+export function UnTermSelector(props: UnTermSelectorProps) {
     const {userConfig} = useContext(UserConfigContext);
     const [optionList, setOptionList] = useState<PickerItemProps<string>[]>([]);
 
