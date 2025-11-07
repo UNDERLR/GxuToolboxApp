@@ -4,6 +4,7 @@ import {AttendanceSystemType as AST} from "@/type/api/auth/attendanceSystem.ts";
 import {store} from "@/js/store.ts";
 import moment from "moment";
 import {AttendanceCourseScheduleClass} from "@/class/auth/attendanceSystem.ts";
+import {SchoolTermValue, SchoolYearValue} from "@/type/global.ts";
 /**
  * 考勤系统相关的API接口封装
  */
@@ -96,6 +97,17 @@ export const attendanceSystemApi = {
             const calenderList = await attendanceSystemApi.calenderData.getList();
             // 查找包含指定日期的日历数据
             return calenderList.find(calender => calender.calendarId === termId);
+        },
+
+        /**
+         * 根据学年和学期获取对应的日历数据
+         * @param termId 学期id
+         * @returns Promise<AST.CalendarData | undefined> 匹配的日历数据或undefined
+         */
+        getBySchoolTerm: async (year: SchoolYearValue | number, term: SchoolTermValue | number) => {
+            const calenderList = await attendanceSystemApi.calenderData.getList();
+            // 查找包含指定日期的日历数据
+            return calenderList.find(calender => calender.calendarName === `${year}-${term}`);
         },
 
         /**
@@ -193,10 +205,7 @@ export const attendanceSystemApi = {
      * @param termId 学期ID，为空时获取全部
      * @return 返回考勤系统学生课表数据
      */
-    getAttendanceTable: async (
-        week: number,
-        termId = 18
-    ): Promise<AttendanceCourseScheduleClass | undefined> => {
+    getAttendanceTable: async (week: number, termId = 18): Promise<AttendanceCourseScheduleClass | undefined> => {
         const loginRes = await userMgr.attendanceSystem.getLoginRes();
         if (!loginRes || !loginRes.data.token) return;
         const defaultData = {

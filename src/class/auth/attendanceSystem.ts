@@ -56,7 +56,7 @@ export class AttendanceDataClass extends BaseClass<TermAttendanceData> implement
      * 从记录中获取指定日期的全天考勤记录
      * @param date 目标日期，字符串格式“YYYY-MM-DD”
      */
-    getAttendanceRecordByDate(date: moment.Moment): AST.AttendanceData[] {
+    getAttendanceRecordByDate(date: moment.MomentInput): AST.AttendanceData[] {
         return this.recordList.filter(item => moment(item.day).isSame(date, "day"));
     }
 
@@ -106,7 +106,7 @@ export class AttendanceDataClass extends BaseClass<TermAttendanceData> implement
      * @param date 日期，字符串格式“YYYY-MM-DD”
      * @param targetPeriod 目标节数
      */
-    getAttendanceStateByDate(date: moment.Moment, targetPeriod: number): AST.AttendanceState | undefined {
+    getAttendanceStateByDate(date: moment.MomentInput, targetPeriod: number): AST.AttendanceState | undefined {
         const records = this.getAttendanceRecordByDate(date);
         return records.find(record => {
             const period = record.periodSplit!.split(",").map(item=>+item);
