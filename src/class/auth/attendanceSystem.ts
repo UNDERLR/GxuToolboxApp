@@ -53,8 +53,15 @@ export class AttendanceDataClass extends BaseClass<TermAttendanceData> implement
     }
 
     /**
+     * @return 返回当前周
+     */
+    get getCurrentWeek(): number {
+        return (moment().startOf("isoWeek").diff(moment(this.calenderData.firstWeekBegin).startOf("isoWeek"), "weeks") + 1);
+    }
+
+    /**
      * 获取指定课程在指定周次的考勤状态
-     * 实际上，你也可以直接看记录的状态名词属性。你问我为啥会有这个函数，问就是写完才想起来又对应属性。
+     * 实际上，你也可以直接看记录的状态名词属性。你问我为啥会有这个函数，问就是写完才想起来有对应属性。
      * 当然也不是一无是处，这个可以计算未开始的情况。
      * @param course 课程对象，包含课程的相关信息
      * @param week 周数，表示要查询的课程所在周次
@@ -83,12 +90,33 @@ export class AttendanceDataClass extends BaseClass<TermAttendanceData> implement
         else if (recordTime.isBetween(courseBeginTime, endTime, null, "(]")) return AST.AttendanceState.Late;
         else return AST.AttendanceState.Absent;
     }
+
+    /**
+     * 获取指定课程在指定日期的考勤状态
+     * @param course 课程对象
+     * @param dayOfWeek 星期几（星期日为0）
+     */
+    getAttendanceStateByDate(course: CourseClass, dayOfWeek: number): AST.AttendanceState {
+        const record = this.getAttendanceRecord(course, this.getCurrentWeek);
+        console.log(record);
+        const week = this.getCurrentWeek;
+        const day = moment(this.calenderData.firstWeekBegin).startOf("isoWeek").add({
+            w: week - 1,
+            day: dayOfWeek - 1,
+        });
+        const [validStartTime, endTime] = course.getAttendanceTimeSpan(day);
+        if (!record) return day.isBefore(moment()) ? AST.AttendanceState.NoNeed : AST.AttendanceState.NotStarted;
+        const recordTime = moment(record.atdTime);
+        const courseBeginTime = validStartTime.clone().add(20, "m");
+        if (record.atdStateId === AST.AttendanceState.Absent) return AST.AttendanceState.Absent;
+        else if (recordTime.isBefore(validStartTime)) return AST.AttendanceState.NotStarted;
+        else if (recordTime.isBetween(validStartTime,courseBeginTime,null,"[]")) return AST.AttendanceState.Normal;
+        else if (recordTime.isBetween(courseBeginTime,endTime,null,"(]")) return AST.AttendanceState.Late;
+        else return AST.AttendanceState.Absent;
+    }
 }
 
-export class AttendanceCourseScheduleClass
-    extends BaseClass<AST.AttendanceCourseSchedule>
-    implements AST.AttendanceCourseSchedule
-{
+export class AttendanceCourseScheduleClass extends BaseClass<AST.AttendanceCourseSchedule> implements AST.AttendanceCourseSchedule {
     periodMax!: number;
     periodTime!: null;
     periodTimeAll!: AST.PeriodTimeItem[];

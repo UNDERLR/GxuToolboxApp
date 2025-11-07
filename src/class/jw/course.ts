@@ -137,7 +137,7 @@ export class CourseClass extends BaseClass<Course> implements Course {
     weekPeriod: number[];
 
     constructor(ori: Course) {
-        super(ori);
+        super(ori instanceof CourseClass ? ori._ori : ori);
         this.weekPeriod = this.getWeeksList;
     }
 
@@ -181,7 +181,7 @@ export class CourseClass extends BaseClass<Course> implements Course {
                 weekList.forEach(v => res.add(v));
             } else {
                 weekList
-                    .filter(v => v % 2 === (weekSpanStr.startsWith("单") ? 1 : 0))
+                    .filter(v => v % 2 === (/单/.test(weekSpanStr) ? 1 : 0))
                     .forEach((v, i) => res.add(v + i));
             }
         });
