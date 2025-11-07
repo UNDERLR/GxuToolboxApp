@@ -22,6 +22,7 @@ import {GPAcalculator} from "@/screens/tool/jw/GPAcalculator/GPAcalculator.tsx";
 import {RescheduleNotificationScreen} from "@/screens/tool/jw/notification/RescheduleNotificationScreen.tsx";
 import {TimeShiftScreen} from "@/screens/tool/jw/notification/TimeShiftScreen.tsx";
 import AttendanceInfoQueryScreen from "@/screens/tool/auth/attendanceSystem/AttendanceInfoQueryScreen.tsx";
+import WebViewScreen from "@/screens/WebViewScreen.tsx";
 
 const Stack = createNativeStackNavigator();
 
@@ -88,7 +89,6 @@ export function ToolboxStack() {
             <Stack.Screen name="examInfo" component={ExamInfo} options={{title: "考试信息查询"}} />
             <Stack.Screen name="examScore" component={ExamScore} options={{title: "考试成绩查询"}} />
             <Stack.Screen name="gpaCalculator" component={GPAcalculator} options={{title: "GPA计算器"}} />
-            <Stack.Screen name="WidgetPreviewScreen" component={WidgetPreviewScreen} options={{title: "小部件预览"}} />
             <Stack.Screen name="SelfSelectedCourse" component={SelfCourseSelection} options={{title: "自主选课"}} />
 
             <Stack.Screen name="phyExpScreen" component={PhyExpScreen} options={{title: "物理实验课查询"}} />
@@ -102,6 +102,8 @@ export function ToolboxStack() {
             <Stack.Screen name="EvaluationComment" component={EvaluationComment} options={{title: "填写评语"}} />
 
             <Stack.Screen name="PositionListScreen" component={BuildingListScreen} options={{title: "地图导航"}} />
+            <Stack.Screen name="WidgetPreviewScreen" component={WidgetPreviewScreen} options={{title: "小部件预览"}} />
+            <Stack.Screen name="EduRechargeScreen" component={WebViewScreen} options={{title: "校园网充值"}} />
         </Stack.Navigator>
     );
 }

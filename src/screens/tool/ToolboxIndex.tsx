@@ -3,121 +3,152 @@ import {Text, useTheme} from "@rneui/themed";
 import {Color} from "@/js/color.ts";
 import {useNavigation} from "@react-navigation/native";
 import {Icon} from "@/components/un-ui/Icon.tsx";
-import {useContext} from "react";
+import React, {useContext} from "react";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 import {Flex} from "@/components/un-ui";
+import {WebViewSource} from "react-native-webview/lib/WebViewTypes";
 
 interface settingSection {
     title: string;
     data: ToolboxItem[];
 }
 
-interface ToolboxItem {
+type ToolboxItem = {
     label: string;
     icon?: React.ReactNode;
+    type?: "navigation";
     navigation: string;
+} | {
+    label: string;
+    icon?: React.ReactNode;
+    type?: "callback";
+    onClick: () => void;
 }
 
 const iconSize = 25;
-const toolList = [
-    {
-        title: "信息查询",
-        data: [
-            {
-                label: "课表查询",
-                icon: <Icon name="calendar-month" size={iconSize} />,
-                type: "navigation",
-                navigation: "courseScheduleQuery",
-            },
-            {
-                label: "班级课表查询",
-                icon: <Icon name="calendar-month-outline" size={iconSize} />,
-                navigation: "classCourseSchedule",
-            },
-            {
-                label: "考试信息查询",
-                icon: <Icon name="information-box-outline" size={iconSize} />,
-                navigation: "examInfo",
-            },
-            {
-                label: "考试成绩查询",
-                icon: <Icon name="chart-box" size={iconSize} />,
-                navigation: "examScore",
-            },
-            {
-                label: "考勤信息查询",
-                icon: <Icon name="clock" size={iconSize} />,
-                navigation: "AttendanceInfoQueryScreen",
-            },
-            // {
-            //     label: "自主选课",
-            //     icon: <Icon name="barschart" size={iconSize} />,
-            //     navigation: "SelfSelectedCourse",
-            // },
-        ],
-    },
-    {
-        title: "实践课",
-        data: [
-            {
-                label: "物理实验课查询",
-                icon: <Icon name="flask" size={iconSize} />,
-                navigation: "phyExpScreen",
-            },
-            {
-                label: "金工实训查询",
-                icon: <Icon name="tools" size={iconSize} />,
-                navigation: "engTrainingScheduleScreen",
-            },
-        ],
-    },
-    {
-        title: "通知",
-        data: [
-            {
-                label: "调课信息查询",
-                icon: <Icon name="clock-star-four-points-outline" size={iconSize} />,
-                navigation: "reschedulingNews",
-            },
-            {
-                label: "调休信息查询",
-                icon: <Icon name="calendar-clock" size={iconSize} />,
-                navigation: "timeShiftScreen",
-            },
-        ],
-    },
-    {
-        title: "教学评价",
-        data: [
-            {
-                label: "期末学生评价",
-                icon: <Icon name="invoice-text-edit" size={iconSize} />,
-                navigation: "EvaluationOverview",
-            },
-        ],
-    },
-    {
-        title: "其他",
-        data: [
-            {
-                label: "地图导航",
-                icon: <Icon name="map" size={iconSize} />,
-                navigation: "PositionListScreen",
-            },
-            {
-                label: "小部件预览",
-                icon: <Icon name="widgets" size={iconSize} />,
-                navigation: "WidgetPreviewScreen",
-            },
-        ],
-    },
-] as settingSection[];
 
 export function ToolboxIndex() {
     const navigation = useNavigation();
     const {theme} = useTheme();
     const {userConfig} = useContext(UserConfigContext);
 
+    const toolList = [
+        {
+            title: "信息查询",
+            data: [
+                {
+                    label: "课表查询",
+                    icon: <Icon name="calendar-month" size={iconSize} />,
+                    type: "navigation",
+                    navigation: "courseScheduleQuery",
+                },
+                {
+                    label: "班级课表查询",
+                    icon: <Icon name="calendar-month-outline" size={iconSize} />,
+                    type: "navigation",
+                    navigation: "classCourseSchedule",
+                },
+                {
+                    label: "考试信息查询",
+                    icon: <Icon name="information-box-outline" size={iconSize} />,
+                    type: "navigation",
+                    navigation: "examInfo",
+                },
+                {
+                    label: "考试成绩查询",
+                    icon: <Icon name="chart-box" size={iconSize} />,
+                    type: "navigation",
+                    navigation: "examScore",
+                },
+                {
+                    label: "考勤信息查询",
+                    icon: <Icon name="clock" size={iconSize} />,
+                    type: "navigation",
+                    navigation: "AttendanceInfoQueryScreen",
+                },
+                // {
+                //     label: "自主选课",
+                //     icon: <Icon name="barschart" size={iconSize} />,
+                //     navigation: "SelfSelectedCourse",
+                // },
+            ],
+        },
+        {
+            title: "实践课",
+            data: [
+                {
+                    label: "物理实验课查询",
+                    icon: <Icon name="flask" size={iconSize} />,
+                    type: "navigation",
+                    navigation: "phyExpScreen",
+                },
+                {
+                    label: "金工实训查询",
+                    icon: <Icon name="tools" size={iconSize} />,
+                    type: "navigation",
+                    navigation: "engTrainingScheduleScreen",
+                },
+            ],
+        },
+        {
+            title: "通知",
+            data: [
+                {
+                    label: "调课信息查询",
+                    icon: <Icon name="clock-star-four-points-outline" size={iconSize} />,
+                    type: "navigation",
+                    navigation: "reschedulingNews",
+                },
+                {
+                    label: "调休信息查询",
+                    icon: <Icon name="calendar-clock" size={iconSize} />,
+                    type: "navigation",
+                    navigation: "timeShiftScreen",
+                },
+            ],
+        },
+        {
+            title: "教学评价",
+            data: [
+                {
+                    label: "期末学生评价",
+                    icon: <Icon name="invoice-text-edit" size={iconSize} />,
+                    type: "navigation",
+                    navigation: "EvaluationOverview",
+                },
+            ],
+        },
+        {
+            title: "其他",
+            data: [
+                {
+                    label: "地图导航",
+                    icon: <Icon name="map" size={iconSize} />,
+                    type: "navigation",
+                    navigation: "PositionListScreen",
+                },
+                {
+                    label: "小部件预览",
+                    icon: <Icon name="widgets" size={iconSize} />,
+                    type: "navigation",
+                    navigation: "WidgetPreviewScreen",
+                },
+                {
+                    label: "校园网充值",
+                    icon: <Icon name="wifi" size={iconSize} />,
+                    type: "callback",
+                    onClick: () => {
+                        navigation.navigate("webViewScreen",{
+                            title: "校园网充值",
+                            source: {
+                                uri: "https://xywjf.gxu.edu.cn/WebPay/toRecharge",
+                            } as WebViewSource,
+                        });
+                    },
+                },
+            ],
+        },
+    ] as settingSection[];
     const data = {
         style: {
             cardBg: Color(theme.mode === "light" ? theme.colors.background : theme.colors.grey5).setAlpha(
@@ -160,6 +191,16 @@ export function ToolboxIndex() {
         },
     });
 
+    function itemClick(item: ToolboxItem){
+        switch(item.type) {
+            case "navigation":
+                navigation.navigate(item.navigation);
+                return;
+            case "callback":
+                item.onClick();
+        }
+    }
+
     return (
         <ScrollView contentContainerStyle={style.settingContainer}>
             {toolList.map(section => (
@@ -171,7 +212,7 @@ export function ToolboxIndex() {
                                 key={`tool-${section.title}-${tool.label}`}
                                 style={style.settingItem}
                                 android_ripple={userConfig.theme.ripple}
-                                onPress={() => navigation.navigate(tool.navigation)}>
+                                onPress={() => itemClick(tool)}>
                                 <Flex direction="column" inline>
                                     <View style={style.toolIcon}>{tool.icon}</View>
                                     <Text style={style.toolLabel}>{tool.label}</Text>
