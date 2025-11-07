@@ -53,10 +53,20 @@ export class AttendanceDataClass extends BaseClass<TermAttendanceData> implement
     }
 
     /**
+     * 从记录中获取指定日期的全天考勤记录
+     * @param date 目标日期，字符串格式“YYYY-MM-DD”
+     */
+    getAttendanceRecordByDate(date: moment.Moment): AST.AttendanceData[] {
+        return this.recordList.filter(item => moment(item.day).isSame(date, "day"));
+    }
+
+    /**
      * @return 返回当前周
      */
     get getCurrentWeek(): number {
-        return (moment().startOf("isoWeek").diff(moment(this.calenderData.firstWeekBegin).startOf("isoWeek"), "weeks") + 1);
+        return (
+            moment().startOf("isoWeek").diff(moment(this.calenderData.firstWeekBegin).startOf("isoWeek"), "weeks") + 1
+        );
     }
 
     /**
@@ -92,27 +102,16 @@ export class AttendanceDataClass extends BaseClass<TermAttendanceData> implement
     }
 
     /**
-     * 获取指定课程在指定日期的考勤状态
-     * @param course 课程对象
-     * @param dayOfWeek 星期几（星期日为0）
+     * 获取指定日期的指定节次的考勤状态
+     * @param date 日期，字符串格式“YYYY-MM-DD”
+     * @param targetPeriod 目标节数
      */
-    getAttendanceStateByDate(course: CourseClass, dayOfWeek: number): AST.AttendanceState {
-        const record = this.getAttendanceRecord(course, this.getCurrentWeek);
-        console.log(record);
-        const week = this.getCurrentWeek;
-        const day = moment(this.calenderData.firstWeekBegin).startOf("isoWeek").add({
-            w: week - 1,
-            day: dayOfWeek - 1,
-        });
-        const [validStartTime, endTime] = course.getAttendanceTimeSpan(day);
-        if (!record) return day.isBefore(moment()) ? AST.AttendanceState.NoNeed : AST.AttendanceState.NotStarted;
-        const recordTime = moment(record.atdTime);
-        const courseBeginTime = validStartTime.clone().add(20, "m");
-        if (record.atdStateId === AST.AttendanceState.Absent) return AST.AttendanceState.Absent;
-        else if (recordTime.isBefore(validStartTime)) return AST.AttendanceState.NotStarted;
-        else if (recordTime.isBetween(validStartTime,courseBeginTime,null,"[]")) return AST.AttendanceState.Normal;
-        else if (recordTime.isBetween(courseBeginTime,endTime,null,"(]")) return AST.AttendanceState.Late;
-        else return AST.AttendanceState.Absent;
+    getAttendanceStateByDate(date: moment.Moment, targetPeriod: number): AST.AttendanceState | undefined {
+        const records = this.getAttendanceRecordByDate(date);
+        return records.find(record => {
+            const period = record.periodSplit!.split(",").map(item=>+item);
+            return period[0] <= targetPeriod && period[1] >= targetPeriod;
+        })?.atdStateId || undefined;
     }
 }
 
