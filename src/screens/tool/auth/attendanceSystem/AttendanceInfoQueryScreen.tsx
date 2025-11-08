@@ -1,5 +1,5 @@
 import {ScrollView, StyleSheet, ToastAndroid} from "react-native";
-import {Tab, TabView, Text, useTheme} from "@rneui/themed";
+import {Button, Tab, TabView, Text, useTheme} from "@rneui/themed";
 import React, {useEffect, useState} from "react";
 import {CourseScheduleTable} from "@/components/tool/infoQuery/courseSchedule/CourseScheduleTable.tsx";
 import {Flex, NumberInput, UnRefreshControl, UnTermSelector, vw} from "@/components/un-ui";
@@ -12,6 +12,7 @@ import {AttendanceCourseClass, AttendanceDataClass} from "@/class/auth/attendanc
 import moment from "moment/moment";
 import {AttendanceCourseItem} from "@/components/tool/auth/AttendanceCourseItem.tsx";
 import {useSchoolTerm} from "@/hooks/jw.ts";
+import {useWebView} from "@/hooks/app.ts";
 
 const style = StyleSheet.create({
     container: {
@@ -24,6 +25,7 @@ const style = StyleSheet.create({
 
 export default function AttendanceInfoQueryScreen() {
     const {year, term, setBoth} = useSchoolTerm();
+    const {openInWeb} = useWebView();
     const [calender, setCalender] = useState<AST.Calendar>();
     const [tabIndex, setTabIndex] = useState(0);
     const {theme} = useTheme();
@@ -57,6 +59,14 @@ export default function AttendanceInfoQueryScreen() {
         <>
             <AttendanceQuickLogin visible={quickLoginShow} onClose={() => setQuickLoginShow(false)} />
             <UnTermSelector year={year} term={term} onChange={setBoth} />
+            <Button
+                onPress={() =>
+                    openInWeb("考勤系统", {
+                        uri: "https://yktuipweb.gxu.edu.cn/#/StudentHome",
+                    })
+                }>
+                在浏览器打开考勤系统
+            </Button>
             <Tab
                 value={tabIndex}
                 dense={true}
@@ -106,9 +116,6 @@ function TableScreen(props: ScreenType) {
         });
         if (res) setAttendanceData(new AttendanceDataClass(res.data.records, props.calender));
     }
-    useEffect(() => {
-        getAttendanceData();
-    }, [props.calender]);
 
     const [refreshing, setRefreshing] = useState(false);
     async function onRefresh() {
@@ -122,6 +129,7 @@ function TableScreen(props: ScreenType) {
 
     useEffect(() => {
         getData();
+        getAttendanceData();
     }, [week, props.calender]);
 
     return (
