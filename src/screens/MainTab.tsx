@@ -1,5 +1,4 @@
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
-import {HomeScreen} from "./HomeScreen.tsx";
 import {Icon} from "@/components/un-ui/Icon.tsx";
 import {SettingStack} from "@/route/screens/SettingStack.tsx";
 import {ToolboxStack} from "@/route/screens/ToolboxStack.tsx";
@@ -7,23 +6,22 @@ import {Color} from "@/js/color.ts";
 import {Button, useTheme} from "@rneui/themed";
 import {useContext} from "react";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
-import {useNavigation} from "@react-navigation/native";
-import {jwxt} from "@/js/jw/jwxt.ts";
 import {HomeStack} from "@/route/screens/HomeStack.tsx";
+import {useWebView} from "@/hooks/app.ts";
 
 const Tab = createBottomTabNavigator();
 
 export default function MainTab() {
     const {theme} = useTheme();
     const {userConfig} = useContext(UserConfigContext);
-    const navigation = useNavigation();
+    const {openInJw} = useWebView();
     const headerRightEle = () => {
         return (
             <Button
                 type="clear"
                 containerStyle={{marginRight: 10}}
                 onPress={() => {
-                    jwxt.openPageInWebView("/xtgl/index_initMenu.html", navigation);
+                    openInJw("/xtgl/index_initMenu.html");
                 }}>
                 打开教务
             </Button>

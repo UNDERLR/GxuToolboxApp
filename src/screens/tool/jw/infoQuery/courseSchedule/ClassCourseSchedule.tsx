@@ -1,8 +1,8 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {ScrollView, StyleSheet, ToastAndroid, View} from "react-native";
 import {Button, Card, Divider, Text, useTheme} from "@rneui/themed";
 import Flex from "@/components/un-ui/Flex.tsx";
-import {PageModel, Schools, SchoolTerms, SchoolTermValue, SchoolValue, SchoolYears} from "@/type/global.ts";
+import {PageModel, Schools, SchoolValue} from "@/type/global.ts";
 import moment from "moment/moment";
 import {infoQuery} from "@/js/jw/infoQuery.ts";
 import {Class, UserInfo} from "@/type/infoQuery/base.ts";
@@ -14,24 +14,21 @@ import {PracticalCourseList} from "@/components/tool/infoQuery/courseSchedule/Pr
 import {UnSlider} from "@/components/un-ui/UnSlider.tsx";
 import {UnPicker} from "@/components/un-ui/UnPicker.tsx";
 import {Picker} from "@react-native-picker/picker";
-import {UserConfigContext} from "@/components/AppProvider.tsx";
 import {courseApi} from "@/js/jw/course.ts";
-import {jwxt} from "@/js/jw/jwxt.ts";
-import {useNavigation} from "@react-navigation/native";
 import {UnTermSelector} from "@/components/un-ui/UnTermSelector.tsx";
 import {CourseScheduleClass} from "@/class/jw/course.ts";
+import {useSchoolTerm} from "@/hooks/jw.ts";
+import {useWebView} from "@/hooks/app.ts";
 
 export function ClassCourseSchedule() {
-    const {userConfig} = useContext(UserConfigContext);
-    const navigation = useNavigation();
+    const {openInJw} = useWebView();
     const {theme} = useTheme();
     const [userInfo, setUserInfo] = useState<UserInfo>();
-    const [subjectList, setSubjectList] = useState<string[][]>([]);
-    const [classList, setClassList] = useState<string[][]>([]);
+    const [subjectList, setSubjectList] = useState<string[][]>([["", "全部"]]);
+    const [classList, setClassList] = useState<string[][]>([["", "全部"]]);
     const pageView = usePagerView({pagesAmount: 20});
     // params
-    const [year, setYear] = useState(+userConfig.jw.year);
-    const [term, setTerm] = useState<SchoolTermValue>(userConfig.jw.term);
+    const {year, term, setBoth} = useSchoolTerm();
     const [school, setSchool] = useState<SchoolValue>(
         Schools[Schools.findIndex(v => v[1] === (userInfo?.school ?? Schools[0][1]))][0],
     );
@@ -40,8 +37,8 @@ export function ClassCourseSchedule() {
     const [classId, setClassId] = useState("");
     // scheduleList
     const [classScheduleList, setClassScheduleList] = useState<Array<CourseSchedule & Class & PageModel>>([]);
-    const [classScheduleIndex, setClassScheduleIndex] = useState<number>();
-    const [classScheduleApiRes, setClassScheduleApiRes] = useState<ClassScheduleQueryRes>();
+    const [classScheduleIndex, setClassScheduleIndex] = useState<number>(0);
+    const [classScheduleApiRes, setClassScheduleApiRes] = useState<ClassScheduleQueryRes | null>(null);
 
     const style = StyleSheet.create({
         container: {
@@ -63,9 +60,22 @@ export function ClassCourseSchedule() {
 
     const queryClassCourseSchedule = async (item = {}, tip = false) => {
         if (tip) ToastAndroid.show("正在获取班级课表", ToastAndroid.SHORT);
-        const {xnm, xqm, njdm_id, jgdm, zyh_id, bh_id} = {...classScheduleList[classScheduleIndex ?? 0], ...item};
+
+        // 添加边界检查
+        if (!classScheduleList || classScheduleList.length === 0) {
+            console.warn("班级课表列表为空");
+            return;
+        }
+
+        const currentIndex = classScheduleIndex ?? 0;
+        if (currentIndex >= classScheduleList.length) {
+            console.warn("班级课表索引超出范围");
+            return;
+        }
+
+        const {xnm, xqm, njdm_id, jgdm, zyh_id, bh_id} = {...classScheduleList[currentIndex], ...item};
         const res = await courseApi.getClassCourseSchedule(+xnm, xqm, jgdm, zyh_id, +njdm_id, bh_id);
-        setClassScheduleApiRes(res);
+        if (res) setClassScheduleApiRes(res);
     };
 
     useEffect(() => {
@@ -74,9 +84,10 @@ export function ClassCourseSchedule() {
 
     const init = async () => {
         const storeUserInfo = await infoQuery.getUserInfo();
+        if (!storeUserInfo) return;
         setUserInfo(storeUserInfo);
 
-        const schoolIndex = Schools.findIndex(v => v[1] === (storeUserInfo?.school ?? Schools[0][1]));
+        const schoolIndex = Schools.findIndex(v => v[1] === (storeUserInfo.school ?? Schools[0][1]));
         const newSchool = Schools[schoolIndex][0];
         setSchool(newSchool);
 
@@ -99,6 +110,7 @@ export function ClassCourseSchedule() {
 
     const getSubjectList = async (schoolId = school, reload = true) => {
         const subjectRes = await infoQuery.getSubjectList(schoolId);
+        if (!subjectRes) return [];
         const newSubjectList = subjectRes.map(item => [item.zyh_id, item.zymc]);
         if (reload) {
             newSubjectList.unshift(["", "全部"]);
@@ -114,6 +126,7 @@ export function ClassCourseSchedule() {
         reload = true,
     ) => {
         const classListRes = await infoQuery.getClassList(schoolId, subjectId, gradeId);
+        if (!classListRes) return [];
         const newClassList = classListRes.map(item => [item.bh_id, item.bj]);
         if (reload) {
             newClassList.unshift(["", "全部"]);
@@ -142,14 +155,7 @@ export function ClassCourseSchedule() {
                     <Flex gap={10}>
                         <Text>学期</Text>
                         <View style={{flex: 1}}>
-                            <UnTermSelector
-                                year={year}
-                                term={term}
-                                onChange={(year, term) => {
-                                    setYear(+year);
-                                    setTerm(term);
-                                }}
-                            />
+                            <UnTermSelector year={year} term={term} onChange={setBoth} />
                         </View>
                     </Flex>
                     <Flex gap={10}>
@@ -166,7 +172,7 @@ export function ClassCourseSchedule() {
                         <Text>专业</Text>
                         <View style={{flex: 1}}>
                             <UnPicker selectedValue={subject} onValueChange={setSubject}>
-                                {subjectList.map(value => {
+                                {[["", "全部"]].concat(subjectList ?? []).map(value => {
                                     return <Picker.Item value={value[0]} label={value[1]} key={value[0]} />;
                                 })}
                             </UnPicker>
@@ -191,7 +197,7 @@ export function ClassCourseSchedule() {
                         <Text>班级</Text>
                         <View style={{flex: 1}}>
                             <UnPicker selectedValue={classId} onValueChange={setClassId}>
-                                {classList.map(value => {
+                                {[["", "全部"]].concat(classList ?? []).map(value => {
                                     return <Picker.Item value={value[0]} label={value[1]} key={value[0]} />;
                                 })}
                             </UnPicker>
@@ -202,12 +208,7 @@ export function ClassCourseSchedule() {
                             查询课表
                         </Button>
                         <Button
-                            onPress={() =>
-                                jwxt.openPageInWebView(
-                                    "/kbdy/bjkbdy_cxBjkbdyIndex.html?gnmkdm=N214505&layout=default",
-                                    navigation,
-                                )
-                            }>
+                            onPress={() => openInJw("/kbdy/bjkbdy_cxBjkbdyIndex.html?gnmkdm=N214505&layout=default")}>
                             前往教务查询
                         </Button>
                     </Flex>
@@ -218,7 +219,7 @@ export function ClassCourseSchedule() {
                     <Flex>
                         <View style={{flex: 1}}>
                             <UnPicker selectedValue={classScheduleIndex} onValueChange={setClassScheduleIndex}>
-                                {classScheduleList.map((value, index) => {
+                                {[...classScheduleList].map((value, index) => {
                                     return <Picker.Item value={index} label={value.tjkbmc} key={value.id} />;
                                 })}
                             </UnPicker>
@@ -229,7 +230,8 @@ export function ClassCourseSchedule() {
                     </View>
                 </Flex>
                 <Divider />
-                {classScheduleApiRes && (
+                // 修改课表预览部分
+                {classScheduleApiRes && classScheduleApiRes.weekNum && classScheduleApiRes.weekNum.length > 0 && (
                     <>
                         <Text h4>课表预览</Text>
                         <Divider />
@@ -245,7 +247,7 @@ export function ClassCourseSchedule() {
                             />
                         </Flex>
                         <CourseScheduleView
-                            startDay={classScheduleApiRes.weekNum[0].rq.split("/")[0]}
+                            startDay={classScheduleApiRes.weekNum[0]?.rq?.split("/")[0]}
                             pageView={pageView}
                             courseSchedule={new CourseScheduleClass(classScheduleApiRes)}
                         />

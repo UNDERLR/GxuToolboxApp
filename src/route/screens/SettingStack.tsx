@@ -25,7 +25,7 @@ export function SettingStack() {
                 type="clear"
                 containerStyle={{marginRight: 10}}
                 onPress={() => {
-                    jwxt.openPageInWebView("/xtgl/index_initMenu.html", navigation);
+                    openInJw("/xtgl/index_initMenu.html")
                 }}>
                 打开教务
             </Button>

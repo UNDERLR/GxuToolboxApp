@@ -118,20 +118,6 @@ export const jwxt = {
         }
         return;
     },
-    openPageInWebView: (
-        url: string,
-        navigation: Omit<NavigationProp<ReactNavigation.RootParamList>, "getState"> & {
-            getState(): NavigationState | undefined;
-        },
-        title?: string,
-    ) => {
-        navigation.navigate("webViewScreen", {
-            title,
-            source: {
-                uri: "https://jwxt2018.gxu.edu.cn/jwglxt" + url,
-            } as WebViewSource,
-        });
-    },
     getReschedulingNews: async (isRead = 1): Promise<AxiosResponse> => {
         const res = await http.post("/xtgl/index_cxDbsy.html?doType=query", {
             sfyy: isRead,

@@ -7,13 +7,14 @@ import {Button, Text, useTheme} from "@rneui/themed";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {EvaluationRow} from "@/components/tool/eduEvaluation/EvaluationRow.tsx";
 import {evaluationApi} from "@/js/jw/evaluation.ts";
-import {jwxt} from "@/js/jw/jwxt.ts";
 import {Evaluation} from "@/type/eduEvaluation/evaluation.type.ts";
+import {useWebView} from "@/hooks/app.ts";
 
 export function EvaluationOverview() {
     const {theme} = useTheme();
     const [evaList, setEvaList] = useState<Evaluation[]>([]);
     const navigation = useNavigation();
+    const {openInJw} = useWebView();
     const colWidths = [9, 6, 5];
     const handleRowPress = (item: Evaluation) => {
         navigation.navigate("EvaluationDetail", {evaluationItem: item});
@@ -82,10 +83,7 @@ export function EvaluationOverview() {
                 <Button
                     containerStyle={{width: "100%"}}
                     onPress={() => {
-                        jwxt.openPageInWebView(
-                            "/xspjgl/xspj_cxXspjIndex.html?doType=details&gnmkdm=N401605&layout=default",
-                            navigation,
-                        );
+                        openInJw("/xspjgl/xspj_cxXspjIndex.html?doType=details&gnmkdm=N401605&layout=default");
                     }}>
                     前往教务查看
                 </Button>

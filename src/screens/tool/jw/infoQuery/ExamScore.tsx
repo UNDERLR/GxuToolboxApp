@@ -11,13 +11,14 @@ import {ExamScoreTable} from "@/screens/tool/jw/infoQuery/ExamScoreTable.tsx";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 import {examApi} from "@/js/jw/exam.ts";
 import {useNavigation} from "@react-navigation/native";
-import {jwxt} from "@/js/jw/jwxt.ts";
 import {UnTermSelector} from "@/components/un-ui/UnTermSelector.tsx";
+import {useWebView} from "@/hooks/app.ts";
 
 export function ExamScore() {
     const {userConfig} = useContext(UserConfigContext);
     const {theme} = useTheme();
     const navigation = useNavigation();
+    const {openInJw} = useWebView();
     const [apiRes, setApiRes] = useState<ExamScoreQueryRes>({} as ExamScoreQueryRes);
     const [year, setYear] = useState(+userConfig.jw.year);
     const [term, setTerm] = useState<SchoolTermValue>(userConfig.jw.term);
@@ -137,10 +138,7 @@ export function ExamScore() {
                         </Button>
                         <Button
                             onPress={() => {
-                                jwxt.openPageInWebView(
-                                    "/cjcx/cjcx_cxDgXscj.html?gnmkdm=N305005&layout=default",
-                                    navigation,
-                                );
+                                openInJw("/cjcx/cjcx_cxDgXscj.html?gnmkdm=N305005&layout=default");
                             }}>
                             前往教务查询
                         </Button>

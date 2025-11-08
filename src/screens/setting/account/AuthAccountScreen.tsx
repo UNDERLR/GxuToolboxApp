@@ -72,7 +72,7 @@ export function AuthAccountScreen() {
             {/*<Button*/}
             {/*    containerStyle={{marginTop: 10}}*/}
             {/*    onPress={() => {*/}
-            {/*        jwxt.openPageInWebView("/xtgl/login_slogin.html", navigation);*/}
+            {/*        openInJw("/xtgl/login_slogin.html")*/}
             {/*    }}>*/}
             {/*    打开教务登录页*/}
             {/*</Button>*/}

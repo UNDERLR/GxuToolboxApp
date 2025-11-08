@@ -6,30 +6,33 @@ import {Icon} from "@/components/un-ui/Icon.tsx";
 import React, {useContext} from "react";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 import {Flex} from "@/components/un-ui";
-import {WebViewSource} from "react-native-webview/lib/WebViewTypes";
+import {useWebView} from "@/hooks/app.ts";
 
 interface settingSection {
     title: string;
     data: ToolboxItem[];
 }
 
-type ToolboxItem = {
-    label: string;
-    icon?: React.ReactNode;
-    type?: "navigation";
-    navigation: string;
-} | {
-    label: string;
-    icon?: React.ReactNode;
-    type?: "callback";
-    onClick: () => void;
-}
+type ToolboxItem =
+    | {
+          label: string;
+          icon?: React.ReactNode;
+          type?: "navigation";
+          navigation: string;
+      }
+    | {
+          label: string;
+          icon?: React.ReactNode;
+          type?: "callback";
+          onClick: () => void;
+      };
 
 const iconSize = 25;
 
 export function ToolboxIndex() {
     const navigation = useNavigation();
     const {theme} = useTheme();
+    const {openInWeb} = useWebView();
     const {userConfig} = useContext(UserConfigContext);
 
     const toolList = [
@@ -138,11 +141,8 @@ export function ToolboxIndex() {
                     icon: <Icon name="wifi" size={iconSize} />,
                     type: "callback",
                     onClick: () => {
-                        navigation.navigate("webViewScreen",{
-                            title: "校园网充值",
-                            source: {
-                                uri: "https://xywjf.gxu.edu.cn/WebPay/toRecharge",
-                            } as WebViewSource,
+                        openInWeb("校园网充值", {
+                            uri: "https://xywjf.gxu.edu.cn/WebPay/toRecharge",
                         });
                     },
                 },
@@ -191,8 +191,8 @@ export function ToolboxIndex() {
         },
     });
 
-    function itemClick(item: ToolboxItem){
-        switch(item.type) {
+    function itemClick(item: ToolboxItem) {
+        switch (item.type) {
             case "navigation":
                 navigation.navigate(item.navigation);
                 return;

@@ -8,9 +8,7 @@ import Flex from "@/components/un-ui/Flex.tsx";
 import {store} from "@/js/store.ts";
 import {courseApi} from "@/js/jw/course.ts";
 import moment from "moment/moment";
-import {WebViewSource} from "react-native-webview/lib/WebViewTypes";
-import {useNavigation} from "@react-navigation/native";
-import {urlWithParams} from "@/js/http.ts";
+import {useWebView} from "@/hooks/app.ts";
 
 type EngTrainingExp = {
     date: string;
@@ -23,7 +21,6 @@ type EngTrainingExp = {
 
 export function EngTrainingScheduleScreen() {
     const {theme} = useTheme();
-    const navigation = useNavigation();
     const [tableData, setTableData] = useState({
         header: ["上课时间", "实验名称"],
         width: [130, 250],
@@ -56,12 +53,10 @@ export function EngTrainingScheduleScreen() {
         getData();
     }
 
+    const {openInWeb} = useWebView();
     function openWeb() {
-        navigation.navigate("webViewScreen", {
-            title: "工程训练中心",
-            source: {
-                uri: "http://xlzxms.gxu.edu.cn/api/security-server/dietc/loginsso/student",
-            } as WebViewSource,
+        openInWeb("工程训练中心", {
+            uri: "http://xlzxms.gxu.edu.cn/api/security-server/dietc/loginsso/student",
         });
     }
 

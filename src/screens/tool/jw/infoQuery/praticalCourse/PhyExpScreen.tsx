@@ -9,12 +9,10 @@ import {store} from "@/js/store.ts";
 import {PhyExp} from "@/type/infoQuery/course/course.ts";
 import {courseApi} from "@/js/jw/course.ts";
 import moment from "moment/moment";
-import {WebViewSource} from "react-native-webview/lib/WebViewTypes";
-import {useNavigation} from "@react-navigation/native";
+import {useWebView} from "@/hooks/app.ts";
 
 export function PhyExpScreen() {
     const {theme} = useTheme();
-    const navigation = useNavigation();
     const [tableData, setTableData] = useState({
         header: ["上课时间", "上课地点", "实验名称"],
         width: [130, 190, 300],
@@ -48,12 +46,10 @@ export function PhyExpScreen() {
         getData();
     }
 
+    const {openInWeb} = useWebView();
     function openWeb() {
-        navigation.navigate("webViewScreen", {
-            title: "物理实验教学中心",
-            source: {
-                uri: "https://pec.gxu.edu.cn/Customer/MasterPage/UserCenterPage.html",
-            } as WebViewSource,
+        openInWeb("物理实验教学中心", {
+            uri: "https://pec.gxu.edu.cn/Customer/MasterPage/UserCenterPage.html",
         });
     }
 
