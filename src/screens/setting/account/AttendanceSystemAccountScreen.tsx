@@ -1,11 +1,11 @@
-import {ActivityIndicator, Pressable, StyleSheet, ToastAndroid, View} from "react-native";
+import {ActivityIndicator, Pressable, ScrollView, StyleSheet, ToastAndroid} from "react-native";
 import {Button, Image, Input, Text} from "@rneui/themed";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Icon} from "@/components/un-ui";
-import {useNavigation} from "@react-navigation/native";
 import {authApi} from "@/js/auth/auth.ts";
 import {http} from "@/js/http.ts";
 import {userMgr} from "@/js/mgr/user.ts";
+import {useWebView} from "@/hooks/app.ts";
 
 export function AttendanceSystemAccountScreen() {
     const [username, setUsername] = useState("");
@@ -13,7 +13,7 @@ export function AttendanceSystemAccountScreen() {
     const [captchaCode, setCaptchaCode] = useState("");
     const [captchaCodeUri, setCaptchaCodeUri] = useState("");
     const [showPwd, setShowPwd] = useState(false);
-    const navigation = useNavigation();
+    const {openInWeb} = useWebView();
 
     async function refreshCaptchaCode() {
         const res = await http.get("https://yktuipweb.gxu.edu.cn/api/account/getVerify?num=666", {
@@ -51,7 +51,7 @@ export function AttendanceSystemAccountScreen() {
         init();
     }, []);
     return (
-        <View style={style.container}>
+        <ScrollView contentContainerStyle={style.container}>
             <Text h2 style={style.title}>
                 设置考勤系统帐密
             </Text>
@@ -97,6 +97,15 @@ export function AttendanceSystemAccountScreen() {
                 style={style.input}
             />
             <Button onPress={() => login(username, password, captchaCode)}>登录考勤系统</Button>
+            <Button
+                containerStyle={{marginTop: 10}}
+                onPress={() =>
+                    openInWeb("考勤系统登录", {
+                        uri: "https://yktuipweb.gxu.edu.cn/#/StudentHome",
+                    })
+                }>
+                在浏览器打开考勤系统
+            </Button>
             {/*<Button*/}
             {/*    containerStyle={{marginTop: 10}}*/}
             {/*    onPress={() => {*/}
@@ -104,8 +113,8 @@ export function AttendanceSystemAccountScreen() {
             {/*    }}>*/}
             {/*    打开教务登录页*/}
             {/*</Button>*/}
-            {/*<Text style={style.note}>提示获取成功后，回到课表页进行测试，若无法正常获取课表，可能为密码错误</Text>*/}
-        </View>
+            <Text style={style.note}>验证码需要手动输入，默认记忆帐密，登录成功后，可以在工具里使用快速登录的功能</Text>
+        </ScrollView>
     );
 }
 
@@ -127,7 +136,7 @@ const style = StyleSheet.create({
         cursor: "pointer",
     },
     input: {
-        height: 60,
+        height: 40,
     },
     image: {
         width: 95,

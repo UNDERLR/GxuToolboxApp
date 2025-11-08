@@ -201,7 +201,7 @@ function RecordScreen(props: ScreenType) {
                 </UnText>,
                 record.atdTime ?? "-",
                 `第${
-                    +moment.duration(moment(record.day).diff(props.calender?.firstWeekBegin)).asWeeks().toFixed()+1
+                    +moment.duration(moment(record.day).diff(props.calender?.firstWeekBegin)).asWeeks().toFixed() + 1
                 }周${moment(record.day).format("ddd")}`,
                 record.roomName!,
                 record.periodConnect!,

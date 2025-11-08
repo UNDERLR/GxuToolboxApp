@@ -12,13 +12,17 @@ export function RootStack() {
                 headerShadowVisible: false,
                 contentStyle: {backgroundColor: "transparent"},
             }}>
-            <Stack.Screen name="main" options={{headerShown: false}} component={lazy(()=>import("@/screens/MainTab.tsx"))} />
+            <Stack.Screen
+                name="main"
+                options={{headerShown: false}}
+                component={lazy(() => import("@/screens/MainTab.tsx"))}
+            />
             <Stack.Screen
                 name="webViewScreen"
                 options={{
                     title: "内置浏览器",
                 }}
-                component={lazy(()=>import("@/screens/WebViewScreen.tsx"))}
+                component={lazy(() => import("@/screens/WebViewScreen.tsx"))}
             />
         </Stack.Navigator>
     );
