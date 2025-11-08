@@ -303,13 +303,13 @@ export namespace AttendanceSystemType {
      */
     export interface AttendanceData {
         /** 日期 */
-        day: `${number}-${number}-${number}` | null;
+        day: `${number}-${number}-${number}`;
         /** 用户ID */
         userId: number | null;
         /** 用户姓名 */
         userName: string | null;
         /** 用户学工号 */
-        userNo: strNum | null;
+        userNo: strNum;
         /** 节次 */
         period: string | null;
         /** 分节次 */
@@ -317,15 +317,15 @@ export namespace AttendanceSystemType {
         /** 连续节次描述 */
         periodConnect: string | null;
         /** 课程名称 */
-        courseName: string | null;
+        courseName: string;
         /** 教室名称 */
-        roomName: string | null;
+        roomName: string;
         /** 考勤状态ID */
-        atdStateId: AttendanceState | null;
+        atdStateId: AttendanceState;
         /** 考勤状态名称 */
-        atdStateName: "正常" | "迟到" | "未到" | string | null;
+        atdStateName: "正常" | "迟到" | "未到" | string;
         /** 考勤时间 */
-        atdTime: string | null;
+        atdTime: string;
         /** 应到节次 */
         stPeriod: number | null;
         /** 实到节次 */

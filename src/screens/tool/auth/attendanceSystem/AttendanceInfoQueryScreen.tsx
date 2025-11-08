@@ -2,7 +2,7 @@ import {ScrollView, StyleSheet, ToastAndroid} from "react-native";
 import {Button, Tab, TabView, Text, useTheme} from "@rneui/themed";
 import React, {useEffect, useState} from "react";
 import {CourseScheduleTable} from "@/components/tool/infoQuery/courseSchedule/CourseScheduleTable.tsx";
-import {Flex, NumberInput, UnRefreshControl, UnTermSelector, vw} from "@/components/un-ui";
+import {Flex, NumberInput, UnRefreshControl, UnTermSelector, UnText, vw} from "@/components/un-ui";
 import {AttendanceQuickLogin} from "@/components/tool/auth/AttendanceQuickLogin.tsx";
 import {Color} from "@/js/color.ts";
 import {Row, Rows, Table} from "react-native-reanimated-table";
@@ -10,7 +10,7 @@ import {AttendanceSystemType as AST} from "@/type/api/auth/attendanceSystem.ts";
 import {attendanceSystemApi} from "@/js/auth/attendanceSystem.ts";
 import {AttendanceCourseClass, AttendanceDataClass} from "@/class/auth/attendanceSystem.ts";
 import moment from "moment/moment";
-import {AttendanceCourseItem} from "@/components/tool/auth/AttendanceCourseItem.tsx";
+import {AttendanceCourseItem, AttendanceStateIcon} from "@/components/tool/auth/AttendanceCourseItem.tsx";
 import {useSchoolTerm} from "@/hooks/jw.ts";
 import {useWebView} from "@/hooks/app.ts";
 
@@ -161,10 +161,18 @@ function RecordScreen(props: ScreenType) {
     const [page, setPage] = useState(1);
     const [apiRes, setApiRes] = useState<AST.PageRes<AST.AttendanceData>>();
 
+    const ColorMap = {
+        [AST.AttendanceState.Normal]: theme.colors.success,
+        [AST.AttendanceState.Late]: theme.colors.warning,
+        [AST.AttendanceState.Absent]: theme.colors.error,
+        [AST.AttendanceState.NotStarted]: theme.colors.primary,
+        [AST.AttendanceState.NoNeed]: theme.colors.primary,
+    };
+
     const [tableData, setTableData] = useState({
-        header: ["日期", "课程名称", "状态", "打卡时间", "教室", "节次"],
-        width: [100, 200, 50, 150, 80, 80],
-        body: [] as string[][],
+        header: ["日期", "课程名称", "状态", "打卡时间", "周时间", "教室", "节次"],
+        width: [100, 200, 50, 150, 100, 80, 80],
+        body: [] as (string | Element)[][],
     });
 
     const [refreshing, setRefreshing] = useState(false);
@@ -184,11 +192,17 @@ function RecordScreen(props: ScreenType) {
         });
         if (res?.code === 600) {
             setApiRes(res);
-            tableData.body = res.data.records.map<string[]>(record => [
-                record.day!,
+            tableData.body = res.data.records.map(record => [
+                record.day,
                 record.courseName!,
-                record.atdStateName!,
-                record.atdTime!,
+                <UnText color={ColorMap[record.atdStateId] ?? theme.colors.black}>
+                    <AttendanceStateIcon state={record.atdStateId} defaultColor={theme.colors.black} />
+                    {record.atdStateName}
+                </UnText>,
+                record.atdTime ?? "-",
+                `第${
+                    +moment.duration(moment(record.day).diff(props.calender?.firstWeekBegin)).asWeeks().toFixed()+1
+                }周${moment(record.day).format("ddd")}`,
                 record.roomName!,
                 record.periodConnect!,
             ]);

@@ -232,7 +232,7 @@ export const courseApi = {
      * @param classId 班级id
      */
     getClassCourseScheduleList: async (
-        year?: number,
+        year?: SchoolYearValue,
         term?: SchoolTermValue,
         schoolId?: SchoolValue,
         subjectId?: string,
@@ -263,7 +263,7 @@ export const courseApi = {
      * @param classId 班级id
      */
     getClassCourseSchedule: async (
-        year: number,
+        year: SchoolYearValue,
         term: SchoolTermValue,
         schoolId: SchoolValue,
         subjectId: string,
