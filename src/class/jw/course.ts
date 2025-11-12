@@ -182,7 +182,7 @@ export class CourseClass extends BaseClass<Course> implements Course {
             } else {
                 weekList
                     .filter(v => v % 2 === (/单/.test(weekSpanStr) ? 1 : 0))
-                    .forEach((v, i) => res.add(v + i));
+                    .forEach(v => res.add(v));
             }
         });
         return Array.from(res);
