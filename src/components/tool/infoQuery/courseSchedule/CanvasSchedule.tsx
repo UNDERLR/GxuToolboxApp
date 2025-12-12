@@ -133,10 +133,10 @@ export function Draw() {
     function drawTimeSpansRects(ctx: CanvasRenderingContext2D) {
         if (spanHeight > 40) {
             courseScheduleData.timeSpanList.forEach((timeSpan, index) => {
-                const timeSpanList = timeSpan.split("\n");
-                const timeSpanY = spanHeight * (index + 1) + (spanHeight - stringLineHeight * 3) / 2 + 3 * (index + 1);
+                const spanList = timeSpan.split("\n");
+                const timeSpanY = spanHeight * (index + 1) + (spanHeight - stringLineHeight * 3) / 2 + 4 * (index + 1);
                 ctx.fillText(String(index + 1), spanWidth / 2, timeSpanY, 150);
-                timeSpanList.forEach((time, timeSpanIndex) => {
+                spanList.forEach((time, timeSpanIndex) => {
                     ctx.fillText(time, spanWidth / 2, timeSpanY + stringLineHeight * (timeSpanIndex + 1), 150);
                 });
             });
@@ -160,9 +160,9 @@ export function Draw() {
                 );
             shortTimeSpanList.forEach((timeSpan, index) => {
                 console.log(timeSpan);
-                const timeSpanY = spanHeight * 2 * (index + 1) + (spanHeight * 2 - stringLineHeight * 3) / 2 + 3;
+                const timeSpanY = spanHeight * 2 * (index + 1) + (spanHeight * 2 - stringLineHeight * 3) / 2 + 3 * (index + 1);
                 timeSpan.forEach((time, timeSpanIndex) => {
-                    ctx.fillText(time, 10 + spanWidth / 2, timeSpanY + stringLineHeight * timeSpanIndex, 140);
+                    ctx.fillText(time, spanWidth / 2, timeSpanY + stringLineHeight * timeSpanIndex, 140);
                 });
             });
         }
@@ -175,7 +175,7 @@ export function Draw() {
      */
     function drawCourse(ctx: CanvasRenderingContext2D, course: CourseScheduleClass) {
         const courseList = course?.getCourseListByWeek(currentWeek); //当前周的课表
-        const topCourseSpanY = spanHeight > 40 ? spanHeight + 3 : spanHeight * 2 + 3;
+        const topCourseSpanY = spanHeight > 40 ? spanHeight + 3 : spanHeight * 2 + 4;
         courseList?.forEach((dailyCourseList, index) => {
             dailyCourseList.forEach(item => {
                 const classPeriod = item.jcs.split("-").map(span => +span);
@@ -183,33 +183,70 @@ export function Draw() {
                 ctx.globalAlpha = theme.mode === "light" ? 0.3 : 0.1;
                 ctx.fillRect(
                     spanWidth * (index + 1) + 3 * (index + 1),
-                    topCourseSpanY + spanHeight * (classPeriod[0] - 1) + 3 * classPeriod[0],
+                    spanHeight > 40
+                        ? topCourseSpanY + spanHeight * (classPeriod[0] - 1) + 3 * classPeriod[0]
+                        : topCourseSpanY + spanHeight * 2 * Math.floor(classPeriod[0] / 2) + 4 * Math.floor(classPeriod[0] / 2),
                     spanWidth,
                     spanHeight > 40
                         ? spanHeight * classPeriod.length + 3 * (classPeriod.length - 1)
-                        : spanHeight * 2 * classPeriod.length + 3 * (classPeriod.length - 1),
+                        : spanHeight * 2 * (classPeriod.length / 2) + 4 * (classPeriod.length / 2 - 1),
                 );
-                const spanList: string[] = [];
-                for (let i = 0; i <= item.kcmc.length; i += 3) {
-                    spanList.push(item.kcmc.slice(i, i + 3));
+
+                function crateSpan(text: string): string[] {
+                    const list: string[] = [];
+                    for (let i = 0; i <= text.length; i += 3) {
+                        list.push(text.slice(i, i + 3));
+                    }
+                    if (list[list.length - 1] === "" && list.length > 1) {
+                        list.pop();
+                    }
+                    return list;
                 }
+
+                const spanList: string[] = crateSpan(item.kcmc);
+                const locationSpanList: string[] = crateSpan(item.cdmc);
                 ctx.globalAlpha = 1;
                 ctx.fillStyle =
                     theme.mode === "dark"
                         ? Color(item.backgroundColor ?? theme.colors.primary).rgbaString
                         : courseScheduleStyle.timeSpanText.color;
                 spanList.forEach((span, spanIndex) => {
-                    ctx.fillText(
-                        span,
-                        spanWidth * (index + 1) + spanWidth / 2 + 3 * (index + 1),
-                        spanHeight > 40
-                            ? topCourseSpanY +
-                                  spanHeight * (classPeriod[0] - 1) +
-                                  stringLineHeight * (spanIndex + 1) +
-                                  3 * (classPeriod[0] - 1)
-                            : topCourseSpanY + spanHeight * 2 * (classPeriod[0] - 1) + 3 * (classPeriod[0] - 1),
-                        150,
-                    );
+                    if (spanHeight > 40 && spanIndex < 3) {
+                        ctx.fillText(
+                            span,
+                            spanWidth * (index + 1) + spanWidth / 2 + 3 * (index + 1),
+                            topCourseSpanY +
+                                spanHeight * (classPeriod[0] - 1) +
+                                stringLineHeight * (spanIndex + 0.5) +
+                                3 * (classPeriod[0] - 1),
+                            150,
+                        );
+                    } else if (spanHeight <= 40 && spanIndex < 2){
+                        ctx.fillText(
+                            span,
+                            spanWidth * (index + 1) + spanWidth / 2 + 3 * (index + 1),
+                            topCourseSpanY +
+                                spanHeight * 2 * Math.floor(classPeriod[0] / 2) +
+                                stringLineHeight * (spanIndex + 0.5) +
+                                4 * Math.floor(classPeriod[0] / 2),
+                            150
+                        );
+                    }
+                    spanIndex++;
+                });
+                locationSpanList.forEach((locationSpan, spanIndex) => {
+                    if (spanHeight >= 46 && spanIndex < 3){
+                        ctx.fillText(
+                            locationSpan,
+                            spanWidth * (index + 1) + spanWidth / 2 + 3 * (index + 1),
+                            topCourseSpanY +
+                                spanHeight * (classPeriod[0] - 1) +
+                                stringLineHeight * (spanList.length > 3 ? 3 : spanList.length) +
+                                stringLineHeight * (spanIndex + 1) +
+                                3 * (classPeriod[0] - 1),
+                            150,
+                        );
+                    }
                 });
             });
         });
