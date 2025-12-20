@@ -4,7 +4,7 @@ import React, {useEffect, useRef, useState} from "react";
 import {UpdateCard} from "@/components/UpdateCard.tsx";
 import {attendanceSystemApi} from "@/js/auth/attendanceSystem.ts";
 import {init} from "@react-native-community/cli/build/tools/packageManager";
-import {Draw} from "@/components/tool/infoQuery/courseSchedule/CanvasSchedule.tsx";
+import {CanvasSchedule} from "@/components/tool/infoQuery/courseSchedule/CanvasSchedule.tsx";
 
 export function HomeScreen() {
     // 滚动相关状态和引用
@@ -84,7 +84,7 @@ export function HomeScreen() {
                 contentContainerStyle={{
                     paddingVertical: 0,
                 }}>
-                <Draw />
+                <CanvasSchedule />
                 <UpdateCard />
                 {/*<ComingExamCard />*/}
                 <ScheduleCard />

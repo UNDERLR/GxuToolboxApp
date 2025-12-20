@@ -1,31 +1,32 @@
-import React, {useContext, useEffect, useState} from "react";
-import {View, Dimensions, PixelRatio, StyleSheet, Text} from "react-native";
+import React, {useContext, useEffect, useRef, useState} from "react";
+import {View, Dimensions, StyleSheet, ToastAndroid} from "react-native";
 import Canvas, {CanvasRenderingContext2D} from "react-native-canvas";
 import {Color} from "@/js/color.ts";
-import {useTheme} from "@rneui/themed";
+import {Image, useTheme} from "@rneui/themed";
+import {Button} from "@rneui/themed";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 import {CourseScheduleContext, CourseScheduleData} from "@/js/jw/course.ts";
 import moment from "moment/moment";
-import {SchoolTermValue} from "@/type/global.ts";
 import {CourseScheduleClass} from "@/class/jw/course.ts";
 import {CourseScheduleQueryRes} from "@/type/api/infoQuery/classScheduleAPI.ts";
 import {store} from "@/js/store.ts";
 import {http} from "@/js/http.ts";
-
-export function Draw() {
+import {Flex} from "@/components/un-ui";
+import RNFS from "react-native-fs";
+export function CanvasSchedule() {
     const {theme} = useTheme();
     const {userConfig} = useContext(UserConfigContext);
     const {courseScheduleData, courseScheduleStyle} = useContext(CourseScheduleContext)!;
     const [courseSchedule, setCourseSchedule] = useState<CourseScheduleClass>();
     const [timeShift, setTimeShift] = useState<[string, string][]>([]);
-    const {width: screenWidth, height: screenHeight} = Dimensions.get("window");
+
+    const {width: screenWidth} = Dimensions.get("window");
     const startDay = moment(userConfig.jw.startDay);
     const currentWeek = Math.ceil(moment.duration(moment().diff(startDay)).asWeeks());
     const styles = StyleSheet.create({
         container: {
-            flex: 1,
-            alignItems: "center",
-            justifyContent: "center",
+            display: "flex",
+            gap: 10,
         },
         canvas: {
             width: screenWidth,
@@ -36,26 +37,24 @@ export function Draw() {
             backgroundColor: Color(theme.mode === "light" ? theme.colors.background : theme.colors.grey5).setAlpha(
                 0.1 + ((theme.mode === "light" ? 0.7 : 0.1) * userConfig.theme.bgOpacity) / 100,
             ).rgbaString,
-            borderWidth: 1,
-            borderColor: "red",
+        },
+        button: {
+            display: "flex",
+            flex: 1,
         },
     });
 
-    const dpr: number = PixelRatio.get();
     const stringLineHeight = courseScheduleStyle.timeSpanText.fontSize * 1.2;
     const canvasCssWidth = styles.canvas.width;
     const spanWidth = (canvasCssWidth - 21) / 8;
     const spanHeight = userConfig.theme.course.timeSpanHeight;
-
-    const year = +userConfig.jw.year;
-    const term: SchoolTermValue = userConfig.jw.term;
 
     /**
      * 从内存获取当前周课表
      */
     async function getCoursesData() {
         const courseData: CourseScheduleQueryRes = await store.load({key: "courseRes"}).catch(e => {
-            console.warn(e);
+            console.warn("内存获取课表失败", e);
             return {};
         });
         if (courseData.kbList) {
@@ -74,7 +73,7 @@ export function Draw() {
     useEffect(() => {
         getCoursesData();
         getTimeShift();
-    }, [year, term]);
+    }, []);
 
     /**
      * 通用字体样式和画布字体配置
@@ -83,7 +82,7 @@ export function Draw() {
         ctx.textBaseline = "top";
         ctx.textAlign = "center";
         ctx.font = `${courseScheduleStyle.timeSpanText.fontSize}px sans-serif`;
-        ctx.fillStyle = courseScheduleStyle.timeSpanText.color;
+        ctx.fillStyle =  courseScheduleStyle.timeSpanText.color;
     }
 
     /**
@@ -160,7 +159,8 @@ export function Draw() {
                 );
             shortTimeSpanList.forEach((timeSpan, index) => {
                 console.log(timeSpan);
-                const timeSpanY = spanHeight * 2 * (index + 1) + (spanHeight * 2 - stringLineHeight * 3) / 2 + 3 * (index + 1);
+                const timeSpanY =
+                    spanHeight * 2 * (index + 1) + (spanHeight * 2 - stringLineHeight * 3) / 2 + 3 * (index + 1);
                 timeSpan.forEach((time, timeSpanIndex) => {
                     ctx.fillText(time, spanWidth / 2, timeSpanY + stringLineHeight * timeSpanIndex, 140);
                 });
@@ -185,7 +185,9 @@ export function Draw() {
                     spanWidth * (index + 1) + 3 * (index + 1),
                     spanHeight > 40
                         ? topCourseSpanY + spanHeight * (classPeriod[0] - 1) + 3 * classPeriod[0]
-                        : topCourseSpanY + spanHeight * 2 * Math.floor(classPeriod[0] / 2) + 4 * Math.floor(classPeriod[0] / 2),
+                        : topCourseSpanY +
+                              spanHeight * 2 * Math.floor(classPeriod[0] / 2) +
+                              4 * Math.floor(classPeriod[0] / 2),
                     spanWidth,
                     spanHeight > 40
                         ? spanHeight * classPeriod.length + 3 * (classPeriod.length - 1)
@@ -221,7 +223,7 @@ export function Draw() {
                                 3 * (classPeriod[0] - 1),
                             150,
                         );
-                    } else if (spanHeight <= 40 && spanIndex < 2){
+                    } else if (spanHeight <= 40 && spanIndex < 2) {
                         ctx.fillText(
                             span,
                             spanWidth * (index + 1) + spanWidth / 2 + 3 * (index + 1),
@@ -229,13 +231,13 @@ export function Draw() {
                                 spanHeight * 2 * Math.floor(classPeriod[0] / 2) +
                                 stringLineHeight * (spanIndex + 0.5) +
                                 4 * Math.floor(classPeriod[0] / 2),
-                            150
+                            150,
                         );
                     }
                     spanIndex++;
                 });
                 locationSpanList.forEach((locationSpan, spanIndex) => {
-                    if (spanHeight >= 46 && spanIndex < 3){
+                    if (spanHeight >= 46 && spanIndex < 3) {
                         ctx.fillText(
                             locationSpan,
                             spanWidth * (index + 1) + spanWidth / 2 + 3 * (index + 1),
@@ -252,10 +254,17 @@ export function Draw() {
         });
     }
 
-    const handleCanvas = (canvas: Canvas) => {
+    const canvasRef = useRef<Canvas | null>(null);
+
+    const handleCanvas = (canvas: Canvas | null) => {
+        canvasRef.current = canvas;
+    };
+
+    const drawSchedule = () => {
+        const canvas = canvasRef.current;
         if (!canvas) return;
-        canvas.width = screenWidth * dpr;
-        canvas.height = screenHeight * dpr;
+        canvas.width = styles.canvas.width;
+        canvas.height = styles.canvas.height;
         const ctx = canvas.getContext("2d");
         fontStyle(ctx);
         drawWeekHeader(ctx);
@@ -263,10 +272,14 @@ export function Draw() {
         drawDateSchedule(ctx, courseSchedule);
         drawCourse(ctx, courseSchedule!);
     };
+
+    useEffect(() => {
+        drawSchedule();
+    }, [courseSchedule, userConfig.theme.course.timeSpanHeight]);
+
     return (
         <View style={styles.container}>
             <Canvas ref={handleCanvas} style={styles.canvas} />
-            <Text style={{color: "white"}}>divider</Text>
         </View>
     );
 }
