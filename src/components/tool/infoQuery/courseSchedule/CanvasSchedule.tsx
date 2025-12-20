@@ -277,9 +277,54 @@ export function CanvasSchedule() {
         drawSchedule();
     }, [courseSchedule, userConfig.theme.course.timeSpanHeight]);
 
+    const [getImage, setGetImage] = useState<string>("");
+    const writeTest = async () => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        try {
+            const base64 = await canvas.toDataURL();
+            const filePath = `${RNFS.DocumentDirectoryPath}/debug_image.png`;
+            await RNFS.writeFile(
+                filePath,
+                base64.replace("data:image/png;base64,", ""),
+                "base64"
+            );
+            setGetImage(filePath);
+            ToastAndroid.show("成功生成图片", ToastAndroid.SHORT);
+        } catch (e) {
+            console.error(e);
+        }
+    };
     return (
         <View style={styles.container}>
             <Canvas ref={handleCanvas} style={styles.canvas} />
+            <Flex gap={10} style={{marginHorizontal: 10}}>
+                <Button
+                    title="生成图片"
+                    onPress={()=>{
+                        writeTest();
+                    }}
+                    containerStyle={
+                        styles.button
+                    }
+                />
+                <Button
+                    title="分享"
+                    containerStyle={
+                        styles.button
+                    }
+                />
+            </Flex>
+            {
+                getImage && (
+                    <Image
+                        source={{uri: "file://" + getImage}}
+                        style={{width: screenWidth - 20, height: styles.canvas.height, marginTop: 10}}
+                        resizeMode="contain"
+                    />
+                )
+            }
         </View>
     );
 }
