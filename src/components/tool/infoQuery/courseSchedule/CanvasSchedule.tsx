@@ -12,7 +12,10 @@ import {CourseScheduleQueryRes} from "@/type/api/infoQuery/classScheduleAPI.ts";
 import {store} from "@/js/store.ts";
 import {http} from "@/js/http.ts";
 import {Flex} from "@/components/un-ui";
-import RNFS from "react-native-fs";
+import RNFS, {exists} from "react-native-fs";
+import Share, {ShareOptions} from "react-native-share";
+import {CameraRoll} from "@react-native-camera-roll/camera-roll";
+
 export function CanvasSchedule() {
     const {theme} = useTheme();
     const {userConfig} = useContext(UserConfigContext);
@@ -73,7 +76,7 @@ export function CanvasSchedule() {
     useEffect(() => {
         getCoursesData();
         getTimeShift();
-    }, []);
+    }, [userConfig.theme.course.timeSpanHeight]);
 
     /**
      * 通用字体样式和画布字体配置
@@ -260,6 +263,9 @@ export function CanvasSchedule() {
         canvasRef.current = canvas;
     };
 
+    /**
+     * 绘制主函数
+     */
     const drawSchedule = () => {
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -277,54 +283,114 @@ export function CanvasSchedule() {
         drawSchedule();
     }, [courseSchedule, userConfig.theme.course.timeSpanHeight]);
 
-    const [getImage, setGetImage] = useState<string>("");
-    const writeTest = async () => {
+    /**
+     * 每次调用生成图片并写入临时目录，返回图片路径
+     */
+    const getImagePath = async (): Promise<string> => {
         const canvas = canvasRef.current;
-        if (!canvas) return;
+        if (!canvas) return "";
+        const base64 = await canvas.toDataURL();
+        const fileName = `week_${currentWeek}_${moment().format("YYYY_MMDD_HHmmss_SSS")}_gxu_tool_app`;
+        const filePath = `${RNFS.TemporaryDirectoryPath}/${fileName}.png`;
+        //把base64字符串解码成二进制
+        await RNFS.writeFile(
+            filePath,
+            base64.replace("data:image/png;base64,", ""),
+            "base64"
+        );
+        return filePath;
+    };
 
+    /**
+     * 生成png类型图片写入系统相册
+     */
+    const saveToLocal = async () => {
         try {
-            const base64 = await canvas.toDataURL();
-            const filePath = `${RNFS.DocumentDirectoryPath}/debug_image.png`;
-            await RNFS.writeFile(
-                filePath,
-                base64.replace("data:image/png;base64,", ""),
-                "base64"
-            );
-            setGetImage(filePath);
-            ToastAndroid.show("成功生成图片", ToastAndroid.SHORT);
+            const filePath = await getImagePath();
+            await CameraRoll.saveToCameraRoll(filePath, "photo");
+            ToastAndroid.show("已保存至相册", ToastAndroid.SHORT);
+            await clearDebugImage();
         } catch (e) {
             console.error(e);
         }
     };
+
+    /**
+     * 分享图片
+     */
+    const shareSchedule = async ()=>{
+        const filePath = await getImagePath();
+        const shareOptions:ShareOptions = {
+            url: "file://" + filePath,
+            type: "image/png",
+            message: "分享课表",
+        };
+        await Share.open(shareOptions);
+        ToastAndroid.show("已发送", ToastAndroid.SHORT);
+    };
+
+    /**
+     * 清除临时目录的文件，可在调试用
+     */
+    const clearDebugImage = async ()=>{
+        const filePath = await getImagePath();
+        try {
+            if (await RNFS.exists(filePath)){
+                await RNFS.unlink(filePath);
+                // ToastAndroid.show("已清除预览图", ToastAndroid.SHORT);
+            }
+        } catch (e){
+            console.log(e);
+        }
+    };
+
     return (
         <View style={styles.container}>
             <Canvas ref={handleCanvas} style={styles.canvas} />
             <Flex gap={10} style={{marginHorizontal: 10}}>
                 <Button
-                    title="生成图片"
-                    onPress={()=>{
-                        writeTest();
+                    title="保存"
+                    onPress={async ()=>{
+                        try {
+                            await saveToLocal();
+                        } catch (e) {
+                            console.log(e);
+                        }
                     }}
                     containerStyle={
                         styles.button
                     }
                 />
                 <Button
-                    title="分享"
+                    title="分享课表"
+                    onPress={async ()=>{
+                        try {
+                            await shareSchedule();
+                        } catch (e) {
+                            console.log(e);
+                        }
+                    }}
                     containerStyle={
                         styles.button
                     }
                 />
             </Flex>
-            {
-                getImage && (
-                    <Image
-                        source={{uri: "file://" + getImage}}
-                        style={{width: screenWidth - 20, height: styles.canvas.height, marginTop: 10}}
-                        resizeMode="contain"
-                    />
-                )
-            }
+            <Flex style={{marginHorizontal: 10}}>
+                <Button
+                    title="刷新"
+                    onPress={async ()=>{
+                        try {
+                            await getCoursesData();
+                            ToastAndroid.show("刷新成功",ToastAndroid.SHORT);
+                        } catch (e){
+                            console.log(e);
+                        }
+                    }}
+                    containerStyle={{
+                        flex: 1,
+                    }}
+                />
+            </Flex>
         </View>
     );
 }
