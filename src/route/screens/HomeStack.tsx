@@ -3,24 +3,23 @@ import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import {Color} from "@/js/color.ts";
 import {Button, useTheme} from "@rneui/themed";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
-import {useNavigation} from "@react-navigation/native";
-import {jwxt} from "@/js/jw/jwxt.ts";
 import {HomeScreen} from "@/screens/HomeScreen.tsx";
 import {ScheduleEdit} from "@/screens/home/schedule/ScheduleEdit.tsx";
+import {useWebView} from "@/hooks/app.ts";
 
 const Stack = createNativeStackNavigator();
 
 export function HomeStack() {
     const {theme} = useTheme();
     const {userConfig} = useContext(UserConfigContext);
-    const navigation = useNavigation();
+    const {openInJw} = useWebView();
     const headerRightEle = () => {
         return (
             <Button
                 type="clear"
                 containerStyle={{marginRight: 10}}
                 onPress={() => {
-                    jwxt.openPageInWebView("/xtgl/index_initMenu.html", navigation);
+                    openInJw("/xtgl/index_initMenu.html");
                 }}>
                 打开教务
             </Button>

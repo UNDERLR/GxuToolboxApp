@@ -3,15 +3,32 @@ import AntDesign, {AntDesignIconName} from "@react-native-vector-icons/ant-desig
 import Ionicons, {IoniconsIconName} from "@react-native-vector-icons/ionicons";
 import FontAwesome6, {FontAwesome6RegularIconName} from "@react-native-vector-icons/fontawesome6";
 import {MaterialDesignIcons, MaterialDesignIconsIconName} from "@react-native-vector-icons/material-design-icons";
+import {FontAwesome6IconProps} from "react-native-vector-icons/FontAwesome6";
 
-interface Props extends IconProps {
-    name: AntDesignIconName | FontAwesome6RegularIconName | IoniconsIconName | MaterialDesignIconsIconName;
+export type UnIconProps = Omit<IconProps, "type"> & {
     size?: number;
     color?: string;
-    type?: "antdesign" | "fontawesome" | "Ionicon" | "material";
+} & (
+    | {
+    name: AntDesignIconName | string;
+    type?: "antdesign" | string;
 }
+    | {
+    name: FontAwesome6RegularIconName | string;
+    type?: "fontawesome" | string;
+} & FontAwesome6IconProps
+    | {
+    name: IoniconsIconName | string;
+    type?: "Ionicons" | string;
+}
+    | {
+    name: MaterialDesignIconsIconName | string;
+    type?: "material" | string;
+}
+    );
 
-export function Icon({type = "material", name, size = 12, color, ...props}: Props) {
+
+export function Icon({type = "material", name, size = 12, color, ...props}: UnIconProps) {
     const {theme} = useTheme();
     const iconColor = color || theme.colors.black;
 

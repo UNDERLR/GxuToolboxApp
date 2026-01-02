@@ -9,7 +9,7 @@ type RootStackParamList = {
     webViewScreen: {source: WebViewSource; title: string};
 };
 
-export function WebViewScreen() {
+export default function WebViewScreen() {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const route = useRoute<RouteProp<{webViewScreen: {source: WebViewSource; title: string}}, "webViewScreen">>();
     const {source: originalSource, title} = route.params;

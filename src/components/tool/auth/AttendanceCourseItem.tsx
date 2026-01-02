@@ -4,34 +4,44 @@ import {Color} from "@/js/color.ts";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {Text, useTheme} from "@rneui/themed";
 import {Icon} from "@/components/un-ui/Icon.tsx";
-import {Course} from "@/type/infoQuery/course/course.ts";
 import {CourseScheduleContext} from "@/js/jw/course.ts";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 import {AttendanceSystemType as AST} from "@/type/api/auth/attendanceSystem.ts";
+import {AttendanceCourseClass, AttendanceDataClass} from "@/class/auth/attendanceSystem.ts";
 
 interface Props {
     style?: ViewStyle;
-    course: Course;
-    attendanceState?: AST.AttendanceState;
-    index: number;
-    onCoursePress?: (course: Course) => void;
+    course: AttendanceCourseClass;
+    attendanceData?: AttendanceDataClass;
+    onCoursePress?: (course: AttendanceCourseClass) => void;
 }
 
-export function CourseItem(props: Props) {
+export function AttendanceCourseItem(props: Props) {
     const {userConfig} = useContext(UserConfigContext);
     const {courseScheduleData, courseScheduleStyle} = useContext(CourseScheduleContext)!;
     const {theme} = useTheme();
-    const {course, index} = props;
-    const span = parseInt(course.jcs.split("-")[1], 10) - parseInt(course.jcs.split("-")[0], 10) + 1;
-    const y = +course.jcs.split("-")[0] - 1;
+    const ColorMap = {
+        [AST.AttendanceState.Normal]: theme.colors.success,
+        [AST.AttendanceState.Late]: theme.colors.warning,
+        [AST.AttendanceState.Absent]: theme.colors.error,
+        [AST.AttendanceState.NotStarted]: theme.colors.primary,
+        [AST.AttendanceState.NoNeed]: theme.colors.primary,
+    };
+    const {course} = props;
+    const span = course.periodArry!.reduceRight((pv, cv) => pv - cv) + 1;
+    const y = course.periodArry![0];
+    const attendanceState = props.attendanceData?.getAttendanceStateByDate(
+        props.course.weekDay!,
+        props.course.periodArry![0],
+    );
+    const color = ColorMap[attendanceState!];
     const itemStyle = useMemo(() => {
         return StyleSheet.create({
             course: {
                 height: span * userConfig.theme.course.timeSpanHeight - userConfig.theme.course.courseItemMargin * 2,
                 position: "absolute",
-                backgroundColor: Color(course.backgroundColor ?? theme.colors.primary).setAlpha(
-                    theme.mode === "light" ? 0.3 : 0.1,
-                ).rgbaString,
+                backgroundColor: Color(color ?? theme.colors.primary).setAlpha(theme.mode === "light" ? 0.3 : 0.1)
+                    .rgbaString,
                 top:
                     userConfig.theme.course.weekdayHeight +
                     y * userConfig.theme.course.timeSpanHeight +
@@ -39,11 +49,10 @@ export function CourseItem(props: Props) {
             },
             text: {
                 textAlign: "center",
-                color: Color.mix(course.backgroundColor ?? theme.colors.primary, theme.colors.black, 0.5).rgbaString,
+                color: Color.mix(color ?? theme.colors.primary, theme.colors.black, 0.5).rgbaString,
             },
         });
     }, [
-        course.backgroundColor,
         userConfig.theme.course.courseItemMargin,
         userConfig.theme.course.timeSpanHeight,
         userConfig.theme.course.weekdayHeight,
@@ -65,26 +74,21 @@ export function CourseItem(props: Props) {
                     <Text style={[itemStyle.text, {fontWeight: 700}]}>
                         <AttendanceStateIcon
                             defaultColor={itemStyle.text.color}
-                            state={props.attendanceState ?? AST.AttendanceState.NotStarted}
+                            state={attendanceState ?? AST.AttendanceState.NotStarted}
                         />
-                        {courseScheduleData.courseInfoVisible.name && course.jxbsftkbj === "1" && (
-                            <Text style={itemStyle.text}>
-                                <Icon name="clock-star-four-points" color={itemStyle.text.color} />调
-                            </Text>
-                        )}
-                        {course.kcmc}
+                        {course.subjectName}
                     </Text>
                 )}
                 {courseScheduleData.courseInfoVisible.position && (
                     <Text style={itemStyle.text}>
                         <Icon name="map-marker" style={itemStyle.text} />
-                        {"\n" + course.cdmc.replace("-", "\n")}
+                        {"\n" + course.roomName!.replace("-", "\n")}
                     </Text>
                 )}
                 {courseScheduleData.courseInfoVisible.teacher && (
                     <Text style={itemStyle.text} ellipsizeMode="tail" numberOfLines={5}>
                         <Icon name="account" style={itemStyle.text} />
-                        {"\n" + course.xm}
+                        {"\n" + course.teacherName}
                     </Text>
                 )}
             </Flex>

@@ -6,7 +6,7 @@ import {useContext, useRef} from "react";
 import {useTheme} from "@rneui/themed";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 
-interface Props {
+export interface NumberInputProps {
     value: number;
     onChange?: (value: number) => void;
     onSubmit?: (value: number) => void;
@@ -18,7 +18,7 @@ interface Props {
     autoFocus?: boolean;
 }
 
-export function NumberInput(props: Props) {
+export function NumberInput(props: NumberInputProps) {
     const {theme} = useTheme();
     const {userConfig} = useContext(UserConfigContext);
     const style = StyleSheet.create({

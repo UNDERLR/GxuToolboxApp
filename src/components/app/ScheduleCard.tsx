@@ -18,7 +18,8 @@ import {
 import {ExamInfo} from "@/type/infoQuery/exam/examInfo.ts";
 import {ExamInfoQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
-import {courseApi, CourseScheduleClass, CourseScheduleContext} from "@/js/jw/course.ts";
+import {courseApi} from "@/js/jw/course.ts";
+import {CourseScheduleClass} from "@/class/jw/course.ts";
 import {examApi} from "@/js/jw/exam.ts";
 import {UserInfo} from "@/type/infoQuery/base.ts";
 import {userMgr} from "@/js/mgr/user.ts";
@@ -31,10 +32,11 @@ import {ActivityDetail} from "@/components/app/activity/ActivityDetail.tsx";
 import {PhyExp} from "@/type/infoQuery/course/course.ts";
 import {http} from "@/js/http.ts";
 import {EngTrainingItem} from "@/components/tool/infoQuery/EngTraining/EngTrainingItem.tsx";
+import {AttendanceDataClass} from "@/class/auth/attendanceSystem.ts";
+import {attendanceSystemApi} from "@/js/auth/attendanceSystem.ts";
 
 export function ScheduleCard() {
     const {userConfig, updateUserConfig} = useContext(UserConfigContext);
-    const {courseScheduleData, courseScheduleStyle} = useContext(CourseScheduleContext)!;
     const navigation = useNavigation();
     const {theme} = useTheme();
     const pagerView = usePagerView({pagesAmount: 20});
@@ -50,11 +52,11 @@ export function ScheduleCard() {
 
     const style = StyleSheet.create({
         card: {
-            backgroundColor: Color(theme.colors.background).setAlpha(
-                0.05 + ((theme.mode === "dark" ? 0.6 : 0.7) * userConfig.theme.bgOpacity) / 100,
+            backgroundColor: Color(theme.mode === "light" ? theme.colors.background : theme.colors.grey5).setAlpha(
+                0.1 + ((theme.mode === "light" ? 0.7 : 0.1) * userConfig.theme.bgOpacity) / 100,
             ).rgbaString,
             borderColor: Color.mix(theme.colors.primary, theme.colors.background, 0.7).rgbaString,
-            borderRadius: 5,
+            borderRadius: 16,
             paddingHorizontal: 0,
             marginHorizontal: 5,
             elevation: 0, // Android 去除阴影
@@ -103,11 +105,28 @@ export function ScheduleCard() {
         }
     }
 
+    const [attendanceData, setAttendanceData] = useState<AttendanceDataClass>();
+    useEffect(() => {
+        if (attendanceData instanceof AttendanceDataClass && courseSchedule) {
+            courseSchedule.setTermAttendanceData = attendanceData;
+            setCourseSchedule(new CourseScheduleClass(courseSchedule));
+        }
+    }, [attendanceData]);
+    async function getAttendanceData() {
+        const calender = await attendanceSystemApi.calenderData.get(userConfig.jw.startDay);
+        const attendanceDataRes = await attendanceSystemApi.getPersonalData(calender?.calendarId, {page_size: 1000});
+        if (attendanceDataRes?.data && calender) {
+            setAttendanceData(new AttendanceDataClass(attendanceDataRes.data.records, calender));
+        }
+    }
     // 获取课表
     async function getCourseSchedule() {
         const data = await courseApi.getCourseSchedule(year, term);
         if (data?.kbList) {
             ToastAndroid.show("获取课表成功", ToastAndroid.SHORT);
+            if (attendanceData instanceof AttendanceDataClass) {
+                data.setTermAttendanceData = attendanceData;
+            }
             setCourseSchedule(data);
             await store.save({key: "courseRes", data});
             if (data.kbList.findIndex(item => item.kcmc === "大学物理实验") > -1) {
@@ -125,7 +144,7 @@ export function ScheduleCard() {
                 key: "userInfo",
             })
             .catch(console.warn);
-        const account = await userMgr.getJWAccount();
+        const account = await userMgr.jw.getAccount();
         if (!userInfo || !account) return;
 
         const schoolId = Schools.filter(school => school[1] === userInfo.school)?.[0]?.[0];
@@ -164,7 +183,7 @@ export function ScheduleCard() {
         name: string;
         y: number;
         span: number;
-        backgroundColor?: string;
+        backgroundColor: string;
         type: "engTrainingExp";
     };
     const [engTrainingExpList, setEngTrainingExpList] = useState<EngTrainingExp[]>([]);
@@ -186,7 +205,7 @@ export function ScheduleCard() {
                 name: exp?.content ?? "",
                 y: 0,
                 span: 8,
-                backgroundColor: undefined,
+                backgroundColor: theme.colors.primary,
             };
         });
         await store.save({
@@ -237,11 +256,12 @@ export function ScheduleCard() {
     }
 
     async function loadData() {
-        await getTimeShift();
+        await getAttendanceData();
+        await getStartDay();
+        getTimeShift();
         await getCourseSchedule();
         await getExamList();
         getActivityList();
-        await getStartDay();
         await getEngTrainingSchedule();
     }
 

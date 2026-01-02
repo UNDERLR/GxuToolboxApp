@@ -2,24 +2,21 @@ import {ScrollView, StyleSheet, ToastAndroid, View} from "react-native";
 import {Button, Divider, Text, useTheme} from "@rneui/themed";
 import React, {useContext, useEffect, useState} from "react";
 import Flex from "@/components/un-ui/Flex.tsx";
-import {Picker} from "@react-native-picker/picker";
 import {SchoolTerms, SchoolTermValue, SchoolYears} from "@/type/global.ts";
 import {NumberInput} from "@/components/un-ui/NumberInput.tsx";
 import {Row, Rows, Table} from "react-native-reanimated-table";
 import {ExamInfoQueryRes} from "@/type/api/infoQuery/examInfoAPI.ts";
 import {store} from "@/js/store.ts";
 import {Color} from "@/js/color.ts";
-import {UnPicker} from "@/components/un-ui/UnPicker.tsx";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 import {examApi} from "@/js/jw/exam.ts";
-import {jwxt} from "@/js/jw/jwxt.ts";
-import {useNavigation} from "@react-navigation/native";
 import {UnTermSelector} from "@/components/un-ui/UnTermSelector.tsx";
+import {useWebView} from "@/hooks/app.ts";
 
 export function ExamInfo() {
     const {theme} = useTheme();
     const {userConfig} = useContext(UserConfigContext);
-    const navigation = useNavigation();
+    const {openInJw} = useWebView();
     const [apiRes, setApiRes] = useState<ExamInfoQueryRes>({} as ExamInfoQueryRes);
     const [year, setYear] = useState(+userConfig.jw.year);
     const [term, setTerm] = useState<SchoolTermValue>(userConfig.jw.term);
@@ -58,9 +55,12 @@ export function ExamInfo() {
     });
 
     function init() {
-        store.load({key: "examInfo"}).then(data => {
-            setApiRes(data);
-        }).catch(console.warn);
+        store
+            .load({key: "examInfo"})
+            .then(data => {
+                setApiRes(data);
+            })
+            .catch(console.warn);
     }
 
     async function query() {
@@ -111,10 +111,12 @@ export function ExamInfo() {
                         </View>
                     </Flex>
                     <Flex gap={10}>
-                        <Button containerStyle={{flex: 1}} onPress={query}>查询</Button>
+                        <Button containerStyle={{flex: 1}} onPress={query}>
+                            查询
+                        </Button>
                         <Button
                             onPress={() => {
-                                jwxt.openPageInWebView("/kwgl/kscx_cxXsksxxIndex.html?gnmkdm=N358105&layout=default", navigation);
+                                openInJw("/kwgl/kscx_cxXsksxxIndex.html?gnmkdm=N358105&layout=default");
                             }}>
                             前往教务查询
                         </Button>

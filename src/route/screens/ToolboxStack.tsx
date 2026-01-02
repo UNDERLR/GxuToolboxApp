@@ -1,40 +1,41 @@
 import React, {useContext} from "react";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import {ToolboxIndex} from "@/screens/tool/ToolboxIndex.tsx";
-import {ExamInfo} from "@/screens/tool/infoQuery/ExamInfo.tsx";
-import {ExamScore} from "@/screens/tool/infoQuery/ExamScore.tsx";
+import {ExamInfo} from "@/screens/tool/jw/infoQuery/ExamInfo.tsx";
+import {ExamScore} from "@/screens/tool/jw/infoQuery/ExamScore.tsx";
 import {Color} from "@/js/color.ts";
-import {ClassCourseSchedule} from "@/screens/tool/infoQuery/courseSchedule/ClassCourseSchedule.tsx";
-import {EvaluationOverview} from "@/screens/tool/eduEvaluation/EvaluationOverview.tsx";
-import {EvaluationDetail} from "@/screens/tool/eduEvaluation/EvaluationDetail.tsx";
+import {ClassCourseSchedule} from "@/screens/tool/jw/infoQuery/courseSchedule/ClassCourseSchedule.tsx";
+import {EvaluationOverview} from "@/screens/tool/jw/eduEvaluation/EvaluationOverview.tsx";
+import {EvaluationDetail} from "@/screens/tool/jw/eduEvaluation/EvaluationDetail.tsx";
 import {Button, useTheme} from "@rneui/themed";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
-import {EvaluationComment} from "@/screens/tool/eduEvaluation/EvaluationComment.tsx";
-import {BuildingListScreen} from "@/screens/tool/mapNavigation/BuildingListScreen.tsx";
-import {CourseScheduleQuery} from "@/screens/tool/infoQuery/courseSchedule/CourseScheduleQuery.tsx";
-import {useNavigation} from "@react-navigation/native";
-import {jwxt} from "@/js/jw/jwxt.ts";
-import {WidgetPreviewScreen} from "@/screens/tool/widgetPreview/WidgetPreviewScreen.tsx";
-import {GPAcalculator} from "@/screens/tool/GPAcalculator/GPAcalculator.tsx";
-import {RescheduleNotificationScreen} from "@/screens/tool/notification/RescheduleNotificationScreen.tsx";
-import {SelfCourseSelection} from "@/screens/tool/selfSelectedCourses/SelfCourseSelection.tsx";
-import {TimeShiftScreen} from "@/screens/tool/notification/TimeShiftScreen.tsx";
-import {PhyExpScreen} from "@/screens/tool/infoQuery/praticalCourse/PhyExpScreen.tsx";
-import {EngTrainingScheduleScreen} from "@/screens/tool/infoQuery/praticalCourse/EngTrainingScheduleScreen.tsx";
+import {EvaluationComment} from "@/screens/tool/jw/eduEvaluation/EvaluationComment.tsx";
+import {BuildingListScreen} from "@/screens/tool/other/mapNavigation/BuildingListScreen.tsx";
+import {CourseScheduleQuery} from "@/screens/tool/jw/infoQuery/courseSchedule/CourseScheduleQuery.tsx";
+import {WidgetPreviewScreen} from "@/screens/tool/other/widgetPreview/WidgetPreviewScreen.tsx";
+import {PhyExpScreen} from "@/screens/tool/jw/infoQuery/praticalCourse/PhyExpScreen.tsx";
+import {EngTrainingScheduleScreen} from "@/screens/tool/jw/infoQuery/praticalCourse/EngTrainingScheduleScreen.tsx";
+import {SelfCourseSelection} from "@/screens/tool/jw/selfSelectedCourses/SelfCourseSelection.tsx";
+import {GPAcalculator} from "@/screens/tool/jw/GPAcalculator/GPAcalculator.tsx";
+import {RescheduleNotificationScreen} from "@/screens/tool/jw/notification/RescheduleNotificationScreen.tsx";
+import {TimeShiftScreen} from "@/screens/tool/jw/notification/TimeShiftScreen.tsx";
+import AttendanceInfoQueryScreen from "@/screens/tool/auth/attendanceSystem/AttendanceInfoQueryScreen.tsx";
+import WebViewScreen from "@/screens/WebViewScreen.tsx";
+import {useWebView} from "@/hooks/app.ts";
 
 const Stack = createNativeStackNavigator();
 
 export function ToolboxStack() {
     const {theme} = useTheme();
     const {userConfig} = useContext(UserConfigContext);
-    const navigation = useNavigation();
+    const {openInJw} = useWebView();
     const headerRightEle = () => {
         return (
             <Button
                 type="clear"
                 containerStyle={{marginRight: 10}}
                 onPress={() => {
-                    jwxt.openPageInWebView("/xtgl/index_initMenu.html", navigation);
+                    openInJw("/xtgl/index_initMenu.html");
                 }}>
                 打开教务
             </Button>
@@ -82,17 +83,29 @@ export function ToolboxStack() {
                 component={ClassCourseSchedule}
                 options={{title: "班级课表查询"}}
             />
+            <Stack.Screen
+                name="AttendanceInfoQueryScreen"
+                component={AttendanceInfoQueryScreen}
+                options={{title: "考勤信息查询"}}
+            />
 
             <Stack.Screen name="examInfo" component={ExamInfo} options={{title: "考试信息查询"}} />
             <Stack.Screen name="examScore" component={ExamScore} options={{title: "考试成绩查询"}} />
             <Stack.Screen name="gpaCalculator" component={GPAcalculator} options={{title: "GPA计算器"}} />
-            <Stack.Screen name="WidgetPreviewScreen" component={WidgetPreviewScreen} options={{title: "小部件预览"}} />
             <Stack.Screen name="SelfSelectedCourse" component={SelfCourseSelection} options={{title: "自主选课"}} />
 
             <Stack.Screen name="phyExpScreen" component={PhyExpScreen} options={{title: "物理实验课查询"}} />
-            <Stack.Screen name="engTrainingScheduleScreen" component={EngTrainingScheduleScreen} options={{title: "金工实训查询"}} />
+            <Stack.Screen
+                name="engTrainingScheduleScreen"
+                component={EngTrainingScheduleScreen}
+                options={{title: "金工实训查询"}}
+            />
 
-            <Stack.Screen name="reschedulingNews" component={RescheduleNotificationScreen} options={{title: "调课信息查询"}} />
+            <Stack.Screen
+                name="reschedulingNews"
+                component={RescheduleNotificationScreen}
+                options={{title: "调课信息查询"}}
+            />
             <Stack.Screen name="timeShiftScreen" component={TimeShiftScreen} options={{title: "调休信息查询"}} />
 
             <Stack.Screen name="EvaluationOverview" component={EvaluationOverview} options={{title: "期末学生评价"}} />
@@ -100,6 +113,8 @@ export function ToolboxStack() {
             <Stack.Screen name="EvaluationComment" component={EvaluationComment} options={{title: "填写评语"}} />
 
             <Stack.Screen name="PositionListScreen" component={BuildingListScreen} options={{title: "地图导航"}} />
+            <Stack.Screen name="WidgetPreviewScreen" component={WidgetPreviewScreen} options={{title: "小部件预览"}} />
+            <Stack.Screen name="EduRechargeScreen" component={WebViewScreen} options={{title: "校园网充值"}} />
         </Stack.Navigator>
     );
 }

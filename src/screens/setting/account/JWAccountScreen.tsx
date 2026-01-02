@@ -5,7 +5,7 @@ import {jwxt} from "@/js/jw/jwxt.ts";
 import {userMgr} from "@/js/mgr/user.ts";
 import {Icon} from "@/components/un-ui/Icon.tsx";
 import {beQuery} from "@/js/be/log.ts";
-import {useNavigation} from "@react-navigation/native";
+import {useWebView} from "@/hooks/app.ts";
 
 async function getToken(username: string, password: string) {
     await userMgr.jw.storeAccount(username, password);
@@ -20,7 +20,7 @@ async function getToken(username: string, password: string) {
             if ((await jwxt.getInfo()) !== undefined) {
                 ToastAndroid.show("获取基础信息成功", ToastAndroid.SHORT);
                 const res = await beQuery.postLog(username);
-                console.log("记录",res.data);
+                console.log("记录", res.data);
             } else {
                 ToastAndroid.show("获取基础信息失败", ToastAndroid.SHORT);
             }
@@ -34,7 +34,7 @@ export function JWAccountScreen() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [showPwd, setShowPwd] = useState(false);
-    const navigation = useNavigation();
+    const {openInJw} = useWebView();
 
     async function init() {
         const account = await userMgr.jw.getAccount();
@@ -81,7 +81,7 @@ export function JWAccountScreen() {
             <Button
                 containerStyle={{marginTop: 10}}
                 onPress={() => {
-                    jwxt.openPageInWebView("/xtgl/login_slogin.html", navigation);
+                    openInJw("/xtgl/login_slogin.html");
                 }}>
                 打开教务登录页
             </Button>

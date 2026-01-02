@@ -1,11 +1,9 @@
 import {Linking, Pressable, ScrollView, StyleSheet, ToastAndroid, View} from "react-native";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {Button, Card, Divider, Text, useTheme} from "@rneui/themed";
-import {UnPicker} from "@/components/un-ui/UnPicker.tsx";
-import {Picker} from "@react-native-picker/picker";
 import {Color} from "@/js/color.ts";
 import React, {useContext, useEffect, useState} from "react";
-import {SchoolTerms, SchoolTermValue, SchoolYears} from "@/type/global.ts";
+import {SchoolTermValue} from "@/type/global.ts";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 import {UnSlider} from "@/components/un-ui/UnSlider.tsx";
 import {CourseScheduleView} from "@/components/tool/infoQuery/courseSchedule/CourseScheduleView.tsx";
@@ -16,14 +14,13 @@ import {courseApi} from "@/js/jw/course.ts";
 import {Row, Rows, Table} from "react-native-reanimated-table";
 import {Course} from "@/type/infoQuery/course/course.ts";
 import Clipboard from "@react-native-clipboard/clipboard";
-import {jwxt} from "@/js/jw/jwxt.ts";
-import {useNavigation} from "@react-navigation/native";
 import {UnTermSelector} from "@/components/un-ui/UnTermSelector.tsx";
+import {useWebView} from "@/hooks/app.ts";
 
 export function CourseScheduleQuery() {
     const {theme} = useTheme();
     const {userConfig} = useContext(UserConfigContext);
-    const navigation = useNavigation();
+    const {openInJw} = useWebView();
     const [year, setYear] = useState(+userConfig.jw.year);
     const [term, setTerm] = useState<SchoolTermValue>(userConfig.jw.term);
     const pageView = usePagerView({pagesAmount: 20});
@@ -103,13 +100,7 @@ export function CourseScheduleQuery() {
                         <Button containerStyle={{flex: 1}} onPress={query}>
                             查询
                         </Button>
-                        <Button
-                            onPress={() =>
-                                jwxt.openPageInWebView(
-                                    "/kbcx/xskbcx_cxXskbcxIndex.html?gnmkdm=N2151&layout=default",
-                                    navigation,
-                                )
-                            }>
+                        <Button onPress={() => openInJw("/kbcx/xskbcx_cxXskbcxIndex.html?gnmkdm=N2151&layout=default")}>
                             前往教务查询
                         </Button>
                     </Flex>

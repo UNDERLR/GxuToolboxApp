@@ -6,7 +6,8 @@ import {Text, useTheme} from "@rneui/themed";
 import {ReactNode, useContext, useEffect, useState} from "react";
 import Flex from "@/components/un-ui/Flex.tsx";
 import {CourseItem} from "@/components/tool/infoQuery/courseSchedule/CourseItem.tsx";
-import {CourseScheduleClass, CourseScheduleContext} from "@/js/jw/course.ts";
+import {CourseScheduleContext} from "@/js/jw/course.ts";
+import {CourseClass, CourseScheduleClass} from "@/class/jw/course.ts";
 import {UserConfigContext} from "@/components/AppProvider.tsx";
 
 export interface CourseScheduleTableProps<T> {
@@ -47,7 +48,7 @@ export function CourseScheduleTable<T = any>(props: CourseScheduleTableProps<T>)
     const {userConfig} = useContext(UserConfigContext);
     const {courseScheduleData, courseScheduleStyle} = useContext(CourseScheduleContext)!;
     const {theme} = useTheme();
-    const [courseSchedule, setCourseSchedule] = useState<Course[][]>([[], [], [], [], [], [], []]);
+    const [courseSchedule, setCourseSchedule] = useState<CourseClass[][]>([[], [], [], [], [], [], []]);
     const startDay = moment(props.startDay ?? userConfig.jw.startDay);
     const [currentTime, setCurrentTime] = useState(moment().format());
     const currentWeek = props.currentWeek ?? Math.ceil(moment.duration(moment().diff(startDay)).asWeeks());
@@ -70,7 +71,8 @@ export function CourseScheduleTable<T = any>(props: CourseScheduleTableProps<T>)
 
     // 从接口返回的数据解析出当周每天的课程
     function parseCourses() {
-        const res = props.courseSchedule!.getCourseListByWeek(currentWeek);
+        if (!props.courseSchedule?.getCourseListByWeek) return;
+        const res = props.courseSchedule.getCourseListByWeek(currentWeek);
         if (Array.isArray(res)) {
             // 调课判断
             res.forEach((day, index) => {
@@ -138,7 +140,7 @@ export function CourseScheduleTable<T = any>(props: CourseScheduleTableProps<T>)
                 <View style={courseScheduleStyle.weekdayItem}>
                     <Text style={courseScheduleStyle.weekdayText}>
                         {props.showDate
-                            ? moment(userConfig.jw.startDay).add(currentWeek, "w").month() + 1 + "月"
+                            ? startDay.clone().add(currentWeek, "w").month() + 1 + "月"
                             : `第${props.currentWeek}周`}
                     </Text>
                 </View>
@@ -169,7 +171,7 @@ export function CourseScheduleTable<T = any>(props: CourseScheduleTableProps<T>)
             {/*课表*/}
             {courseScheduleData.weekdayList.map((weekday, index) => {
                 // 判断是否为当天
-                const currentDay = moment(userConfig.jw.startDay).add({
+                const currentDay = startDay.clone().add({
                     week: currentWeek - 1,
                     day: index,
                 });
@@ -212,17 +214,23 @@ export function CourseScheduleTable<T = any>(props: CourseScheduleTableProps<T>)
                                 );
                                 if (phyExpIndex > -1) {
                                     const phyExp = props.phyExpList[phyExpIndex];
-                                    course = {
+                                    course = new CourseClass({
                                         ...course,
                                         kcmc: phyExp.xmmc,
                                         cdmc: phyExp.fjbh,
                                         xm: phyExp.zjjsxm,
-                                    };
+                                    });
                                 }
                             }
+                            // 考勤状态
+                            const attendanceState = props.courseSchedule?.attendanceData?.getAttendanceState?.(
+                                course,
+                                currentWeek,
+                            );
                             return (
                                 <CourseItem
                                     style={props.courseStyle}
+                                    attendanceState={attendanceState}
                                     onCoursePress={props.onCoursePress}
                                     key={`day${index}-${course.jxb_id}-${i}`}
                                     course={course}
@@ -232,7 +240,7 @@ export function CourseScheduleTable<T = any>(props: CourseScheduleTableProps<T>)
                         })}
 
                         {/*课表其他元素*/}
-                        {currentDayItemList.map(examInfo => props.itemRender?.(examInfo, props.onItemPress))}
+                        {currentDayItemList.map(item => props.itemRender?.(item, props.onItemPress))}
                     </View>
                 );
             })}
